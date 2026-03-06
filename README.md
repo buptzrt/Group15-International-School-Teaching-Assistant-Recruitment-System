@@ -1,0 +1,2 @@
+# International-School-Teaching-Assistant-Recruitment-System
+Team will develop a software application that will be used by  BUPT International School for recruiting Teaching Assistants. Agile methods should be  applied throughout all stages of development, including requirements, analysis and design,  implementation, and testing. And demonstrate incremental delivery,  feedback, and reflective  improvement.
