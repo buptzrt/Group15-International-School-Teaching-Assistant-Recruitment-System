@@ -1,7 +1,8 @@
 # Collaborators
-GitHub Usernames: buptzrt  QMID: 231220013
-Yuxuan:yuxuanwwang@outlook.com    (Support TA)
 
+GitHub Usernames: buptzrt  QMID: 231220013  
+GitHub Usernames: aaazcshuaige0905  QMID: 231222844  
+Yuxuan:yuxuanwwang@outlook.com    (Support TA)
 
 # International-School-Teaching-Assistant-Recruitment-System
 
