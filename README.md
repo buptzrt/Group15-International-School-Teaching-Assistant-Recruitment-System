@@ -1,6 +1,7 @@
 # Collaborators
 GitHub Usernames: buptzrt  QMID: 231220013
 GitHub Usernames: penguin-qsr  QMID: 231221157
+GitHub Usernames: Charity-zcy  QMID: 231222062
 Yuxuan:yuxuanwwang@outlook.com    (Support TA)
 
 
