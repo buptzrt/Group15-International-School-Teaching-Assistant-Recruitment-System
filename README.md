@@ -60,3 +60,4 @@ Tasks include defining detailed requirements, designing, developing, and testing
 - 2.2 requirement must meet, can be stand alone or Java Servlet/JSP web-based, no database
 - GitHub checking throughout the timeline
 - Marks is group mark * individual factor
+Update README
