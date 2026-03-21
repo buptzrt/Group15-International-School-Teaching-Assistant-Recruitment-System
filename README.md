@@ -3,7 +3,7 @@ GitHub Usernames: buptzrt  QMID: 231220013
 GitHub Usernames: penguin-qsr  QMID: 231221157  
 GitHub Usernames: Charity-zcy  QMID: 231222062  
 GitHub Usernames: lucy-wjy  QMID: 231220459  
-GitHub Usernames: ChenQiutong-123   QMID: 231220459  
+GitHub Usernames: ChenQiutong-123   QMID: 231222545   
 GitHub Usernames: aaazcshuaige0905  QMID: 231222844  
 Yuxuan:yuxuanwwang@outlook.com    (Support TA)
 
