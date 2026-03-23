@@ -1,0 +1,10 @@
+[
+  {
+    "enrollmentNo": "S001",
+    "email": "test@bupt.edu.cn",
+    "password": "123",
+    "fullName": "张三",
+    "branch": "Computer Science",
+    "role": "Student"
+  }
+]
