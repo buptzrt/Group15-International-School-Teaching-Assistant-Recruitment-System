@@ -1,3 +1,13 @@
+# Collaborators
+GitHub Usernames: buptzrt  QMID: 231220013  
+GitHub Usernames: penguin-qsr  QMID: 231221157  
+GitHub Usernames: Charity-zcy  QMID: 231222062  
+GitHub Usernames: lucy-wjy  QMID: 231220459  
+GitHub Usernames: ChenQiutong-123   QMID: 231222545   
+GitHub Usernames: aaazcshuaige0905  QMID: 231222844  
+Yuxuan:yuxuanwwang@outlook.com    (Support TA)
+
+
 # International-School-Teaching-Assistant-Recruitment-System
 
 Team will develop a software application that will be used by BUPT International School for recruiting Teaching Assistants. Agile methods should be applied throughout all stages of development, including requirements, analysis and design, implementation, and testing. And demonstrate incremental delivery, feedback, and reflective improvement.
@@ -50,3 +60,4 @@ Tasks include defining detailed requirements, designing, developing, and testing
 - 2.2 requirement must meet, can be stand alone or Java Servlet/JSP web-based, no database
 - GitHub checking throughout the timeline
 - Marks is group mark * individual factor
+Update README
