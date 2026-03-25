@@ -12,7 +12,7 @@ public class UserDao {
     // 🚨 极度重要：把这里的路径换成你电脑上 data/users.json 的绝对路径！
     // 注意 Windows 路径要把单斜杠 \ 换成双斜杠 \\ 或者正斜杠 /
     //改成自己的绝对地址
-    private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/project/sys/Group15-International-School-Teaching-Assistant-Recruitment-System/TA_System/TA_System/data/users.json";
+    private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/TA_System/data/users.json";
     //private static final String FILE_PATH = "data/users.json";
     private Gson gson = new Gson();
 
@@ -70,5 +70,38 @@ public class UserDao {
             }
         }
         return null; // 账号或密码错误
+    }
+
+    // 方法5. 检查学号或邮箱是否已经被注册过
+    public boolean userExists(String enrollmentNo, String email) {
+        List<User> users = getAllUsers();
+        if (users == null) return false;
+
+        for (User u : users) {
+            if ((u.getEnrollmentNo() != null && u.getEnrollmentNo().equals(enrollmentNo)) ||
+                    (u.getEmail() != null && u.getEmail().equals(email))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 方法6. 将新注册的用户追加保存到 JSON 文件中
+    public boolean addUser(User newUser) {
+        List<User> users = getAllUsers();
+        if (users == null) {
+            users = new ArrayList<>();
+        }
+
+        users.add(newUser); // 把新用户加进列表
+
+        // 写回 json 文件
+        try (Writer writer = new FileWriter(FILE_PATH)) {
+            gson.toJson(users, writer);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

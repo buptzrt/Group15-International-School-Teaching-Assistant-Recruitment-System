@@ -56,7 +56,7 @@
         }
 
         form {
-            max-width: 800px;
+            max-width: 600px; /* 因为字段少了，把表单改窄一点更好看 */
             margin: auto;
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(6px);
@@ -92,7 +92,7 @@
             text-align: left;
         }
 
-        input, select, textarea {
+        input {
             width: 100%;
             padding: 12px;
             margin-bottom: 16px;
@@ -104,40 +104,8 @@
             box-sizing: border-box;
         }
 
-        input::placeholder, textarea::placeholder {
+        input::placeholder {
             color: #ccc;
-        }
-
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 16px 16px;
-        }
-
-        select option {
-            background-color: #243b55;
-            color: #fff;
-        }
-
-        input[type="file"] {
-            color: #ccc;
-        }
-
-        input[type="file"]::-webkit-file-upload-button,
-        input[type="file"]::file-selector-button {
-            background-color: #1e90ff;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        input[type="file"]::-webkit-file-upload-button:hover,
-        input[type="file"]::file-selector-button:hover {
-            background-color: #187bcd;
         }
 
         input[type="submit"] {
@@ -150,11 +118,13 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 10px;
+            width: 100%; /* 按钮横跨整个底部 */
         }
 
         input[type="submit"]:hover {
             background-color: #187bcd;
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .error {
@@ -166,13 +136,27 @@
             margin-bottom: 20px;
             position: relative;
             z-index: 1;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .login-link {
+            display: block;
+            margin-top: 15px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .login-link:hover {
+            color: #ffdd57;
         }
 
         @media screen and (max-width: 768px) {
             .form-row {
                 flex-direction: column;
             }
-
             h2 {
                 font-size: 24px;
             }
@@ -181,86 +165,49 @@
 </head>
 <body>
 
-    <h2>Student Registration</h2>
+<h2>Create an Account</h2>
 
-    <% if (request.getAttribute("error") != null) { %>
-        <p class="error"><%= request.getAttribute("error") %></p>
-    <% } %>
+<% if (request.getAttribute("error") != null) { %>
+<p class="error"><%= request.getAttribute("error") %></p>
+<% } %>
 
-    <form action="StudentRegisterServlet" method="post" enctype="multipart/form-data">
+<form action="StudentRegisterServlet" method="post">
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Enrollment Number</label>
-                <input type="text" name="enrollment_no" placeholder="Enrollment Number" maxlength="20" required>
-            </div>
-
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" name="full_name" placeholder="Full Name" maxlength="100" required>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" placeholder="Email" maxlength="100" required>
-            </div>
-
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" placeholder="Password" maxlength="255" required>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Date of Birth</label>
-                <input type="date" name="dob" required>
-            </div>
-
-            <div class="form-group">
-                <label>Branch</label>
-                <input type="text" name="branch" placeholder="Branch" maxlength="50" required>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Contact Number</label>
-                <input type="text" name="contact" placeholder="Contact Number" maxlength="15" required>
-            </div>
-
-            <div class="form-group">
-                <label>CGPA</label>
-                <input type="number" name="cgpa" step="0.01" min="0" max="10" placeholder="e.g. 8.25" required>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Gender</label>
-                <select name="gender" required>
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="full_name" placeholder="Enter your full name" maxlength="100" required>
         </div>
 
         <div class="form-group">
-            <label>Upload Resume (PDF, Max 5MB)</label>
-            <input type="file" name="resume" accept=".pdf" required>
+            <label>Student/Staff ID</label>
+            <input type="text" name="enrollment_no" placeholder="e.g. S12345" maxlength="20" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group" style="flex: 100%;">
+            <label>University Email</label>
+            <input type="email" name="email" placeholder="student@university.edu" maxlength="100" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Create a password" maxlength="255" required>
         </div>
 
         <div class="form-group">
-            <label>Address</label>
-            <textarea name="address" placeholder="Address" rows="3" required></textarea>
+            <label>Confirm Password</label>
+            <input type="password" name="confirm_password" placeholder="Confirm your password" maxlength="255" required>
         </div>
+    </div>
 
-        <input type="submit" value="Register">
-    </form>
+    <input type="submit" value="Register">
+
+    <a href="student_login.jsp" class="login-link">Already have an account? Login here</a>
+</form>
 
 </body>
 </html>

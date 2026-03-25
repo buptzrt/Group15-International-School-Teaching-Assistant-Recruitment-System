@@ -1,10 +1,3 @@
-[
-  {
-    "enrollmentNo": "S001",
-    "email": "test@bupt.edu.cn",
-    "password": "123",
-    "fullName": "张三",
-    "branch": "Computer Science",
-    "role": "Student"
-  }
-]
+[{"enrollmentNo":"S001","email":"test@bupt.edu.cn","password":"123","fullName":"张三","role":"Student"},
+  {"enrollmentNo":"S002","email":"lisi@bupt.edu.cn","password":"234","fullName":"李四","role":"Student"},
+  {"enrollmentNo":"S003","email":"wangwu@bupt.edu.cn","password":"345","fullName":"王五","role":"Student"}]

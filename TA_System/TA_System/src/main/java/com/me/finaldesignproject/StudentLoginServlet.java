@@ -10,7 +10,7 @@ import com.me.finaldesignproject.model.User;
 import com.me.finaldesignproject.dao.UserDao;
 
 @WebServlet("/StudentLoginServlet") // 路由地址，对应 jsp 表单里的 action
-public class StudentLoginServlet extends HttpServlet {
+public class    StudentLoginServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
