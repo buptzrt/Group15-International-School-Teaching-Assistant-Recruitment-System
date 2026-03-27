@@ -35,6 +35,10 @@
         <servlet-class>com.me.finaldesignproject.AdminLoginServlet</servlet-class>
     </servlet>-->
     <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.me.finaldesignproject.LoginServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>AdminRegisterServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.AdminRegisterServlet</servlet-class>
     </servlet>
@@ -71,6 +75,11 @@
         <servlet-class>com.me.finaldesignproject.CompanyApplicationsServlet</servlet-class>
     </servlet>
     <!-- Mappings -->
+
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.LogoutServlet</servlet-class>

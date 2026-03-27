@@ -1,7 +1,8 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-    if (session == null || session.getAttribute("mo_id") == null) {
-        response.sendRedirect("mo_login.jsp");
+    if (session == null || session.getAttribute("role") == null ||
+        !"MO".equalsIgnoreCase((String) session.getAttribute("role"))) {
+        response.sendRedirect("login.jsp");
         return;
     }
 %>
@@ -158,14 +159,14 @@
             <a href="#" onclick="openSection('filter_students.jsp', event)">Filter Students</a>
         </div>
         <div class="navbar-right">
-            <form action="MOLogoutServlet" method="get" style="margin: 0;" onsubmit="confirmLogout(event);">
+            <form action="LogoutServlet" method="get" style="margin: 0;" onsubmit="confirmLogout(event);">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
         </div>
     </div>
 
     <div class="welcome-card" id="welcomeCard">
-        <h3>Welcome <%= session.getAttribute("mo_name") %></h3>
+        <h3>Welcome <%= session.getAttribute("user_name") %></h3>
         <p>
             Welcome to the MO Dashboard.
             You can post job openings, view student applications, and filter candidates.

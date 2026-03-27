@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="jakarta.servlet.http.*, jakarta.servlet.*" %>
 <%
-    if (session == null || session.getAttribute("email") == null) {
-        response.sendRedirect("student_login.jsp");
+    if (session == null || session.getAttribute("role") == null ||
+        !"Student".equalsIgnoreCase((String) session.getAttribute("role"))) {
+        response.sendRedirect("login.jsp");
         return;
     }
 %>
@@ -146,7 +147,7 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <h2>🎓 Student Dashboard</h2>
+            <h2>Student Dashboard</h2>
             <a href="#" onclick="loadStudentSection('welcome_student.jsp', event)">Home</a>
             <a href="#" onclick="loadStudentSection('StudentProfileServlet', event)">View My Profile</a>
             <a href="#" onclick="loadStudentSection('view_companies.jsp', event)">View Company List</a>

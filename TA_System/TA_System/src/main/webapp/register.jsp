@@ -154,7 +154,6 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            margin-top: 20px;
         }
 
         .action-btn:hover,
@@ -239,7 +238,7 @@
         }
     </style>
 
-    <title>Student Registration</title>
+    <title>Register | Choose Role</title>
 </head>
 <body>
 
@@ -247,43 +246,19 @@
 
     <div class="page-shell">
         <div class="card">
-            <h2>Student Registration</h2>
+            <h2>Choose Role to Register</h2>
             <div class="title-line"></div>
-            <p class="sub-desc">Create your student account below.</p>
+            <p class="sub-desc">Please select one role to continue registration.</p>
 
-            <% if (request.getAttribute("error") != null) { %>
-                <p class="error"><%= request.getAttribute("error") %></p>
-            <% } %>
+            <div class="role-group">
+                <a href="admin_register.jsp" class="choice-btn">Admin Registration</a>
+                <a href="mo_register.jsp" class="choice-btn">MO Registration</a>
+                <a href="student_register.jsp" class="choice-btn">Student Registration</a>
+            </div>
 
-            <form action="StudentRegisterServlet" method="post">
-                <div class="grid">
-                    <div>
-                        <label>Full Name</label>
-                        <input type="text" name="full_name" required>
-                    </div>
-                    <div>
-                        <label>Student ID</label>
-                        <input type="text" name="enrollment_no" required>
-                    </div>
-                    <div class="full">
-                        <label>Email</label>
-                        <input type="email" name="email" required>
-                    </div>
-                    <div>
-                        <label>Password</label>
-                        <input type="password" name="password" required>
-                    </div>
-                    <div>
-                        <label>Confirm Password</label>
-                        <input type="password" name="confirm_password" required>
-                    </div>
-                </div>
-                <button type="submit">Register Student</button>
-            </form>
-
-            <div class="link">
-                <a href="register.jsp">Back to role selection</a>
-                <a href="login.jsp">Already have an account? Login</a>
+            <div class="footer-links">
+                <a href="login.jsp">Return to Login</a>
+                <a href="index.html">Return to Home</a>
             </div>
         </div>
 

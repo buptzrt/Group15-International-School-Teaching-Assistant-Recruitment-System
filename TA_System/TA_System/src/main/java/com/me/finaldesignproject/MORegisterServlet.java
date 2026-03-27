@@ -4,7 +4,6 @@ import com.me.finaldesignproject.dao.UserDao;
 import com.me.finaldesignproject.model.User;
 
 import java.io.IOException;
-import java.util.List;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -12,83 +11,55 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class MORegisterServlet extends HttpServlet {
-
-    private String generateNextMoId(UserDao userDao) {
-        List<User> users = userDao.getAllUsers();
-        int max = 0;
-
-        for (User u : users) {
-            if (u.getRole() == null || !"MO".equalsIgnoreCase(u.getRole())) {
-                continue;
-            }
-            String id = u.getEnrollmentNo();
-            if (id == null || !id.toUpperCase().startsWith("MO")) {
-                continue;
-            }
-            String numberPart = id.substring(2).replaceAll("[^0-9]", "");
-            if (!numberPart.isEmpty()) {
-                try {
-                    int value = Integer.parseInt(numberPart);
-                    if (value > max) {
-                        max = value;
-                    }
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        }
-
-        return String.format("MO%03d", max + 1);
-    }
+    private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
 
-        String moName = request.getParameter("company_name");
+        String fullName = request.getParameter("company_name");
+        String enrollmentNo = request.getParameter("enrollment_no");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirm_password");
-        String moId = request.getParameter("enrollment_no");
 
-        if (moName == null || moName.trim().isEmpty() || email == null || email.trim().isEmpty()
-                || password == null || password.trim().isEmpty()) {
-            request.setAttribute("error", "Please fill all required fields.");
-            request.getRequestDispatcher("mo_register.jsp").forward(request, response);
+        if (fullName == null || fullName.trim().isEmpty() ||
+            enrollmentNo == null || enrollmentNo.trim().isEmpty() ||
+            email == null || email.trim().isEmpty() ||
+            password == null || password.trim().isEmpty() ||
+            confirmPassword == null || confirmPassword.trim().isEmpty()) {
+            request.setAttribute("error", "All fields are required.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("mo_register.jsp");
+            dispatcher.forward(request, response);
             return;
         }
 
-        if (confirmPassword != null && !confirmPassword.equals(password)) {
+        if (!password.equals(confirmPassword)) {
             request.setAttribute("error", "Passwords do not match.");
-            request.getRequestDispatcher("mo_register.jsp").forward(request, response);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("mo_register.jsp");
+            dispatcher.forward(request, response);
             return;
         }
 
-        com.me.finaldesignproject.dao.UserDao userDao = new com.me.finaldesignproject.dao.UserDao();
-
-        if (moId == null || moId.trim().isEmpty()) {
-            moId = generateNextMoId(userDao);
-        }
-
-        if (userDao.userExists(moId, email)) {
-            request.setAttribute("error", "MO ID or Email already exists.");
-            request.getRequestDispatcher("mo_register.jsp").forward(request, response);
+        UserDao userDao = new UserDao();
+        if (userDao.userExists(email, enrollmentNo)) {
+            request.setAttribute("error", "Email or ID already exists.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("mo_register.jsp");
+            dispatcher.forward(request, response);
             return;
         }
 
-        User newMo = new User();
-        newMo.setEnrollmentNo(moId.trim());
-        newMo.setFullName(moName.trim());
-        newMo.setEmail(email.trim());
-        newMo.setPassword(password);
-        newMo.setRole("MO");
+        User user = new User(enrollmentNo.trim(), email.trim(), password.trim(), fullName.trim(), "", "MO");
+        boolean saved = userDao.saveUser(user);
 
-        if (userDao.addUser(newMo)) {
-            response.sendRedirect("mo_login.jsp?registered=success");
+        if (saved) {
+            response.sendRedirect("login.jsp");
         } else {
-            request.setAttribute("error", "Registration failed (System Error).");
-            RequestDispatcher rd = request.getRequestDispatcher("mo_register.jsp");
-            rd.forward(request, response);
+            request.setAttribute("error", "Registration failed. Please try again later.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("mo_register.jsp");
+            dispatcher.forward(request, response);
         }
     }
 }
