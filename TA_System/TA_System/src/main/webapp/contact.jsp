@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About System - TA Recruitment System</title>
+    <title>Contact - TA Recruitment System</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -125,7 +125,7 @@
             max-width: 760px;
             height: 4px;
             background-color: #222;
-            margin: 0 auto 40px auto;
+            margin: 0 auto 35px auto;
             border-radius: 4px;
         }
 
@@ -139,53 +139,90 @@
             margin: 0 auto 45px auto;
         }
 
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 28px;
-        }
-
-        .card {
-            background-color: rgba(255, 255, 255, 0.88);
+        .contact-card {
+            background-color: rgba(255, 255, 255, 0.90);
             border: 3px solid #222;
             border-radius: 22px;
-            padding: 30px 28px;
+            padding: 35px 30px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-6px);
+        .contact-card:hover {
+            transform: translateY(-4px);
             box-shadow: 0 10px 24px rgba(0,0,0,0.12);
         }
 
-        .card h2 {
-            font-size: 28px;
+        .section-title {
+            font-size: 30px;
             font-weight: 800;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
+            color: #222;
+            text-align: center;
+        }
+
+        .member-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+        }
+
+        .member-item {
+            background-color: #fff;
+            border: 2px solid #222;
+            border-radius: 18px;
+            padding: 22px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .member-item:hover {
+            background-color: #fff5f5;
+            transform: translateY(-3px);
+        }
+
+        .member-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 10px;
+        }
+
+        .member-info {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .support-box {
+            margin-top: 32px;
+            background-color: #fff;
+            border: 2px solid #222;
+            border-radius: 18px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .support-box h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
             color: #222;
         }
 
-        .card p {
+        .support-box p {
             font-size: 18px;
             line-height: 1.8;
             color: #333;
         }
 
-        .card ul {
-            padding-left: 22px;
-            margin-top: 8px;
+        .support-box a {
+            color: #d63031;
+            text-decoration: none;
+            font-weight: 700;
         }
 
-        .card ul li {
-            font-size: 18px;
-            line-height: 1.8;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
+        .support-box a:hover {
+            text-decoration: underline;
         }
 
         .footer-nav {
@@ -231,7 +268,7 @@
         }
 
         @media (max-width: 900px) {
-            .content-grid {
+            .member-list {
                 grid-template-columns: 1fr;
             }
 
@@ -283,75 +320,90 @@
 
         <div class="top-nav">
             <a href="index.html">Home</a>
-            <a href="contact.jsp">Contact</a>
-            <a href="help.jsp">Help</a>
+            <a href="aboutus.jsp">About System</a>
+            <a href="login.jsp">Login</a>
         </div>
 
         <main class="main-content">
-            <h1 class="page-title">About the TA Recruitment System</h1>
+            <h1 class="page-title">Contact the Project Team</h1>
             <div class="title-line"></div>
 
             <p class="intro-text">
-                This system was developed for the International School of Beijing University of Posts and Telecommunications
-                to support the recruitment and management of Teaching Assistants in a clearer, faster, and more organized way.
+                Meet the development team behind the TA Recruitment System and the support contact for this project.
             </p>
 
-            <div class="content-grid">
-                <section class="card">
-                    <h2>Project Background</h2>
-                    <p>
-                        The TA Recruitment System is a software engineering project created by Group 15 for the Software Engineering course.
-                        It was designed to improve the traditional recruitment process, which often relies on forms, spreadsheets,
-                        and manual communication. By building a web-based platform, the team aimed to make TA recruitment more efficient,
-                        transparent, and user-friendly for both applicants and administrators.
-                    </p>
-                </section>
+            <section class="contact-card">
+                <h2 class="section-title">Software Engineering Group 15</h2>
 
-                <section class="card">
-                    <h2>Development Purpose</h2>
-                    <p>
-                        The purpose of this system is to provide a dedicated platform for publishing Teaching Assistant opportunities
-                        within BUPT International School. It allows student applicants to view positions, submit applications,
-                        and track their progress, while Module Organisers and administrators can manage vacancies, review candidates,
-                        and coordinate recruitment work more effectively.
-                    </p>
-                </section>
+                <div class="member-list">
+                    <div class="member-item">
+                        <div class="member-name">Runtian Zhou</div>
+                        <div class="member-info">
+                            Chinese Name: 周润恬<br>
+                            GitHub Username: buptzrt<br>
+                            QMID: 231220013
+                        </div>
+                    </div>
 
-                <section class="card">
-                    <h2>Core Features</h2>
-                    <ul>
-                        <li>Create and manage applicant profiles</li>
-                        <li>Browse available TA positions</li>
-                        <li>Submit job applications online</li>
-                        <li>Track application status</li>
-                        <li>Support position posting and candidate selection</li>
-                    </ul>
-                </section>
+                    <div class="member-item">
+                        <div class="member-name">Sirong Qi</div>
+                        <div class="member-info">
+                            Chinese Name: 祁思榕<br>
+                            GitHub Username: penguin-qsr<br>
+                            QMID: 231221157
+                        </div>
+                    </div>
 
-                <section class="card">
-                    <h2>Project Team</h2>
-                    <p>
-                        This system was developed by Software Engineering Group 15 as part of the course project.
-                        The team followed an agile development approach throughout requirements analysis, design,
-                        implementation, testing, and iterative improvement. The project also reflects collaborative development,
-                        incremental delivery, and continuous feedback in practice.
-                    </p>
-                </section>
+                    <div class="member-item">
+                        <div class="member-name">Chenyu Zhang</div>
+                        <div class="member-info">
+                            Chinese Name: 章晨瑜<br>
+                            GitHub Username: Charity-zcy<br>
+                            QMID: 231222062
+                        </div>
+                    </div>
 
-                <section class="card full-width">
-                    <h2>System Value</h2>
+                    <div class="member-item">
+                        <div class="member-name">Jiayi Wang</div>
+                        <div class="member-info">
+                            Chinese Name: 王佳仪<br>
+                            GitHub Username: lucy-wjy<br>
+                            QMID: 231220459
+                        </div>
+                    </div>
+
+                    <div class="member-item">
+                        <div class="member-name">Qiutong Chen</div>
+                        <div class="member-info">
+                            Chinese Name: 陈秋彤<br>
+                            GitHub Username: ChenQiutong-123<br>
+                            QMID: 231222545
+                        </div>
+                    </div>
+
+                    <div class="member-item">
+                        <div class="member-name">Zichun Ao</div>
+                        <div class="member-info">
+                            Chinese Name: 敖子淳<br>
+                            GitHub Username: aaazcshuaige0905<br>
+                            QMID: 231222844
+                        </div>
+                    </div>
+                </div>
+
+                <div class="support-box">
+                    <h3>Support Contact</h3>
                     <p>
-                        More than just a course assignment, this platform serves as a focused recruitment solution for the International School.
-                        It helps reduce repetitive manual work, improves communication between applicants and organisers,
-                        and offers a more structured experience for TA recruitment each semester. The system also demonstrates
-                        how software engineering methods can be applied to solve practical management problems in an academic environment.
+                        Yuxuan Wang (Support TA)<br>
+                        Email:
+                        <a href="mailto:yuxuanwwang@outlook.com">yuxuanwwang@outlook.com</a>
                     </p>
-                </section>
-            </div>
+                </div>
+            </section>
         </main>
 
         <div class="footer-nav">
-            <a href="aboutus.jsp">About</a>
+            <a href="aboutus.jsp">About System</a>
             <div class="divider"></div>
             <a href="help.jsp">Help</a>
             <div class="divider"></div>

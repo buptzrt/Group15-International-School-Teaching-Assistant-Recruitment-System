@@ -10,17 +10,42 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
 
-    private static final String USER_JSON_PATH = "E:\\study\\software engineer\\Group15_TA_SYSTEM\\TA_System\\TA_System\\src\\main\\resources\\users.json";
+    private static final String USER_JSON_FILE = "users.json";
+
+    /**
+     * 获取 users.json 文件的路径
+     * 优先使用 classpath 中的文件（运行时），如果找不到就使用开发环境的路径
+     */
+    private static String getUserJsonPath() {
+        try {
+            // 尝试从 classpath 加载（运行时路径）
+            InputStream resourceStream = UserDao.class.getClassLoader().getResourceAsStream(USER_JSON_FILE);
+            if (resourceStream != null) {
+                resourceStream.close();
+                // 从 classpath 获取路径
+                String classPath = UserDao.class.getClassLoader().getResource(USER_JSON_FILE).getPath();
+                return classPath;
+            }
+        } catch (Exception e) {
+            // 忽略异常，使用备选方案
+        }
+
+        // 备选方案：使用开发环境路径（相对于项目根目录）
+        String projectRoot = System.getProperty("user.dir");
+        return Paths.get(projectRoot, "src", "main", "resources", USER_JSON_FILE).toString();
+    }
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
+        String filePath = getUserJsonPath();
 
-        try (InputStream is = new FileInputStream(USER_JSON_PATH);
+        try (InputStream is = new FileInputStream(filePath);
              Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 
             Type listType = new TypeToken<List<User>>() {}.getType();
@@ -31,6 +56,7 @@ public class UserDao {
             }
 
         } catch (Exception e) {
+            System.err.println("Error reading users.json from: " + filePath);
             e.printStackTrace();
         }
 
@@ -61,12 +87,14 @@ public class UserDao {
 
         List<User> users = getAllUsers();
         users.add(user);
+        String filePath = getUserJsonPath();
 
         try (java.io.Writer writer = new java.io.OutputStreamWriter(
-                new java.io.FileOutputStream(USER_JSON_PATH), StandardCharsets.UTF_8)) {
+                new java.io.FileOutputStream(filePath), StandardCharsets.UTF_8)) {
             new com.google.gson.Gson().toJson(users, writer);
             return true;
         } catch (Exception e) {
+            System.err.println("Error writing users.json to: " + filePath);
             e.printStackTrace();
             return false;
         }
