@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage TA Profile</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            background: linear-gradient(135deg, #f3f1ec 0%, #e6edf5 100%);
+            color: #1f2933;
+        }
+        .page { max-width: 980px; margin: 0 auto; padding: 26px 18px 40px; }
+        h1 { margin: 6px 0 12px; font-size: 34px; color: #0f172a; }
+        p.lead { margin: 0 0 18px; color: #475569; line-height: 1.6; }
+        .panel {
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid #d8e1ec;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+            padding: 22px 22px 26px;
+        }
+        .section-title {
+            margin: 20px 0 10px;
+            color: #0f172a;
+            font-size: 19px;
+            font-weight: 700;
+        }
+        label { display: block; margin-bottom: 6px; font-weight: 700; color: #1e293b; font-size: 14px; }
+        .required::after { content: " *"; color: #b42318; }
+        input[type="text"], input[type="email"], input[type="tel"], textarea {
+            width: 100%; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 10px;
+            font: inherit; color: #0f172a; background: #f8fafc;
+            text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+        }
+        textarea { min-height: 72px; resize: vertical; }
+        input:focus, textarea:focus { outline: none; border-color: #1f6fb5; box-shadow: 0 0 0 3px rgba(31,111,181,0.16); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 18px; }
+        .row { margin: 10px 0; }
+        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px 12px; }
+        .checkbox-item { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px; display:flex; gap:8px; align-items:flex-start; }
+        .actions { margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap; }
+        button {
+            border: none; border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer;
+            transition: transform .15s ease, box-shadow .15s ease; font-size: 15px;
+        }
+        button.primary { background: linear-gradient(135deg,#1e3c72,#2a5298); color:#fff; box-shadow:0 10px 20px rgba(42,82,152,.25); }
+        button.secondary { background: #e2e8f0; color:#0f172a; }
+        button:disabled { opacity: .6; cursor: not-allowed; }
+        .alert { display:none; margin-bottom:14px; padding:12px 14px; border-radius:10px; font-size:14px; }
+        .alert.ok { background:#e8f7ee; color:#14532d; border:1px solid #b9e2c6; }
+        .alert.err { background:#fdecec; color:#8a1c23; border:1px solid #f5c2c7; }
+        small.hint { color:#64748b; display:block; margin-top:4px; }
+        @media (max-width:700px){ .checkbox-group{grid-template-columns:1fr;} }
+    </style>
+</head>
+<body>
+<div class="page">
+    <h1>Manage TA Profile</h1>
+    <p class="lead">Fill in the basic information and skills. Required fields are marked with *.</p>
+    <div class="panel">
+        <div id="toast" class="alert"></div>
+        <form id="profileForm">
+            <div class="section-title">Basic Information</div>
+            <div class="grid">
+                <div class="row"><label class="required" for="fullName">Name</label><input id="fullName" type="text"></div>
+                <div class="row"><label for="chineseName">Chinese name</label><input id="chineseName" type="text"></div>
+                <div class="row"><label for="gender">Gender</label><input id="gender" type="text"></div>
+                <div class="row"><label class="required" for="qmId">QM ID</label><input id="qmId" type="text"></div>
+                <div class="row"><label class="required" for="buptId">BUPT ID</label><input id="buptId" type="text"></div>
+                <div class="row"><label for="buptClass">BUPT Class</label><input id="buptClass" type="text"></div>
+                <div class="row"><label class="required" for="majorProgramme">Major / Programme</label><input id="majorProgramme" type="text"></div>
+                <div class="row"><label class="required" for="grade">Grade</label><input id="grade" type="text"></div>
+                <div class="row"><label class="required" for="email">Email</label><input id="email" type="email"></div>
+                <div class="row"><label for="mobilePhone">Mobile Phone</label><input id="mobilePhone" type="tel"></div>
+                <div class="row"><label for="wechatId">WeChat ID</label><input id="wechatId" type="text"></div>
+            </div>
+
+            <div class="section-title">Queen Mary-BUPT Joint Programme</div>
+            <div class="row">
+                <label>Have you ever been a student on the Queen Mary-BUPT Joint Programme?</label>
+                <div class="checkbox-group" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+                    <label class="checkbox-item"><input type="radio" name="priorAnswer" value="Yes">Yes</label>
+                    <label class="checkbox-item"><input type="radio" name="priorAnswer" value="No">No</label>
+                </div>
+                <input id="priorProgramme" type="text" placeholder="If Yes, programme and graduation year">
+            </div>
+
+            <div class="section-title">Availability</div>
+            <div class="row">
+                <div class="checkbox-group" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+                    <label class="checkbox-item"><input type="radio" name="availability" value="All semester">All semester</label>
+                    <label class="checkbox-item"><input type="radio" name="availability" value="Others">Others</label>
+                </div>
+                <input id="availabilityNotes" type="text" placeholder="If others, please specify">
+            </div>
+
+            <div class="section-title">Campus Preference</div>
+            <div class="checkbox-group" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+                <label class="checkbox-item"><input type="radio" name="campusPreference" value="BUPT Main Campus only">BUPT Main Campus only</label>
+                <label class="checkbox-item"><input type="radio" name="campusPreference" value="BUPT Shahe Campus only">BUPT Shahe Campus only</label>
+                <label class="checkbox-item"><input type="radio" name="campusPreference" value="Both campuses">Both campuses</label>
+            </div>
+
+            <div class="section-title">Select Your Skills</div>
+            <div class="checkbox-group" id="skillsGroup">
+                <!-- skills checkboxes inserted by JS -->
+            </div>
+
+            <div class="section-title">Resume</div>
+            <div class="row">
+                <label for="resumePath">CV / Resume Path</label>
+                <input id="resumePath" type="text" placeholder="Will be auto-filled after upload">
+            </div>
+            <div class="row" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                <input id="resumeFile" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="max-width:260px;">
+                <button id="uploadBtn" type="button" class="secondary">Upload PDF</button>
+                <small class="hint">PDF/Word only, up to 10MB. Upload fills the path above.</small>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="secondary" id="reloadBtn">Reload Profile</button>
+                <button type="submit" class="primary" id="saveBtn">Save Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const apiProfile = "api/ta/profile";
+const apiUpload = "api/ta/resume/upload";
+
+const skillsList = [
+    "Programming Development(Java, Python, C/C++, software development)",
+    "Web Application Development(HTML5, JavaScript, JSP, Servlets, MVC)",
+    "Artificial Intelligence, Algorithms & Computer Vision(AI theory, machine learning, computer vision, image processing)",
+    "Data Processing (Hadoop, MapReduce, distributed data processing)",
+    "Signals, Systems & Multimedia Processing(signal analysis, system modelling, multimedia processing)",
+    "Telecommunications (modulation, multiplexing, radio propagation, cellular systems)",
+    "Communication Electronics(AM/FM systems, amplifiers, modulators, high-frequency circuits)",
+    "Internet Protocols(TCP/IP, routing protocols, network architecture)",
+    "Advanced Networking Concepts(Packet Tracer, ad hoc networks, advanced networking)",
+    "Cybersecurity (encryption, authentication, secure communication)",
+    "Distributed Systems　(AWS, EC2, cloud deployment)",
+    "Server Configuration(Tomcat, Linux/Windows deployment, remote configuration)",
+    "Control Systems (Matlab, Simulink)",
+    "3D Programming　(OpenGL, 3D graphics programming)",
+    "Hardware Design(logic gates, flip-flops, VHDL, FPGA tools)",
+    "Management Knowledge(marketing, finance, operations, business strategy)",
+    "Teaching Support (I am willing to travel to the Shahe Campus to help with teaching activities)"
+];
+
+const el = {
+    toast: document.getElementById("toast"),
+    fullName: document.getElementById("fullName"),
+    chineseName: document.getElementById("chineseName"),
+    gender: document.getElementById("gender"),
+    qmId: document.getElementById("qmId"),
+    buptId: document.getElementById("buptId"),
+    buptClass: document.getElementById("buptClass"),
+    majorProgramme: document.getElementById("majorProgramme"),
+    grade: document.getElementById("grade"),
+    email: document.getElementById("email"),
+    mobilePhone: document.getElementById("mobilePhone"),
+    wechatId: document.getElementById("wechatId"),
+    priorProgramme: document.getElementById("priorProgramme"),
+    availabilityNotes: document.getElementById("availabilityNotes"),
+    campusPreference: () => document.querySelector("input[name='campusPreference']:checked"),
+    availability: () => document.querySelector("input[name='availability']:checked"),
+    priorAnswer: () => document.querySelector("input[name='priorAnswer']:checked"),
+    resumePath: document.getElementById("resumePath"),
+    resumeFile: document.getElementById("resumeFile"),
+    uploadBtn: document.getElementById("uploadBtn"),
+    reloadBtn: document.getElementById("reloadBtn"),
+    saveBtn: document.getElementById("saveBtn"),
+    skillsGroup: document.getElementById("skillsGroup"),
+};
+
+function renderSkills() {
+    el.skillsGroup.innerHTML = "";
+    skillsList.forEach((text, idx) => {
+        const id = "skill_" + idx;
+        const div = document.createElement("label");
+        div.className = "checkbox-item";
+        div.innerHTML = `<input type="checkbox" value="${text.replace(/"/g,'&quot;')}" id="${id}"> <span>${text}</span>`;
+        el.skillsGroup.appendChild(div);
+    });
+}
+renderSkills();
+
+function showToast(msg, ok=true) {
+    el.toast.textContent = msg;
+    el.toast.className = "alert " + (ok ? "ok" : "err");
+    el.toast.style.display = "block";
+}
+function clearToast(){ el.toast.style.display="none"; }
+
+function getSelectedSkills() {
+    return Array.from(el.skillsGroup.querySelectorAll("input[type='checkbox']:checked"))
+        .map(c => c.value).join(", ");
+}
+function setSelectedSkills(skillsStr) {
+    const set = new Set((skillsStr || "").split(",").map(s=>s.trim()).filter(Boolean));
+    el.skillsGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
+        cb.checked = set.has(cb.value);
+    });
+}
+
+function getPayload() {
+    return {
+        fullName: el.fullName.value.trim(),
+        chineseName: el.chineseName.value.trim(),
+        gender: el.gender.value.trim(),
+        qmId: el.qmId.value.trim(),
+        buptId: el.buptId.value.trim(),
+        studentId: el.buptId.value.trim(),
+        buptClass: el.buptClass.value.trim(),
+        majorProgramme: el.majorProgramme.value.trim(),
+        grade: el.grade.value.trim(),
+        email: el.email.value.trim(),
+        mobilePhone: el.mobilePhone.value.trim(),
+        wechatId: el.wechatId.value.trim(),
+        priorProgramme: el.priorProgramme.value.trim(),
+        priorAnswer: el.priorAnswer() ? el.priorAnswer().value : "",
+        availability: el.availability() ? el.availability().value : "",
+        availabilityNotes: el.availabilityNotes.value.trim(),
+        campusPreference: el.campusPreference() ? el.campusPreference().value : "",
+        skills: getSelectedSkills(),
+        resumePath: el.resumePath.value.trim()
+    };
+}
+
+function fillForm(data) {
+    el.fullName.value = data.fullName || "";
+    el.chineseName.value = data.chineseName || "";
+    el.gender.value = data.gender || "";
+    el.qmId.value = data.qmId || "";
+    el.buptId.value = data.buptId || data.studentId || "";
+    el.buptClass.value = data.buptClass || "";
+    el.majorProgramme.value = data.majorProgramme || "";
+    el.grade.value = data.grade || "";
+    el.email.value = data.email || "";
+    el.mobilePhone.value = data.mobilePhone || "";
+    el.wechatId.value = data.wechatId || "";
+    el.priorProgramme.value = data.priorProgramme || "";
+    if (data.priorAnswer) {
+        const r = document.querySelector(`input[name='priorAnswer'][value='${data.priorAnswer}']`);
+        if (r) r.checked = true;
+    }
+    if (data.availability) {
+        const r = document.querySelector(`input[name='availability'][value='${data.availability}']`);
+        if (r) r.checked = true;
+    }
+    el.availabilityNotes.value = data.availabilityNotes || "";
+    if (data.campusPreference) {
+        const r = document.querySelector(`input[name='campusPreference'][value='${data.campusPreference}']`);
+        if (r) r.checked = true;
+    }
+    setSelectedSkills(data.skills || data.skillTags || "");
+    el.resumePath.value = data.resumePath || "";
+}
+
+function validate(payload) {
+    if (!payload.fullName) return "Name is required.";
+    if (!payload.qmId) return "QM ID is required.";
+    if (!payload.buptId) return "BUPT ID is required.";
+    if (!payload.majorProgramme) return "Major / Programme is required.";
+    if (!payload.grade) return "Grade is required.";
+    if (!payload.email) return "Email is required.";
+    return null;
+}
+
+async function loadProfile() {
+    clearToast();
+    el.saveBtn.disabled = true; el.reloadBtn.disabled = true; el.uploadBtn.disabled = true;
+    try {
+        const resp = await fetch(apiProfile, { credentials:"same-origin" });
+        if (resp.status === 401 || resp.status === 403) { window.top.location.href = "login.jsp"; return; }
+        const data = await resp.json();
+        if (data.success === false) { showToast(data.message || "Failed to load.", false); return; }
+        fillForm(data);
+    } catch(e){ showToast("Load failed: "+e.message,false); }
+    finally { el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false; }
+}
+
+document.getElementById("reloadBtn").addEventListener("click", loadProfile);
+
+document.getElementById("profileForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    clearToast();
+    const payload = getPayload();
+    const err = validate(payload);
+    if (err) { showToast(err, false); return; }
+    el.saveBtn.disabled = true; el.reloadBtn.disabled = true; el.uploadBtn.disabled = true;
+    try {
+        const resp = await fetch(apiProfile, {
+            method:"PUT",
+            credentials:"same-origin",
+            headers:{ "Content-Type":"application/json;charset=UTF-8" },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!resp.ok || data.success === false) { showToast(data.message || "Save failed.", false); return; }
+        showToast(data.message || "Profile saved.", true);
+    } catch(e){ showToast("Save failed: "+e.message,false); }
+    finally { el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false; }
+});
+
+el.uploadBtn.addEventListener("click", async () => {
+    clearToast();
+    const file = el.resumeFile.files[0];
+    if (!file) { showToast("Please choose a file first.", false); return; }
+    const okTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ];
+    const extOk = /\.(pdf|doc|docx)$/i.test(file.name || "");
+    if (!okTypes.includes(file.type) && !extOk) {
+        showToast("Only PDF or Word files are allowed.", false); return;
+    }
+    if (file.size > 10*1024*1024) { showToast("File too large (max 10MB).", false); return; }
+    el.uploadBtn.disabled=true; el.saveBtn.disabled=true; el.reloadBtn.disabled=true;
+    try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const resp = await fetch(apiUpload, { method:"POST", credentials:"same-origin", body: fd });
+        const data = await resp.json();
+        if (!resp.ok || data.success === false) { showToast(data.message || "Upload failed.", false); return; }
+        el.resumePath.value = data.path || "";
+        showToast(data.message || "Upload succeeded.", true);
+    } catch(e){ showToast("Upload failed: "+e.message,false); }
+    finally { el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false; }
+});
+
+loadProfile();
+</script>
+</body>
+</html>
