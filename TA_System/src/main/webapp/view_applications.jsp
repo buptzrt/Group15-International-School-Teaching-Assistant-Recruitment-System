@@ -1,4 +1,6 @@
-﻿<%@ page import="java.sql.*" %>
+﻿<%@ page import="com.me.finaldesignproject.dao.StudentProfileDao" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
+<%@ page import="java.sql.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     if (session == null || session.getAttribute("company_id") == null) {
@@ -114,13 +116,13 @@
 
                 String sql;
                 if (hasStatusColumn) {
-                    sql = "SELECT s.full_name, s.enrollment_no, s.branch, s.cgpa, s.resume_path, a.status "
+                    sql = "SELECT s.full_name, s.enrollment_no, s.branch, s.cgpa, a.status "
                         + "FROM applications a "
                         + "JOIN students s ON s.enrollment_no = a.enrollment_no "
                         + "WHERE a.company_id = ? "
                         + "ORDER BY a.application_date DESC";
                 } else {
-                    sql = "SELECT s.full_name, s.enrollment_no, s.branch, s.cgpa, s.resume_path, 'Pending' AS status "
+                    sql = "SELECT s.full_name, s.enrollment_no, s.branch, s.cgpa, 'Pending' AS status "
                         + "FROM applications a "
                         + "JOIN students s ON s.enrollment_no = a.enrollment_no "
                         + "WHERE a.company_id = ? "
@@ -154,7 +156,13 @@
                 <td><%= cgpaValue %></td>
                 <td>
                     <%
-                        String resumePath = rs.getString("resume_path");
+                        String resumePath = null;
+                        // 从JSON获取简历路径
+                        StudentProfileDao studentProfileDao = new StudentProfileDao();
+                        StudentProfile studentProfile = studentProfileDao.getByEnrollment(rs.getString("enrollment_no"));
+                        if (studentProfile != null) {
+                            resumePath = studentProfile.getResumePath();
+                        }
                         if (resumePath != null && !resumePath.trim().isEmpty()) {
                     %>
                         <a href="DownloadResumeServlet?enrollment_no=<%= rs.getString("enrollment_no") %>" target="_blank">Download Resume</a>

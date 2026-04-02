@@ -34,31 +34,15 @@ public class UserDao {
 
     /**
      * 获取 users.json 文件的路径
-     * 
-     * 采用双策略加载机制：
-     * 1. 运行时（production）：优先从 classpath 中加载
-     * 2. 开发时（development）：从项目 src/main/resources 目录加载
-     * 
+     *
+     * 使用本地绝对路径：
+     * 将JSON文件存储在resources目录中
+     *
      * @return users.json 文件的完整路径
      */
     private static String getUserJsonPath() {
-        try {
-            // 尝试从 classpath 加载（运行时路径）
-            InputStream resourceStream = UserDao.class.getClassLoader().getResourceAsStream(USER_JSON_FILE);
-            if (resourceStream != null) {
-                resourceStream.close();
-                // 从 classpath 获取完整的文件路径
-                String classPath = UserDao.class.getClassLoader().getResource(USER_JSON_FILE).getPath();
-                return classPath;
-            }
-        } catch (Exception e) {
-            // 异常处理：如果从 classpath 加载失败，则使用备选方案
-        }
-
-        // 备选方案：使用开发环境路径
-        // 从项目根目录动态构建路径：项目根 -> src -> main -> resources -> users.json
-        String projectRoot = System.getProperty("user.dir");
-        return Paths.get(projectRoot, "src", "main", "resources", USER_JSON_FILE).toString();
+        // 使用resources目录作为存储位置
+        return "E:\\Github\\Group15_TA_SYSTEM\\TA_System\\src\\main\\resources\\" + USER_JSON_FILE;
     }
 
     /**

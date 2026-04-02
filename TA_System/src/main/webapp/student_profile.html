@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage TA Profile</title>
+    <title>Manage Student Profile</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -58,7 +58,7 @@
 </head>
 <body>
 <div class="page">
-    <h1>Manage TA Profile</h1>
+    <h1>Manage Student Profile</h1>
     <p class="lead">Fill in the basic information and skills. Required fields are marked with *.</p>
     <div class="panel">
         <div id="toast" class="alert"></div>
@@ -129,8 +129,8 @@
 </div>
 
 <script>
-const apiProfile = "api/ta/profile";
-const apiUpload = "api/ta/resume/upload";
+const apiProfile = "api/student/profile";
+const apiUpload = "api/student/resume/upload";
 
 const skillsList = [
     "Programming Development(Java, Python, C/C++, software development)",
@@ -198,13 +198,21 @@ function showToast(msg, ok=true) {
 function clearToast(){ el.toast.style.display="none"; }
 
 function getSelectedSkills() {
-    return Array.from(el.skillsGroup.querySelectorAll("input[type='checkbox']:checked"))
+    const selected = Array.from(el.skillsGroup.querySelectorAll("input[type='checkbox']:checked"))
         .map(c => c.value).join(", ");
+    console.log("getSelectedSkills: Selected skills =", selected);
+    return selected;
 }
 function setSelectedSkills(skillsStr) {
+    console.log("setSelectedSkills: Input string =", skillsStr);
     const set = new Set((skillsStr || "").split(",").map(s=>s.trim()).filter(Boolean));
+    console.log("setSelectedSkills: Parsed skills set =", Array.from(set));
     el.skillsGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
-        cb.checked = set.has(cb.value);
+        const shouldCheck = set.has(cb.value);
+        cb.checked = shouldCheck;
+        if (shouldCheck) {
+            console.log("setSelectedSkills: Checked =", cb.value);
+        }
     });
 }
 
@@ -233,6 +241,7 @@ function getPayload() {
 }
 
 function fillForm(data) {
+    // 填充文本输入框
     el.fullName.value = data.fullName || "";
     el.chineseName.value = data.chineseName || "";
     el.gender.value = data.gender || "";
@@ -245,21 +254,32 @@ function fillForm(data) {
     el.mobilePhone.value = data.mobilePhone || "";
     el.wechatId.value = data.wechatId || "";
     el.priorProgramme.value = data.priorProgramme || "";
+    el.availabilityNotes.value = data.availabilityNotes || "";
+    
+    // 填充 radio buttons（先清除所有）
+    document.querySelectorAll('input[name="priorAnswer"]').forEach(r => r.checked = false);
     if (data.priorAnswer) {
         const r = document.querySelector(`input[name='priorAnswer'][value='${data.priorAnswer}']`);
         if (r) r.checked = true;
     }
+    
+    document.querySelectorAll('input[name="availability"]').forEach(r => r.checked = false);
     if (data.availability) {
         const r = document.querySelector(`input[name='availability'][value='${data.availability}']`);
         if (r) r.checked = true;
     }
-    el.availabilityNotes.value = data.availabilityNotes || "";
+    
+    document.querySelectorAll('input[name="campusPreference"]').forEach(r => r.checked = false);
     if (data.campusPreference) {
         const r = document.querySelector(`input[name='campusPreference'][value='${data.campusPreference}']`);
         if (r) r.checked = true;
     }
+    
+    // 填充 skills（先清除所有，然后设置新的）
     setSelectedSkills(data.skills || data.skillTags || "");
     el.resumePath.value = data.resumePath || "";
+    
+    console.log("Profile filled successfully. Skills:", data.skills);
 }
 
 function validate(payload) {
@@ -275,17 +295,74 @@ function validate(payload) {
 async function loadProfile() {
     clearToast();
     el.saveBtn.disabled = true; el.reloadBtn.disabled = true; el.uploadBtn.disabled = true;
+    showToast("Loading profile...", true);
+    console.log("loadProfile: Starting to load profile...");
     try {
         const resp = await fetch(apiProfile, { credentials:"same-origin" });
-        if (resp.status === 401 || resp.status === 403) { window.top.location.href = "login.jsp"; return; }
+        console.log("loadProfile: Response status =", resp.status);
+        
+        // 检查会话过期 - 改为显示警告而不是立即重定向
+        if (resp.status === 401 || resp.status === 403) { 
+            console.error("loadProfile: Session expired or unauthorized");
+            showToast("Session expired. Please refresh the page or go back to Dashboard.", false);
+            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
+            return; 
+        }
+        
+        // 检查响应是否为JSON
+        const contentType = resp.headers.get("content-type");
+        console.log("loadProfile: Content-Type =", contentType);
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error("loadProfile: Invalid content type");
+            showToast("Server error. Please try again later.", false);
+            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
+            return;
+        }
+        
         const data = await resp.json();
-        if (data.success === false) { showToast(data.message || "Failed to load.", false); return; }
+        console.log("loadProfile: Data received =", data);
+        if (data.success === false) { 
+            console.error("loadProfile: API returned success=false");
+            showToast(data.message || "Failed to load.", false); 
+            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
+            return; 
+        }
+        
+        console.log("loadProfile: Filling form with data. Skills from server:", data.skills);
         fillForm(data);
-    } catch(e){ showToast("Load failed: "+e.message,false); }
+        console.log("loadProfile: Form filled successfully");
+        showToast("Profile loaded successfully.", true);
+    } catch(e){ 
+        console.error("Load profile error:", e);
+        showToast("Load failed: "+e.message, false); 
+    }
     finally { el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false; }
 }
 
-document.getElementById("reloadBtn").addEventListener("click", loadProfile);
+document.getElementById("reloadBtn").addEventListener("click", function() {
+    if (confirm("⚠️ This will discard any unsaved changes. Are you sure you want to reload?")) {
+        loadProfile();
+    }
+});
+
+// 页面加载时自动加载用户的Student Profile
+window.addEventListener("DOMContentLoaded", function() {
+    console.log("student_profile.html loaded, auto-loading profile...");
+    console.log("当前 URL: " + window.location.href);
+    console.log("当前时间: " + new Date().toLocaleString());
+    
+    // 【诊断】检查浏览器中的 JSESSIONID cookie
+    const cookies = document.cookie.split(';');
+    console.log("浏览器 Cookie 数量: " + cookies.length);
+    cookies.forEach(cookie => {
+        const [name, value] = cookie.split('=');
+        if (name.includes('SESSION') || name.includes('login')) {
+            console.log("  - " + name.trim() + " = " + (value ? value.substring(0, 20) + "..." : ""));
+        }
+    });
+    
+    loadProfile();
+});
 
 document.getElementById("profileForm").addEventListener("submit", async e => {
     e.preventDefault();
@@ -301,10 +378,37 @@ document.getElementById("profileForm").addEventListener("submit", async e => {
             headers:{ "Content-Type":"application/json;charset=UTF-8" },
             body: JSON.stringify(payload)
         });
+        
+        // 检查会话过期 - 改为显示警告而不是立即重定向
+        if (resp.status === 401 || resp.status === 403) {
+            console.error("Save failed: Session expired");
+            showToast("Session expired. Please go back to Dashboard and log in again.", false);
+            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
+            return;
+        }
+        
+        // 检查响应是否为JSON
+        const contentType = resp.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error("Save failed: Invalid content type");
+            showToast("Server error. Please try again later.", false);
+            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
+            return;
+        }
+        
         const data = await resp.json();
-        if (!resp.ok || data.success === false) { showToast(data.message || "Save failed.", false); return; }
-        showToast(data.message || "Profile saved.", true);
-    } catch(e){ showToast("Save failed: "+e.message,false); }
+        if (!resp.ok || data.success === false) { 
+            console.error("Save failed:", data.message);
+            showToast(data.message || "Save failed.", false); 
+            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
+            return;
+        }
+        console.log("Save successful");
+        showToast(data.message || "Profile saved successfully. ✅", true);
+    } catch(e){ 
+        console.error("Save error:", e);
+        showToast("Save failed: "+e.message,false); 
+    }
     finally { el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false; }
 });
 
@@ -327,15 +431,40 @@ el.uploadBtn.addEventListener("click", async () => {
         const fd = new FormData();
         fd.append("file", file);
         const resp = await fetch(apiUpload, { method:"POST", credentials:"same-origin", body: fd });
+        
+        // 检查会话过期 - 改为显示警告而不是立即重定向
+        if (resp.status === 401 || resp.status === 403) {
+            console.error("Upload failed: Session expired");
+            showToast("Session expired. Please go back to Dashboard and log in again.", false);
+            el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false;
+            return;
+        }
+        
+        // 检查响应是否为JSON
+        const contentType = resp.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error("Upload failed: Invalid content type");
+            showToast("Server error. Please try again later.", false);
+            el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false;
+            return;
+        }
+        
         const data = await resp.json();
-        if (!resp.ok || data.success === false) { showToast(data.message || "Upload failed.", false); return; }
+        if (!resp.ok || data.success === false) { 
+            console.error("Upload failed:", data.message);
+            showToast(data.message || "Upload failed.", false); 
+            el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false;
+            return;
+        }
         el.resumePath.value = data.path || "";
-        showToast(data.message || "Upload succeeded.", true);
-    } catch(e){ showToast("Upload failed: "+e.message,false); }
+        console.log("Upload successful. Resume path:", data.path);
+        showToast(data.message || "Upload succeeded. ✅", true);
+    } catch(e){ 
+        console.error("Upload error:", e);
+        showToast("Upload failed: "+e.message,false); 
+    }
     finally { el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false; }
 });
-
-loadProfile();
 </script>
 </body>
 </html>

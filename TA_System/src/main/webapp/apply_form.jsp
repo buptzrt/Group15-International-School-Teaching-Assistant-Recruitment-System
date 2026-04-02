@@ -1,3 +1,5 @@
+<%@ page import="com.me.finaldesignproject.dao.StudentProfileDao" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
 <%@ page import="java.sql.*" %>
 <%@ page session="true" %>
 <%
@@ -15,7 +17,7 @@
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/design_engineering_portal", "root", "root");
 
-        PreparedStatement stuStmt = conn.prepareStatement("SELECT full_name, email, branch, contact, resume_path, cgpa FROM students WHERE enrollment_no = ?");
+        PreparedStatement stuStmt = conn.prepareStatement("SELECT full_name, email, branch, contact, cgpa FROM students WHERE enrollment_no = ?");
         stuStmt.setString(1, enrollmentNo);
         ResultSet stuRs = stuStmt.executeQuery();
         if (stuRs.next()) {
@@ -23,8 +25,14 @@
             email = stuRs.getString("email");
             branch = stuRs.getString("branch");
             contact = stuRs.getString("contact");
-            resumePath = stuRs.getString("resume_path");
             cgpa = stuRs.getString("cgpa");
+        }
+
+        // 从JSON获取简历路径，而不是数据库
+        StudentProfileDao studentProfileDao = new StudentProfileDao();
+        StudentProfile studentProfile = studentProfileDao.getByEnrollment(enrollmentNo);
+        if (studentProfile != null && studentProfile.getResumePath() != null) {
+            resumePath = studentProfile.getResumePath();
         }
 
         PreparedStatement compStmt = conn.prepareStatement("SELECT company_name FROM companies WHERE company_id = ?");

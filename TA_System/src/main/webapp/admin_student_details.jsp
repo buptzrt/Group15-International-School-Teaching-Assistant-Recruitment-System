@@ -1,3 +1,5 @@
+<%@ page import="com.me.finaldesignproject.dao.StudentProfileDao" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="jakarta.servlet.http.*,jakarta.servlet.*,jakarta.servlet.annotation.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -199,7 +201,10 @@
         <td><%= rs.getString("address") %></td>
         <td>
             <%
-                String resumePath = rs.getString("resume_path");
+                // 从JSON获取简历路径，而不是数据库
+                StudentProfileDao studentProfileDao = new StudentProfileDao();
+                StudentProfile studentProfile = studentProfileDao.getByEnrollment(rs.getString("enrollment_no"));
+                String resumePath = (studentProfile != null) ? studentProfile.getResumePath() : null;
                 if (resumePath != null && !resumePath.trim().isEmpty()) {
             %>
                 <a href="DownloadResumeServlet?enrollment_no=<%= rs.getString("enrollment_no") %>" target="_blank">Download</a>

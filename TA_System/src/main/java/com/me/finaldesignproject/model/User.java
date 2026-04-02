@@ -1,6 +1,23 @@
 package com.me.finaldesignproject.model;
 
-public class User {
+import java.io.Serializable;
+
+/**
+ * User 用户模型类
+ * 
+ * 【重要】实现 Serializable 接口
+ * 原因：用户对象会被保存在 HttpSession 中。当 Tomcat 进行以下操作时，需要对 session 中的对象进行序列化：
+ * 1. 应用重启或关闭时，将 session 保存到磁盘
+ * 2. 集群环境中，将 session 进行跨服务器迁移
+ * 3. Tomcat 的内部操作（如 session 钝化、激活等）
+ * 
+ * 如果不实现 Serializable，上述操作就会失败，导致 User 对象丢失，进而 session 无法正常工作。
+ */
+public class User implements Serializable {
+    // 序列化版本号 - 用于版本兼容性管理
+    // 每当修改 User 类的内容时，应该更新这个版本号
+    private static final long serialVersionUID = 1L;
+    
     // 私有成员变量（对应数据库字段，驼峰命名适配Java规范）
     private String enrollmentNo; // 对应 enrollment_no
     private String email;        // 用邮箱登录

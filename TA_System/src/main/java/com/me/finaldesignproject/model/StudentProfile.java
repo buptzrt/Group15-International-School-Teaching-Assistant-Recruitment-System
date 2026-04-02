@@ -1,9 +1,17 @@
 package com.me.finaldesignproject.model;
 
+import java.io.Serializable;
+
 /**
- * TA 个人资料（与登录用户学号 enrollmentNo 关联）
+ * Student 个人资料（与登录用户学号 enrollmentNo 关联）
+ * 
+ * 【重要】实现 Serializable 接口
+ * 虽然 StudentProfile 主要作为 JSON 数据传输对象，但为了安全起见实现 Serializable，
+ * 防止 Tomcat 或其他容器在某些场景下需要序列化此对象时出错。
  */
-public class TaProfile {
+public class StudentProfile implements Serializable {
+    // 序列化版本号
+    private static final long serialVersionUID = 1L;
 
     private String enrollmentNo;
     private String fullName;
@@ -26,7 +34,7 @@ public class TaProfile {
     private String skills; // comma separated skills selection
     private String resumePath;
 
-    public TaProfile() {
+    public StudentProfile() {
     }
 
     public String getEnrollmentNo() {

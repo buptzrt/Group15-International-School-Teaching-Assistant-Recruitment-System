@@ -7,8 +7,7 @@
     }
     String role = (String) session.getAttribute("role");
     boolean isStudent = "Student".equalsIgnoreCase(role);
-    boolean isTA = "TA".equalsIgnoreCase(role);
-    if (!isStudent && !isTA) {
+    if (!isStudent) {
         response.sendRedirect("login.jsp");
         return;
     }
@@ -150,16 +149,12 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <h2><%= isStudent ? "Student Dashboard" : "TA Dashboard" %></h2>
-            <% if (isStudent) { %>
-                <a href="#" onclick="loadStudentSection('welcome_student.jsp', event)">Home</a>
-                <a href="#" onclick="loadStudentSection('ta_profile.html', event)">Manage Profile</a>
-                <a href="#" onclick="loadStudentSection('StudentProfileServlet', event)">View My Profile</a>
-                <a href="#" onclick="loadStudentSection('view_companies.jsp', event)">View Company List</a>
-                <a href="#" onclick="loadStudentSection('my_applications.jsp', event)">My Applications</a>
-            <% } else { %>
-                <a href="#" onclick="loadStudentSection('ta_profile.html', event)">Manage TA Profile</a>
-            <% } %>
+            <h2>Student Dashboard</h2>
+            <a href="#" onclick="loadStudentSection('welcome_student.jsp', event)">Home</a>
+            <a href="#" onclick="loadStudentSection('student_profile.html', event)">Manage Profile</a>
+            <a href="#" onclick="loadStudentSection('StudentProfileServlet', event)">View My Profile</a>
+            <a href="#" onclick="loadStudentSection('view_companies.jsp', event)">View Company List</a>
+            <a href="#" onclick="loadStudentSection('my_applications.jsp', event)">My Applications</a>
         </div>
         <div class="navbar-right">
             <form action="LogoutServlet" method="get" style="margin:0;" onsubmit="confirmLogout(event);">
@@ -170,7 +165,7 @@
 
     <div class="content">
         <iframe id="contentFrame"
-                src="<%= isStudent ? "welcome_student.jsp" : "ta_profile.html" %>"
+                src="welcome_student.jsp"
                 onload="onStudentFrameLoad()"></iframe>
     </div>
 

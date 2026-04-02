@@ -1,4 +1,6 @@
-﻿<%@ page import="java.sql.*" %>
+﻿<%@ page import="com.me.finaldesignproject.dao.StudentProfileDao" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
+<%@ page import="java.sql.*" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     if (session == null || session.getAttribute("company_id") == null) {
@@ -159,7 +161,7 @@
                     if (!cgpaColumnExists) {
                         out.println("<p class='error'>CGPA column not found in students table.</p>");
                     } else {
-                        String sql = "SELECT full_name, enrollment_no, branch, cgpa, resume_path "
+                        String sql = "SELECT full_name, enrollment_no, branch, cgpa FROM students WHERE 1=1"
                                 + "FROM students WHERE cgpa >= ? ORDER BY cgpa DESC";
                         ps = conn.prepareStatement(sql);
                         ps.setDouble(1, minCgpa);
@@ -184,7 +186,13 @@
                 <td><%= rs.getString("cgpa") %></td>
                 <td>
                     <%
-                        String resumePath = rs.getString("resume_path");
+                        String resumePath = null;
+                        // 从JSON获取简历路径
+                        StudentProfileDao studentProfileDao = new StudentProfileDao();
+                        StudentProfile studentProfile = studentProfileDao.getByEnrollment(rs.getString("enrollment_no"));
+                        if (studentProfile != null) {
+                            resumePath = studentProfile.getResumePath();
+                        }
                         if (resumePath != null && !resumePath.trim().isEmpty()) {
                     %>
                     <a href="DownloadResumeServlet?enrollment_no=<%= rs.getString("enrollment_no") %>" target="_blank">Download</a>

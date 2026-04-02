@@ -1,11 +1,9 @@
 <%@ page import="com.me.finaldesignproject.model.User" %>
-<%@ page import="com.me.finaldesignproject.model.TaProfile" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     User user = (User) request.getAttribute("userProfile");
-    TaProfile taProfile = (TaProfile) request.getAttribute("taProfile");
-    boolean isTa = user != null && user.getRole() != null && "TA".equalsIgnoreCase(user.getRole().trim());
-    boolean isStudent = user != null && user.getRole() != null && "Student".equalsIgnoreCase(user.getRole().trim());
+    StudentProfile studentProfile = (StudentProfile) request.getAttribute("studentProfile");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,7 +82,7 @@
             <h2>My Profile</h2>
             <div class="row empty">No profile data is available in the current session.</div>
         <% } else { %>
-            <h2><%= isTa ? "TA Profile Overview" : "Student Profile Overview" %></h2>
+            <h2>Student Profile Overview</h2>
 
             <div class="section-title">Basic Information</div>
             <div class="grid">
@@ -95,27 +93,27 @@
                 <div class="card"><span class="label">Branch / College:</span> <%= user.getBranch() == null ? "Not set" : user.getBranch() %></div>
             </div>
 
-            <% if (isTa || isStudent) { %>
+            <% if (user != null && studentProfile != null) { %>
                 <div class="section-title">Profile Details (same as Manage Profile)</div>
                 <div class="grid">
-                    <div class="card"><span class="label">Name:</span> <%= taProfile != null && taProfile.getFullName()!=null ? taProfile.getFullName() : (user.getFullName()==null?"Not set":user.getFullName()) %></div>
-                    <div class="card"><span class="label">Chinese name:</span> <%= taProfile != null && taProfile.getChineseName()!=null ? taProfile.getChineseName() : "Not set" %></div>
-                    <div class="card"><span class="label">Gender:</span> <%= taProfile != null && taProfile.getGender()!=null ? taProfile.getGender() : "Not set" %></div>
-                    <div class="card"><span class="label">QM ID:</span> <%= taProfile != null && taProfile.getQmId()!=null ? taProfile.getQmId() : "Not set" %></div>
-                    <div class="card"><span class="label">BUPT ID:</span> <%= taProfile != null && taProfile.getBuptId()!=null ? taProfile.getBuptId() : (user.getEnrollmentNo()==null?"Not set":user.getEnrollmentNo()) %></div>
-                    <div class="card"><span class="label">BUPT Class:</span> <%= taProfile != null && taProfile.getBuptClass()!=null ? taProfile.getBuptClass() : "Not set" %></div>
-                    <div class="card"><span class="label">Major / Programme:</span> <%= taProfile != null && taProfile.getMajorProgramme()!=null ? taProfile.getMajorProgramme() : "Not set" %></div>
-                    <div class="card"><span class="label">Grade:</span> <%= taProfile != null && taProfile.getGrade()!=null ? taProfile.getGrade() : "Not set" %></div>
-                    <div class="card"><span class="label">Email:</span> <%= taProfile != null && taProfile.getEmail()!=null ? taProfile.getEmail() : (user.getEmail()==null?"Not set":user.getEmail()) %></div>
-                    <div class="card"><span class="label">Mobile Phone:</span> <%= taProfile != null && taProfile.getMobilePhone()!=null ? taProfile.getMobilePhone() : "Not set" %></div>
-                    <div class="card"><span class="label">WeChat ID:</span> <%= taProfile != null && taProfile.getWechatId()!=null ? taProfile.getWechatId() : "Not set" %></div>
-                    <div class="card"><span class="label">Prior Joint Programme:</span> <%= taProfile != null && taProfile.getPriorAnswer()!=null ? taProfile.getPriorAnswer() : "Not set" %></div>
-                    <div class="card"><span class="label">Programme & Graduation Year:</span> <%= taProfile != null && taProfile.getPriorProgramme()!=null ? taProfile.getPriorProgramme() : "Not set" %></div>
-                    <div class="card"><span class="label">Availability:</span> <%= taProfile != null && taProfile.getAvailability()!=null ? taProfile.getAvailability() : "Not set" %></div>
-                    <div class="card"><span class="label">Availability Notes:</span> <%= taProfile != null && taProfile.getAvailabilityNotes()!=null ? taProfile.getAvailabilityNotes() : "Not set" %></div>
-                    <div class="card"><span class="label">Campus Preference:</span> <%= taProfile != null && taProfile.getCampusPreference()!=null ? taProfile.getCampusPreference() : "Not set" %></div>
-                    <div class="card"><span class="label">Skills:</span> <%= taProfile != null && taProfile.getSkills()!=null ? taProfile.getSkills() : "Not set" %></div>
-                    <div class="card" id="cvRow" style="word-break: break-word; overflow-wrap:anywhere;"><span class="label">CV Path:</span> <%= taProfile != null && taProfile.getResumePath()!=null ? taProfile.getResumePath() : "Not set" %></div>
+                    <div class="card"><span class="label">Name:</span> <%= studentProfile != null && studentProfile.getFullName()!=null ? studentProfile.getFullName() : (user.getFullName()==null?"Not set":user.getFullName()) %></div>
+                    <div class="card"><span class="label">Chinese name:</span> <%= studentProfile != null && studentProfile.getChineseName()!=null ? studentProfile.getChineseName() : "Not set" %></div>
+                    <div class="card"><span class="label">Gender:</span> <%= studentProfile != null && studentProfile.getGender()!=null ? studentProfile.getGender() : "Not set" %></div>
+                    <div class="card"><span class="label">QM ID:</span> <%= studentProfile != null && studentProfile.getQmId()!=null ? studentProfile.getQmId() : "Not set" %></div>
+                    <div class="card"><span class="label">BUPT ID:</span> <%= studentProfile != null && studentProfile.getBuptId()!=null ? studentProfile.getBuptId() : (user.getEnrollmentNo()==null?"Not set":user.getEnrollmentNo()) %></div>
+                    <div class="card"><span class="label">BUPT Class:</span> <%= studentProfile != null && studentProfile.getBuptClass()!=null ? studentProfile.getBuptClass() : "Not set" %></div>
+                    <div class="card"><span class="label">Major / Programme:</span> <%= studentProfile != null && studentProfile.getMajorProgramme()!=null ? studentProfile.getMajorProgramme() : "Not set" %></div>
+                    <div class="card"><span class="label">Grade:</span> <%= studentProfile != null && studentProfile.getGrade()!=null ? studentProfile.getGrade() : "Not set" %></div>
+                    <div class="card"><span class="label">Email:</span> <%= studentProfile != null && studentProfile.getEmail()!=null ? studentProfile.getEmail() : (user.getEmail()==null?"Not set":user.getEmail()) %></div>
+                    <div class="card"><span class="label">Mobile Phone:</span> <%= studentProfile != null && studentProfile.getMobilePhone()!=null ? studentProfile.getMobilePhone() : "Not set" %></div>
+                    <div class="card"><span class="label">WeChat ID:</span> <%= studentProfile != null && studentProfile.getWechatId()!=null ? studentProfile.getWechatId() : "Not set" %></div>
+                    <div class="card"><span class="label">Prior Joint Programme:</span> <%= studentProfile != null && studentProfile.getPriorAnswer()!=null ? studentProfile.getPriorAnswer() : "Not set" %></div>
+                    <div class="card"><span class="label">Programme & Graduation Year:</span> <%= studentProfile != null && studentProfile.getPriorProgramme()!=null ? studentProfile.getPriorProgramme() : "Not set" %></div>
+                    <div class="card"><span class="label">Availability:</span> <%= studentProfile != null && studentProfile.getAvailability()!=null ? studentProfile.getAvailability() : "Not set" %></div>
+                    <div class="card"><span class="label">Availability Notes:</span> <%= studentProfile != null && studentProfile.getAvailabilityNotes()!=null ? studentProfile.getAvailabilityNotes() : "Not set" %></div>
+                    <div class="card"><span class="label">Campus Preference:</span> <%= studentProfile != null && studentProfile.getCampusPreference()!=null ? studentProfile.getCampusPreference() : "Not set" %></div>
+                    <div class="card"><span class="label">Skills:</span> <%= studentProfile != null && studentProfile.getSkills()!=null ? studentProfile.getSkills() : "Not set" %></div>
+                    <div class="card" id="cvRow" style="word-break: break-word; overflow-wrap:anywhere;"><span class="label">CV Path:</span> <%= studentProfile != null && studentProfile.getResumePath()!=null ? studentProfile.getResumePath() : "Not set" %></div>
                 </div>
                 <div class="card" style="margin-top:12px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                     <span class="label" style="margin:0;">Upload PDF:</span>
@@ -124,7 +122,7 @@
                     <small style="color:#d7e3f1;">PDF/Word, up to 10MB. Uploading updates CV Path.</small>
                 </div>
                 <div id="msg" class="card" style="display:none; color:#ffd166; font-weight:700; background:rgba(255,255,255,0.08); margin-top:10px;"></div>
-                <a class="cta" href="ta_profile.html">Edit / Manage Profile</a>
+                <a class="cta" href="student_profile.html">Edit / Manage Profile</a>
             <% } %>
         <% } %>
     </div>
@@ -162,11 +160,29 @@
         try {
             const fd = new FormData();
             fd.append('file', file);
-            const resp = await fetch('api/ta/resume/upload', {
+            const resp = await fetch('api/student/resume/upload', {
                 method: 'POST',
                 credentials: 'same-origin',
                 body: fd
             });
+            
+            // 检查会话过期
+            if (resp.status === 401 || resp.status === 403) {
+                show('Your session has expired. Please log in again.', false);
+                setTimeout(() => {
+                    window.location.href = 'login.jsp';
+                }, 1500);
+                return;
+            }
+            
+            // 检查响应是否为JSON
+            const contentType = resp.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                show('Server error. Please try again later.', false);
+                btn.disabled = false;
+                return;
+            }
+            
             const data = await resp.json();
             if (!resp.ok || data.success === false) {
                 show(data.message || 'Upload failed.', false);
@@ -178,7 +194,20 @@
                 cvRow.innerHTML = '<span class="label">CV Path:</span> ' + path;
             }
             show(data.message || 'Upload succeeded.', true);
+            
+            // 【重要修改】上传成功后不自动刷新整个页面，因为这会导致 session 丢失
+            // 原因：整体刷新会重新请求 StudentProfileServlet，可能导致 session 过期
+            // 改进：延迟 2 秒后，用 JavaScript 刷新 CV Path 行，或让用户手动点击刷新按钮
+            console.log("Upload succeeded, you can click 'Reload Profile' button to see the updated CV path");
+            // 选项1：自动更新 CV Path 显示（无需刷新页面）
+            setTimeout(() => {
+                if (cvRow && data.path) {
+                    cvRow.innerHTML = '<span class="label">CV Path:</span> ' + data.path;
+                    console.log("CV path updated: " + data.path);
+                }
+            }, 1000);
         } catch (e) {
+            console.error("Upload error:", e);
             show('Upload failed: ' + e.message, false);
         } finally {
             btn.disabled = false;

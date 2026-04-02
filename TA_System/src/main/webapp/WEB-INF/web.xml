@@ -207,23 +207,30 @@
         <url-pattern>/MOLogoutServlet</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>TaProfileApiServlet</servlet-name>
-        <servlet-class>com.me.finaldesignproject.TaProfileApiServlet</servlet-class>
+        <servlet-name>StudentProfileApiServlet</servlet-name>
+        <servlet-class>com.me.finaldesignproject.StudentProfileApiServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>TaProfileApiServlet</servlet-name>
-        <url-pattern>/api/ta/profile</url-pattern>
+        <servlet-name>StudentProfileApiServlet</servlet-name>
+        <url-pattern>/api/student/profile</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>TaResumeUploadServlet</servlet-name>
-        <servlet-class>com.me.finaldesignproject.TaResumeUploadServlet</servlet-class>
+        <servlet-name>StudentResumeUploadServlet</servlet-name>
+        <servlet-class>com.me.finaldesignproject.StudentResumeUploadServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>TaResumeUploadServlet</servlet-name>
-        <url-pattern>/api/ta/resume/upload</url-pattern>
+        <servlet-name>StudentResumeUploadServlet</servlet-name>
+        <url-pattern>/api/student/resume/upload</url-pattern>
     </servlet-mapping>
     <session-config>
+        <!-- 【重要】Session 超时时间设置为 30 分钟（单位：分钟） -->
         <session-timeout>30</session-timeout>
+        <!-- 【关键修复】禁用 URL 重写和会话固定攻击防护
+             原因：某些 servlet 容器（包括 Tomcat）在处理 multipart 请求时
+             会进行会话固定，导致原有的 JSESSIONID 失效，创建新的 session
+             这在我们的 file upload 场景中导致用户需要重新登录
+        -->
+        <tracking-mode>COOKIE</tracking-mode>
     </session-config>
     <!-- Optional: Welcome page -->
     <welcome-file-list>
