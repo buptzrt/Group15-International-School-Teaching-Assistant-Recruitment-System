@@ -13,114 +13,144 @@
     <title>MO Dashboard</title>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
             margin: 0;
-            background: linear-gradient(to right, #141e30, #243b55);
-            color: #fff;
-            animation: fadeInBody 0.8s ease;
+            padding: 36px 18px;
+            font-family: Georgia, "Times New Roman", serif;
+            background-image: url("${pageContext.request.contextPath}/images/bupt_campus_bg.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #f4f7fb;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 35, 61, 0.78);
+            z-index: -1;
+        }
+
+        .page-container {
+            max-width: 1120px;
+            margin: 0 auto;
         }
 
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 30px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            background: rgba(44, 62, 80, 0.95);
-            backdrop-filter: blur(6px);
-            animation: slideDown 0.7s ease;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(10px);
         }
 
         .navbar-left, .navbar-right {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
+            gap: 12px;
         }
 
         .navbar-left h2 {
             margin: 0;
-            margin-right: 30px;
-            font-size: 24px;
-            color: #f9ca24;
-            font-weight: 600;
+            font-size: 28px;
+            color: #ffd166;
+            font-weight: 700;
         }
 
         .navbar a {
-            margin: 0 8px;
-            color: #ecf0f1;
+            color: #f4f7fb;
             text-decoration: none;
             font-size: 15px;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.25s ease;
         }
 
         .navbar a:hover {
-            background-color: #00b894;
-            transform: scale(1.04);
+            background: rgba(255, 255, 255, 0.14);
+            transform: translateY(-1px);
         }
 
         .logout-btn {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: #18b394;
             color: #fff;
             border: none;
             font-size: 15px;
-            padding: 9px 20px;
-            border-radius: 8px;
+            padding: 11px 22px;
+            border-radius: 999px;
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
         .logout-btn:hover {
-            transform: translateY(-1px) scale(1.03);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.18);
         }
 
         .welcome-card {
-            max-width: 900px;
-            margin: 24px auto 14px;
-            padding: 22px 26px;
-            border-radius: 14px;
+            margin-bottom: 22px;
+            padding: 28px;
+            border-radius: 18px;
             background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-            text-align: center;
-            animation: fadeInUp 0.8s ease;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
         }
 
         .welcome-card h3 {
             margin-top: 0;
-            color: #f9ca24;
+            color: #ffd166;
+            font-size: 32px;
+        }
+
+        .welcome-card p {
+            margin: 10px 0 0;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #e2e8f0;
         }
 
         .content {
-            height: calc(100vh - 210px);
-            padding: 0 20px 20px;
+            height: calc(100vh - 260px);
+            padding-bottom: 20px;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.03);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 18px 32px rgba(0, 0, 0, 0.16);
         }
 
         .hidden {
             display: none;
         }
 
-        @keyframes fadeInBody {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @media (max-width: 760px) {
+            .navbar {
+                padding: 18px 16px;
+            }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(22px); }
-            to { opacity: 1; transform: translateY(0); }
+            .content {
+                height: auto;
+            }
         }
     </style>
     <script>
@@ -150,11 +180,12 @@
     </script>
 </head>
 <body>
+    <div class="page-container">
     <div class="navbar">
         <div class="navbar-left">
             <h2>MO Dashboard</h2>
             <a href="#" onclick="showDashboard(event)">Dashboard</a>
-            <a href="#" onclick="openSection('post_job.jsp', event)">Post Job Opening</a>
+            <a href="#" onclick="openSection('view_job.jsp', event)">Post Job Opening</a>
             <a href="#" onclick="openSection('view_applications.jsp', event)">View Applications</a>
             <a href="#" onclick="openSection('filter_students.jsp', event)">Filter Students</a>
         </div>
@@ -175,6 +206,7 @@
 
     <div class="content hidden" id="content">
         <iframe id="contentFrame" name="contentFrame" src="about:blank"></iframe>
+    </div>
     </div>
 </body>
 </html>
