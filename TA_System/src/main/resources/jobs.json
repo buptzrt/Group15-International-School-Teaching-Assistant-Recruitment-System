@@ -1,0 +1,31 @@
+[
+  {
+    "jobId": "c324f388-b40f-40f1-92a3-9abc6ad60651",
+    "creatorId": "555",
+    "courseName": "C-Programming",
+    "moduleCode": "CS101",
+    "jobTitle": "Lab Assistant",
+    "numberOfPositions": 4,
+    "applicationDeadline": "2026-04-18",
+    "requiredSkills": "C",
+    "jobResponsibilities": "Assist in the acceptance of student software engineering.",
+    "workingHours": "Two hours in the morning or afternoon on four weekends this semester.",
+    "location": "Offline",
+    "activityType": "Teaching Assistant",
+    "semester": "Spring 2026",
+    "cgpaRequired": 3.56,
+    "preferredMajor": "Computer Science",
+    "contactEmail": "555@qq.com",
+    "contactPhone": "15555555555",
+    "status": "Open",
+    "postedDate": "2026-04-05",
+    "lastUpdatedDate": "2026-04-05",
+    "lastModifiedBy": "555",
+    "deleted": false,
+    "applicationsReceived": 0,
+    "applicationsAccepted": 0,
+    "studentCanApply": true,
+    "editable": true,
+    "deletable": true
+  }
+]

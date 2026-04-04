@@ -84,10 +84,10 @@
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.LogoutServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>AdminLogoutServlet</servlet-name>
-        <servlet-class>com.me.finaldesignproject.AdminLogoutServlet</servlet-class>
-    </servlet>
+<!--    <servlet>-->
+<!--        <servlet-name>AdminLogoutServlet</servlet-name>-->
+<!--        <servlet-class>com.me.finaldesignproject.AdminLogoutServlet</servlet-class>-->
+<!--    </servlet>-->
     <servlet>
         <servlet-name>DownloadResumeServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.DownloadResumeServlet</servlet-class>
@@ -97,14 +97,14 @@
         <servlet-name>MORegisterServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.MORegisterServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>MOLoginServlet</servlet-name>
-        <servlet-class>com.me.finaldesignproject.MOLoginServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>PostJobServlet</servlet-name>
-        <servlet-class>com.me.finaldesignproject.PostJobServlet</servlet-class>
-    </servlet>
+<!--    <servlet>-->
+<!--        <servlet-name>MOLoginServlet</servlet-name>-->
+<!--        <servlet-class>com.me.finaldesignproject.MOLoginServlet</servlet-class>-->
+<!--    </servlet>-->
+<!--    <servlet>-->
+<!--        <servlet-name>PostJobServlet</servlet-name>-->
+<!--        <servlet-class>com.me.finaldesignproject.MOJobServlet</servlet-class>-->
+<!--    </servlet>-->
     <servlet>
         <servlet-name>MOLogoutServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.MOLogoutServlet</servlet-class>
@@ -182,10 +182,10 @@
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/LogoutServlet</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AdminLogoutServlet</servlet-name>
-        <url-pattern>/AdminLogoutServlet</url-pattern>
-    </servlet-mapping>
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>AdminLogoutServlet</servlet-name>-->
+<!--        <url-pattern>/AdminLogoutServlet</url-pattern>-->
+<!--    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>DownloadResumeServlet</servlet-name>
         <url-pattern>/DownloadResumeServlet</url-pattern>
@@ -194,14 +194,14 @@
         <servlet-name>MORegisterServlet</servlet-name>
         <url-pattern>/MORegisterServlet</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MOLoginServlet</servlet-name>
-        <url-pattern>/MOLoginServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>PostJobServlet</servlet-name>
-        <url-pattern>/PostJobServlet</url-pattern>
-    </servlet-mapping>
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>MOLoginServlet</servlet-name>-->
+<!--        <url-pattern>/MOLoginServlet</url-pattern>-->
+<!--    </servlet-mapping>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>PostJobServlet</servlet-name>-->
+<!--        <url-pattern>/PostJobServlet</url-pattern>-->
+<!--    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>MOLogoutServlet</servlet-name>
         <url-pattern>/MOLogoutServlet</url-pattern>

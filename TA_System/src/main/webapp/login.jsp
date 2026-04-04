@@ -296,7 +296,7 @@
         <form action="<%=request.getContextPath()%>/LoginServlet" method="POST">
             <div class="input-group">
                 <div class="input-item">
-                    <label for="loginId">User ID:</label>
+                    <label for="loginId">User ID/Email:</label>
                     <input type="text" id="loginId" name="loginId" value="<%= savedLoginId %>" required>
                 </div>
                 <div class="input-item">

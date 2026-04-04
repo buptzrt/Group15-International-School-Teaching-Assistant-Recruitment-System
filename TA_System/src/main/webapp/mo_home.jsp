@@ -185,7 +185,7 @@
         <div class="navbar-left">
             <h2>MO Dashboard</h2>
             <a href="#" onclick="showDashboard(event)">Dashboard</a>
-            <a href="#" onclick="openSection('view_job.jsp', event)">Post Job Opening</a>
+            <a href="#" onclick="openSection('MOJobServlet', event)">Post Job</a>
             <a href="#" onclick="openSection('view_applications.jsp', event)">View Applications</a>
             <a href="#" onclick="openSection('filter_students.jsp', event)">Filter Students</a>
         </div>

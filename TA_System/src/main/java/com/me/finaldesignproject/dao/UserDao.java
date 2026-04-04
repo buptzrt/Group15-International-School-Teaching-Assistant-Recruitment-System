@@ -16,15 +16,15 @@ import java.util.List;
 
 /**
  * 用户数据访问对象（DAO）
- * 
+ *
  * 负责用户信息的持久化操作，包括：
  * 1. 从 users.json 文件读取用户数据
  * 2. 检查用户是否已存在（邮箱或学号）
  * 3. 保存新用户到 JSON 文件
  * 4. 用户登录验证
- * 
+ *
  * 使用 GSON 库处理 JSON 格式的数据，支持开发环境和运行时环境的文件路径自动切换
- * 
+ *
  * @author Team
  * @version 1.0
  */
@@ -42,15 +42,15 @@ public class UserDao {
      */
     private static String getUserJsonPath() {
         // 使用resources目录作为存储位置
-        return "E:\\Github\\Group15_TA_SYSTEM\\TA_System\\src\\main\\resources\\" + USER_JSON_FILE;
+        return "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/" + USER_JSON_FILE;
     }
 
     /**
      * 获取所有用户数据
-     * 
+     *
      * 从 users.json 文件中读取所有用户信息，使用 GSON 反序列化 JSON 数据
      * 如果文件不存在或解析异常，返回空列表
-     * 
+     *
      * @return 用户对象列表，若无用户或读取失败则返回空列表
      */
     public List<User> getAllUsers() {
@@ -79,10 +79,10 @@ public class UserDao {
 
     /**
      * 检查用户是否已存在
-     * 
+     *
      * 根据邮箱或学号检查用户是否已在系统中存在
      * 邮箱比较时不区分大小写，学号比较时不区分大小写
-     * 
+     *
      * @param email 用户邮箱，可为 null
      * @param enrollmentNo 用户学号或 ID，可为 null
      * @return 若邮箱或学号已存在返回 true，否则返回 false
@@ -92,17 +92,17 @@ public class UserDao {
         if (email == null && enrollmentNo == null) {
             return false;
         }
-        
+
         List<User> users = getAllUsers();
         for (User u : users) {
             // 跳过 null 对象
             if (u == null) continue;
-            
+
             // 检查邮箱是否已存在（不区分大小写）
             if (email != null && u.getEmail() != null && u.getEmail().equalsIgnoreCase(email.trim())) {
                 return true;
             }
-            
+
             // 检查学号是否已存在（不区分大小写）
             if (enrollmentNo != null && u.getEnrollmentNo() != null && u.getEnrollmentNo().equalsIgnoreCase(enrollmentNo.trim())) {
                 return true;
@@ -113,10 +113,10 @@ public class UserDao {
 
     /**
      * 保存新用户到 JSON 文件
-     * 
+     *
      * 读取现有用户列表，将新用户添加到列表，然后将更新后的列表写入 users.json 文件
      * 使用 UTF-8 编码确保中文等特殊字符正确保存
-     * 
+     *
      * @param user 要保存的用户对象
      * @return 保存成功返回 true，失败返回 false
      */
@@ -147,10 +147,10 @@ public class UserDao {
 
     /**
      * 用户登录验证
-     * 
+     *
      * 根据登录 ID（可以是邮箱或学号）和密码验证用户身份
      * 登录 ID 的比对不区分大小写，密码比对区分大小写
-     * 
+     *
      * @param loginId 登录 ID，可以是用户邮箱或学号
      * @param password 用户密码
      * @return 登录成功返回 User 对象，失败返回 null
