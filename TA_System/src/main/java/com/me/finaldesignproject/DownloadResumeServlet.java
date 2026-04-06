@@ -23,7 +23,7 @@ public class DownloadResumeServlet extends HttpServlet {
             return;
         }
 
-        // 从JSON文件读取简历路径，而不是数据库
+        // 从JSON文件读取简历路径
         StudentProfileDao studentProfileDao = new StudentProfileDao();
         StudentProfile profile = studentProfileDao.getByEnrollment(enrollmentNo.trim());
 
@@ -33,45 +33,39 @@ public class DownloadResumeServlet extends HttpServlet {
         }
 
         String resumePath = profile.getResumePath();
-        File file = new File(resumePath);
+        File file = null;
 
-        // Support relative paths stored in JSON, e.g. uploads/resumes/file.pdf
-        if (!file.isAbsolute()) {
-            String appRoot = getServletContext().getRealPath("");
+        // ✅ 核心修改点：优先从 Tomcat 部署目录（target/webapp）获取文件
+        String appRoot = getServletContext().getRealPath("/");
+        if (appRoot != null) {
             String normalizedPath = resumePath.replace("\\", File.separator).replace("/", File.separator);
             file = new File(appRoot, normalizedPath);
         }
 
-        // Fallback to project root uploads folder
-        if (!file.exists()) {
-            String projectRoot = System.getProperty("user.dir");
-            String relativePath = resumePath.startsWith("uploads/") ? resumePath.substring("uploads/".length()) : resumePath;
-            file = new File(projectRoot, "uploads" + File.separator + "resumes" + File.separator + relativePath);
-        }
-
-        // Final fallback: try from app root
-        if (!file.exists()) {
-            String appRoot = getServletContext().getRealPath("");
-            if (appRoot != null && !appRoot.trim().isEmpty()) {
-                file = new File(appRoot, resumePath);
-            }
+        // ✅ 核心修改点：如果 target 下没找到，再尝试 project 物理路径作为备份
+        if (file == null || !file.exists()) {
+            String backupPath = "E:\\Group15_TA_SYSTEM\\TA_System\\src\\main\\webapp\\" + resumePath;
+            file = new File(backupPath);
         }
 
         if (!file.exists()) {
-            response.getWriter().write("Resume file not found at: " + resumePath);
+            response.getWriter().write("Resume file not found on server.");
             return;
         }
 
+        // ✅ 核心修改点：将 Content-Disposition 改为 inline，这样点击链接会直接在浏览器预览 PDF 而不是下载
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
+        response.setContentLength((int) file.length());
 
         try (FileInputStream fis = new FileInputStream(file);
              OutputStream os = response.getOutputStream()) {
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = fis.read(buffer)) != -1) {
                 os.write(buffer, 0, bytesRead);
             }
+            os.flush();
         } catch (Exception e) {
             e.printStackTrace();
             response.getWriter().write("Error downloading file: " + e.getMessage());

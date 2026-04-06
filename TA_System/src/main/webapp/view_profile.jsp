@@ -118,7 +118,21 @@
                     <div class="card"><span class="label">Availability Notes:</span> <%= studentProfile != null && studentProfile.getAvailabilityNotes()!=null ? studentProfile.getAvailabilityNotes() : "Not set" %></div>
                     <div class="card"><span class="label">Campus Preference:</span> <%= studentProfile != null && studentProfile.getCampusPreference()!=null ? studentProfile.getCampusPreference() : "Not set" %></div>
                     <div class="card"><span class="label">Skills:</span> <%= studentProfile != null && studentProfile.getSkills()!=null ? studentProfile.getSkills() : "Not set" %></div>
-                    <div class="card" id="cvRow" style="word-break: break-word; overflow-wrap:anywhere;"><span class="label">CV Path:</span> <%= studentProfile != null && studentProfile.getResumePath()!=null ? studentProfile.getResumePath() : "Not set" %></div>
+                    <div class="card" id="cvRow" style="word-break: break-word; overflow-wrap:anywhere;">
+                        <span class="label">CV Path:</span>
+                        <%
+                            String rPath = (studentProfile != null) ? studentProfile.getResumePath() : null;
+                            if (rPath != null && !rPath.trim().isEmpty()) {
+                        %>
+                        <a href="DownloadResumeServlet?enrollment_no=<%= user.getEnrollmentNo() %>"
+                           target="_blank"
+                           style="color: #18b394; text-decoration: underline; font-weight: bold;">
+                            Click to View Resume (PDF)
+                        </a>
+                        <% } else { %>
+                        <span class="empty">Not set</span>
+                        <% } %>
+                    </div>
                 </div>
                 <div class="card" style="margin-top:12px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                     <span class="label" style="margin:0;">Upload PDF:</span>
