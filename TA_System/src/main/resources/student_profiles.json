@@ -1,0 +1,24 @@
+{
+  "S001": {
+    "enrollmentNo": "S001",
+    "fullName": "张三",
+    "studentId": "S001",
+    "chineseName": "敖",
+    "gender": "男",
+    "qmId": "23122284",
+    "buptId": "S001",
+    "buptClass": "2023215102",
+    "majorProgramme": "Telecommunication",
+    "grade": "3",
+    "email": "1521086257@qq.com",
+    "mobilePhone": "15908698086",
+    "wechatId": "aozichun",
+    "priorProgramme": "",
+    "priorAnswer": "Yes",
+    "availability": "All semester",
+    "availabilityNotes": "",
+    "campusPreference": "BUPT Main Campus only",
+    "skills": "Signals, Systems \u0026 Multimedia Processing(signal analysis, system modelling, multimedia processing)",
+    "resumePath": ""
+  }
+}
