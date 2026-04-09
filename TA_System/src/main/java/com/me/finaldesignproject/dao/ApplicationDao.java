@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.nio.charset.StandardCharsets;
 
 public class ApplicationDao {
-    // ✅ 统一源码路径
+    // ✅ 核心路径：读写都锁定这个源码位置，解决同步延迟问题
     private static final String FILE_PATH = "E:\\Group15_TA_SYSTEM\\TA_System\\src\\main\\resources\\applications.json";
 
     /**
@@ -14,14 +14,14 @@ public class ApplicationDao {
      */
     public boolean saveApplication(String studentId, String jobId) {
         synchronized (this) {
-            // 1. 先读出所有现有的 JSON 行
+            // 1. 先从源码路径读出所有现有的 JSON 行
             List<String> allLines = readAllLinesRaw();
 
             // 2. 构造新的申请条目
             String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
             String newEntry = "{\"studentId\":\"" + studentId + "\", \"jobId\":\"" + jobId + "\", \"date\":\"" + currentTime + "\", \"status\":\"Pending\"}";
 
-            // 3. 加入列表并整体写回
+            // 3. 加入列表并整体写回源码路径
             allLines.add(newEntry);
             return writeAllLinesRaw(allLines);
         }
@@ -47,7 +47,7 @@ public class ApplicationDao {
 
             if (!found) return false;
 
-            // 写回文件
+            // 写回源码路径文件
             return writeAllLinesRaw(allLines);
         }
     }
@@ -61,7 +61,6 @@ public class ApplicationDao {
         for (String line : lines) {
             if (line.contains("\"studentId\":\"" + studentId + "\"")) {
                 try {
-                    // 依然兼容你之前的 split 解析逻辑
                     String jId = line.split("\"jobId\":\"")[1].split("\"")[0];
                     appliedIds.add(jId);
                 } catch (Exception e) {
@@ -76,9 +75,11 @@ public class ApplicationDao {
 
     /**
      * 读取文件，自动剥离外层的 [ ] 和行末逗号
+     * ✅ 核心点：强制读取源码路径文件
      */
     private List<String> readAllLinesRaw() {
         List<String> lines = new ArrayList<>();
+        // 强制使用 E 盘绝对路径，避开 target 的缓存和延迟
         File file = new File(FILE_PATH);
         if (!file.exists() || file.length() == 0) return lines;
 
@@ -89,7 +90,7 @@ public class ApplicationDao {
                 // 过滤掉 JSON 数组的边界符和空行
                 if (trimmed.equals("[") || trimmed.equals("]") || trimmed.isEmpty()) continue;
 
-                // 如果行末有逗号，去掉它，方便逻辑处理
+                // 如果行末有逗号，去掉它
                 if (trimmed.endsWith(",")) {
                     trimmed = trimmed.substring(0, trimmed.length() - 1);
                 }
@@ -103,20 +104,21 @@ public class ApplicationDao {
 
     /**
      * 将数据包装在 [ ] 中，并自动为每行添加逗号
+     * ✅ 核心点：覆盖写入源码路径文件
      */
     private boolean writeAllLinesRaw(List<String> lines) {
         File file = new File(FILE_PATH);
         try {
             if (!file.exists()) {
-                file.getParentFile().mkdirs();
+                if (file.getParentFile() != null) file.getParentFile().mkdirs();
                 file.createNewFile();
             }
 
-            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            // 使用 false 覆盖写入 E 盘文件
+            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
                 bw.write("[");
                 bw.newLine();
                 for (int i = 0; i < lines.size(); i++) {
-                    // 每一行前面缩进两个空格，看起来更专业
                     bw.write("  " + lines.get(i));
                     // 只要不是最后一行，就加逗号
                     if (i < lines.size() - 1) {
