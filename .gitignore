@@ -23,3 +23,5 @@ Thumbs.db
 # Runtime/temp files
 tmp/
 temp/
+# NetBeans
+nb-configuration.xml
