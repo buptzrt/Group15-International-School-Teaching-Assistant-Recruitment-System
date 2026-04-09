@@ -125,7 +125,7 @@
                 }
 
                 // 指定源码路径下的 JSON
-                String appPath = "C:\\Users\\31008\\Desktop\\Group15_TA_SYSTEM-sirongQi-TA-0203 (1)\\Group15_TA_SYSTEM-sirongQi-TA-0203\\TA_System\\src\\main\\resources\\applications.json";
+                String appPath = ApplicationDao.getFilePath();
                 File file = new File(appPath);
                 boolean hasData = false;
 

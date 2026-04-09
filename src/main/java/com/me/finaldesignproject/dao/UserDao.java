@@ -42,7 +42,7 @@ public class UserDao {
      */
     private static String getUserJsonPath() {
         // 使用resources目录作为存储位置
-        return "C:\\Users\\31008\\Desktop\\Group15_TA_SYSTEM-sirongQi-TA-0203 (1)\\Group15_TA_SYSTEM-sirongQi-TA-0203\\TA_System\\src\\main\\resources\\" + USER_JSON_FILE;
+        return "C:\\Users\\31008\\Desktop\\Group_TA_SYSTEM-ChenyuZhang-AD-01\\TA_System\\src\\main\\resources\\" + USER_JSON_FILE;
     }
 
     /**

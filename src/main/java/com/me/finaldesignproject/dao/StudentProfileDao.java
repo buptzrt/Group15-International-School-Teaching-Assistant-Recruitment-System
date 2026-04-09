@@ -48,7 +48,7 @@ public class StudentProfileDao {
      */
     private static Path resolvePath() {
         // 使用resources目录作为存储位置
-        return Paths.get("C:\\Users\\31008\\Desktop\\Group15_TA_SYSTEM-sirongQi-TA-0203 (1)\\Group15_TA_SYSTEM-sirongQi-TA-0203\\TA_System\\src\\main\\resources\\" + FILE_NAME);
+        return Paths.get("C:\\Users\\31008\\Desktop\\Group_TA_SYSTEM-ChenyuZhang-AD-01\\TA_System\\src\\main\\resources\\" + FILE_NAME);
     }
 
     /**

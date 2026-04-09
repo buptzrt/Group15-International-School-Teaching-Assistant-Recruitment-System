@@ -6,7 +6,11 @@ import java.text.SimpleDateFormat;
 
 public class ApplicationDao {
     // ✅ 统一源码路径，确保全项目同步
-    private static final String FILE_PATH = "C:\\Users\\31008\\Desktop\\Group15_TA_SYSTEM-sirongQi-TA-0203 (1)\\Group15_TA_SYSTEM-sirongQi-TA-0203\\TA_System\\src\\main\\resources\\applications.json";
+    private static final String FILE_PATH = "C:\\Users\\31008\\Desktop\\Group_TA_SYSTEM-ChenyuZhang-AD-01\\TA_System\\src\\main\\resources\\applications.json";
+
+    public static String getFilePath() {
+        return FILE_PATH;
+    }
 
     /**
      * 学生端：保存新申请
