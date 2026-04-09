@@ -99,14 +99,12 @@
         </thead>
         <tbody>
         <%
-            boolean anyApplicationsForMe = false; // 用于判断当前MO是否有属于自己的申请
+            boolean anyApplicationsForMe = false;
             try {
-                // 1. 获取最新的 Job 数据
                 JobDao jobDao = new JobDao();
                 Map<String, Job> jobMap = new HashMap<>();
                 for(Job j : jobDao.getAllJobs()) { jobMap.put(j.getJobId(), j); }
 
-                // 2. 获取用户映射
                 UserDao userDao = new UserDao();
                 Map<String, String> userNameMap = new HashMap<>();
                 for(User u : userDao.getAllUsers()) {
@@ -122,24 +120,35 @@
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                     long nowTime = new Date().getTime();
 
-                    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    // ✅ 使用 UTF-8 读取防止乱码
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
                         String line;
                         while ((line = br.readLine()) != null) {
-                            String sId = line.split("\"studentId\":\"")[1].split("\"")[0];
-                            String jId = line.split("\"jobId\":\"")[1].split("\"")[0];
+                            String trimmed = line.trim();
+
+                            // ✅ 【核心修改点】跳过 JSON 数组的格式行 ( [ , ] , 空行 )
+                            if (trimmed.equals("[") || trimmed.equals("]") || trimmed.isEmpty()) {
+                                continue;
+                            }
+
+                            // ✅ 【核心修改点】确保行内包含有效数据关键词，防止 split 报错
+                            if (!trimmed.contains("\"studentId\":\"")) {
+                                continue;
+                            }
+
+                            // 解析 ID，兼容行尾可能存在的逗号
+                            String sId = trimmed.split("\"studentId\":\"")[1].split("\"")[0];
+                            String jId = trimmed.split("\"jobId\":\"")[1].split("\"")[0];
 
                             Job job = jobMap.get(jId);
 
-                            // ✅ 关键修改：过滤逻辑
-                            // 只有当职位存在，且该职位的 creatorId 与当前登录 MO 的 userId 相同时才显示
                             if (job != null && currentUserId != null && currentUserId.equals(job.getCreatorId())) {
                                 anyApplicationsForMe = true;
 
-                                String dStr = line.split("\"date\":\"")[1].split("\"")[0];
-                                String status = line.contains("\"status\":\"") ? line.split("\"status\":\"")[1].split("\"")[0] : "Pending";
+                                String dStr = trimmed.split("\"date\":\"")[1].split("\"")[0];
+                                String status = trimmed.contains("\"status\":\"") ? trimmed.split("\"status\":\"")[1].split("\"")[0] : "Pending";
                                 String studentName = userNameMap.getOrDefault(sId, "Unknown");
 
-                                // 超时逻辑
                                 boolean isTimeout = false;
                                 try {
                                     Date applyDate = sdf.parse(dStr);
@@ -160,7 +169,7 @@
             <td><%= sId %></td>
             <td><%= dStr %></td>
             <td>
-                <a href="StudentProfileServlet?userId=<%= sId %>" class="resume-link" target="_blank">View Profile</a>
+                <a href="DownloadResumeServlet?enrollment_no=<%= sId %>" class="resume-link" target="_blank">View Profile</a>
             </td>
             <td>
                 <% if(isTimeout) { %>
