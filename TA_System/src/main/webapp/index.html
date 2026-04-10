@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TA Recruitment System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', "Arial Rounded MT Bold", sans-serif;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body {
+            background: url("images/bupt_campus_bg.jpg") no-repeat center center;
+            background-size: cover;
+        }
+        .bg-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.85);
+            z-index: 1;
+        }
+
+
+        .header-logos {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .logo-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-item img {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .logo-text {
+            font-size: 17px;
+            color: #000;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            width: 90%;
+            max-width: 900px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .main-title {
+            font-size: 58px;
+            font-weight: 800;
+            color: #222;
+            line-height: 1.2;
+            margin-bottom: 22px;
+            letter-spacing: 1px;
+        }
+
+        .title-line {
+            width: 100%;
+            height: 4px;
+            background-color: #222;
+            margin: 0 auto 38px auto;
+            border-radius: 4px;
+        }
+
+        .sub-desc {
+            font-size: 30px;
+            color: #d63031;
+            line-height: 1.5;
+            margin-bottom: 50px;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+        }
+        .action-btn {
+            padding: 14px 48px;
+            font-size: 26px;
+            font-weight: 700;
+            background-color: #fff;
+            border: 3px solid #222;
+            border-radius: 18px;
+            text-decoration: none;
+            color: #222;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            background-color: #ffe8e8;
+            transform: scale(1.05) translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .ta-illustration {
+            position: absolute;
+            right: 40px;
+            bottom: 70px;
+            z-index: 10;
+            animation: float 3s ease-in-out infinite;
+        }
+        .ta-illustration img {
+            height: 400px;
+            object-fit: contain;
+        }
+
+        .footer-nav {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .footer-nav a {
+            text-decoration: none;
+            color: #222;
+            transition: all 0.2s ease;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+        .footer-nav a:hover {
+            color: #d63031;
+            background-color: rgba(255,255,255,0.7);
+        }
+        .divider {
+            width: 2px;
+            height: 26px;
+            background-color: #222;
+            border-radius: 2px;
+        }
+
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 38px;
+            }
+            .sub-desc {
+                font-size: 22px;
+            }
+            .action-btn {
+                font-size: 20px;
+                padding: 10px 30px;
+            }
+            .footer-nav {
+                font-size: 16px;
+                gap: 25px;
+            }
+            .ta-illustration {
+                display: none;
+            }
+            .logo-item img {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mask"></div>
+
+    <div class="header-logos">
+        <div class="logo-item">
+            <img src="images/bupt_logo.png" alt="Beijing University of Posts and Telecommunications">
+            <div class="logo-text">Beijing University of Posts and<br>Telecommunications</div>
+        </div>
+        <div class="logo-item">
+            <img src="images/qmul_logo.png" alt="Queen Mary University of London">
+            <div class="logo-text">Queen Mary University of London</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 class="main-title">Welcome to<br>Teaching Assistant Portal!</h1>
+        <div class="title-line"></div>
+        <p class="sub-desc">View available opportunities and manage<br>your teaching assistant applications.</p>
+        <div class="btn-group">
+            <a href="login.jsp" class="action-btn">Login</a>
+            <a href="register.jsp" class="action-btn">Register</a>
+        </div>
+    </div>
+
+    <div class="ta-illustration">
+        <img src="images/ta_illustration.png" alt="Teaching Assistant Illustration">
+    </div>
+
+    <div class="footer-nav">
+    <a href="aboutus.jsp">About System</a>
+    <div class="divider"></div>
+    <a href="help.jsp">Help</a>
+    <div class="divider"></div>
+    <a href="contact.jsp">Contact</a>
+</div>
+</body>
+</html>
