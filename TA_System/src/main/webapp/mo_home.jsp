@@ -12,6 +12,17 @@
     <meta charset="UTF-8">
     <title>MO Dashboard</title>
     <style>
+        /* 🌟 针对 contentFrame 的完美全屏修复 🌟 */
+        #contentFrame {
+            width: 100%;
+            /* 这里的 80px 是假设你顶部导航栏的高度。
+               如果导航栏更厚或更薄，你可以把 80px 改成 70px 或 90px 等，自己微调一下 */
+            height: calc(100vh - 80px);
+            border: none; /* 去掉默认的丑陋凹陷边框 */
+            display: block; /* 防止底部出现神秘的几像素留白 */
+            background-color: transparent; /* 保持玻璃拟物风格的通透感 */
+        }
+
         body {
             margin: 0;
             padding: 36px 18px;
@@ -187,7 +198,7 @@
             <a href="#" onclick="showDashboard(event)">Dashboard</a>
             <a href="#" onclick="openSection('mo_job_list.jsp', event)">Job List</a>
             <a href="#" onclick="openSection('MOJobServlet', event)">Post Job</a>
-            <a href="#" onclick="openSection('view_applications.jsp', event)">View Applications</a>
+            <a href="#" onclick="openSection('mo_view_applications.jsp', event)">View Applications</a>
             <a href="#" onclick="openSection('filter_students.jsp', event)">Filter Students</a>
         </div>
         <div class="navbar-right">

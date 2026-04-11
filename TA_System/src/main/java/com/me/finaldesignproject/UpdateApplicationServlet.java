@@ -1,4 +1,4 @@
-package com.me.finaldesignproject.controller;
+package com.me.finaldesignproject;
 
 import com.me.finaldesignproject.dao.ApplicationDao;
 import com.me.finaldesignproject.dao.JobDao;
@@ -40,7 +40,7 @@ public class UpdateApplicationServlet extends HttpServlet {
         }
 
         if (isSuccess) {
-            response.sendRedirect("view_applications.jsp");
+            response.sendRedirect("mo_view_applications.jsp");
         } else {
             response.setContentType("text/html;charset=UTF-8");
             response.getWriter().println("<script>alert('Update failed! Record might not exist.'); history.back();</script>");

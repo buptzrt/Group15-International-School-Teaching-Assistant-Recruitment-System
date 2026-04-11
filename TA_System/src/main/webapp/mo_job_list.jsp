@@ -17,6 +17,24 @@
     <meta charset="UTF-8">
     <title>Job List</title>
     <style>
+        /* 🌟 滚动条整体美化 🌟 */
+        ::-webkit-scrollbar {
+            width: 8px; /* 纵向滚动条的宽度 */
+            height: 8px; /* 横向滚动条的高度 */
+        }
+        /* 滚动条轨道（背景） */
+        ::-webkit-scrollbar-track {
+            background: transparent; /* 让轨道彻底透明，完美融入星空背景 */
+        }
+        /* 滚动条滑块 */
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.25); /* 半透明白色，带有磨砂感 */
+            border-radius: 10px; /* 圆角设计 */
+        }
+        /* 鼠标悬停在滑块上的效果 */
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.45); /* 悬停时稍微变亮 */
+        }
         /* 原有样式保持不变 */
         body {
             margin: 0;

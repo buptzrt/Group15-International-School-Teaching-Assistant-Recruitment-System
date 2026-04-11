@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 
 public class ApplicationDao {
     // �?统一源码路径，确保全项目同步
-    private static final String FILE_PATH = "C:\\Users\\31008\\Desktop\\Group15_TA_SYSTEM-qsr-pdf_modi\\TA_System\\src\\main\\resources\\applications.json";
+    private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/applications.json";
 
     public static String getFilePath() {
         return FILE_PATH;
