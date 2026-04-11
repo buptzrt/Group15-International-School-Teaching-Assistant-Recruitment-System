@@ -96,39 +96,163 @@ public class StudentResumeUploadServlet extends HttpServlet {
                 return;
             }
 
-            // ✅ 核心修改点：彻底移除 E:\ 绝对路径，改用双路同步
+//            // ✅ 核心修改点：彻底移除 E:\ 绝对路径，改用双路同步
+//            List<Path> uploadPaths = new ArrayList<>();
+//
+//            // 1. 获取 Target 路径（Tomcat 运行时的路径，保证点击即开）
+//            String baseDir = getServletContext().getRealPath("/WEB-INF/classes/");
+//            if (baseDir != null) {
+//                uploadPaths.add(Paths.get(baseDir).resolve(RESUME_RELATIVE_DIR).normalize());
+//            }
+//
+//            // 2. 获取 Src 路径（动态获取当前项目源码位置，保证数据永久保存）
+//            String projectRoot = System.getProperty("user.dir");
+//            if (projectRoot != null) {
+//                // 自动判断是在根目录运行还是子模块运行
+//                File srcFile = new File(projectRoot, "TA_System/src/main/resources/" + RESUME_RELATIVE_DIR);
+//                if (!srcFile.getParentFile().exists()) {
+//                    srcFile = new File(projectRoot, "src/main/resources/" + RESUME_RELATIVE_DIR);
+//                }
+//                uploadPaths.add(srcFile.toPath().normalize());
+//            }
+//
+//            String fileExtension = getFileExtension(fileName);
+//            String uniqueFileName = enrollmentNo + "_" + UUID.randomUUID() + "." + fileExtension;
+//
+//            // 执行多路径同步保存
+//            for (Path resumeDir : uploadPaths) {
+//                if (!Files.exists(resumeDir)) {
+//                    Files.createDirectories(resumeDir);
+//                }
+//                Path targetFile = resumeDir.resolve(uniqueFileName).normalize();
+//
+//                try (InputStream in = filePart.getInputStream()) {
+//                    Files.copy(in, targetFile, StandardCopyOption.REPLACE_EXISTING);
+//                }
+//            }
+
+//            // ✅ 核心修改点：改用 webapp 目录，并且开启双路同步写入 (Dual-Save)
+//            List<Path> uploadPaths = new ArrayList<>();
+//
+//            // ---------------------------------------------------------
+//            // 路径 1：Tomcat 运行时路径 (对应你看到的 target 目录)
+//            // 作用：解决"实时更新"，上传完立刻在网页上点击 View 就能看到，不报 404
+//            // ---------------------------------------------------------
+//            String runtimeBaseDir = getServletContext().getRealPath("/");
+//            if (runtimeBaseDir != null) {
+//                uploadPaths.add(Paths.get(runtimeBaseDir).resolve(RESUME_RELATIVE_DIR).normalize());
+//            }
+//
+//            // ---------------------------------------------------------
+//            // 路径 2：项目源码相对路径 (对应你电脑上的 src 目录)
+//            // 作用：解决"Git同步"，别人拉代码不会丢失，重启 Tomcat 也不丢失
+//            // ---------------------------------------------------------
+//            String projectRoot = System.getProperty("user.dir"); // 动态获取当前项目的根目录
+//            if (projectRoot != null) {
+//                // 标准相对路径
+//                File srcFolder = new File(projectRoot, "src/main/webapp/" + RESUME_RELATIVE_DIR);
+//
+//                // 兼容你的单层嵌套 (如果IDEA打开的外层目录)
+//                if (!srcFolder.getParentFile().exists()) {
+//                    srcFolder = new File(projectRoot, "TA_System/src/main/webapp/" + RESUME_RELATIVE_DIR);
+//                }
+//
+//                // 兼容你的双层嵌套 (TA_System/TA_System)
+//                if (!srcFolder.getParentFile().exists()) {
+//                    srcFolder = new File(projectRoot, "TA_System/TA_System/src/main/webapp/" + RESUME_RELATIVE_DIR);
+//                }
+//
+//                uploadPaths.add(srcFolder.toPath().normalize());
+//            }
+//
+//            String fileExtension = getFileExtension(fileName);
+//            String uniqueFileName = enrollmentNo + "_" + UUID.randomUUID() + "." + fileExtension;
+//
+//            // ---------------------------------------------------------
+//            // 执行双路同步保存
+//            // ---------------------------------------------------------
+//            for (Path resumeDir : uploadPaths) {
+//                // 如果 resumes 文件夹不存在，自动创建它
+//                if (!Files.exists(resumeDir)) {
+//                    Files.createDirectories(resumeDir);
+//                }
+//
+//                Path targetFile = resumeDir.resolve(uniqueFileName).normalize();
+//
+//                // 将用户上传的 PDF 复制到目标路径
+//                try (InputStream in = filePart.getInputStream()) {
+//                    Files.copy(in, targetFile, StandardCopyOption.REPLACE_EXISTING);
+//                }
+//                System.out.println("[ResumeUpload] 成功保存简历至: " + targetFile.toAbsolutePath());
+//            }
+
+// ✅ 核心修改点：改用 webapp 目录，并且开启双路同步写入 (Dual-Save)
             List<Path> uploadPaths = new ArrayList<>();
 
-            // 1. 获取 Target 路径（Tomcat 运行时的路径，保证点击即开）
-            String baseDir = getServletContext().getRealPath("/WEB-INF/classes/");
-            if (baseDir != null) {
-                uploadPaths.add(Paths.get(baseDir).resolve(RESUME_RELATIVE_DIR).normalize());
-            }
+            // ---------------------------------------------------------
+            // 路径 1：Tomcat 运行时路径 (对应 IDEA 的 out/artifacts 目录)
+            // 作用：解决"实时更新"，上传完立刻在网页上点击 View 就能看到
+            // ---------------------------------------------------------
+            String runtimeBaseDir = getServletContext().getRealPath("/");
+            if (runtimeBaseDir != null) {
+                uploadPaths.add(Paths.get(runtimeBaseDir).resolve(RESUME_RELATIVE_DIR).normalize());
 
-            // 2. 获取 Src 路径（动态获取当前项目源码位置，保证数据永久保存）
-            String projectRoot = System.getProperty("user.dir");
-            if (projectRoot != null) {
-                // 自动判断是在根目录运行还是子模块运行
-                File srcFile = new File(projectRoot, "TA_System/src/main/resources/" + RESUME_RELATIVE_DIR);
-                if (!srcFile.getParentFile().exists()) {
-                    srcFile = new File(projectRoot, "src/main/resources/" + RESUME_RELATIVE_DIR);
+                // ---------------------------------------------------------
+                // 路径 2：项目源码相对路径 (顺藤摸瓜找 src)
+                // 作用：解决"Git同步"，存入 D 盘源码，别人拉代码不丢失
+                // ---------------------------------------------------------
+                // 兼容 Maven 的 target 目录
+                int targetIndex = runtimeBaseDir.indexOf(File.separator + "target" + File.separator);
+                if (targetIndex == -1) targetIndex = runtimeBaseDir.indexOf("/target/");
+
+                // 兼容 IDEA 的 out/artifacts 目录
+                int outIndex = runtimeBaseDir.indexOf(File.separator + "out" + File.separator + "artifacts");
+                if (outIndex == -1) outIndex = runtimeBaseDir.indexOf("/out/artifacts");
+
+                String projectRootPath = null;
+                if (targetIndex != -1) {
+                    projectRootPath = runtimeBaseDir.substring(0, targetIndex);
+                } else if (outIndex != -1) {
+                    projectRootPath = runtimeBaseDir.substring(0, outIndex);
                 }
-                uploadPaths.add(srcFile.toPath().normalize());
+
+                if (projectRootPath != null) {
+                    // 精准拼接回你心心念念的 src 目录！
+                    File srcFolder = new File(projectRootPath, "src/main/webapp/" + RESUME_RELATIVE_DIR);
+
+                    // 兼容你的单层嵌套
+                    if (!srcFolder.getParentFile().exists()) {
+                        srcFolder = new File(projectRootPath, "TA_System/src/main/webapp/" + RESUME_RELATIVE_DIR);
+                    }
+                    // 兼容你的双层嵌套
+                    if (!srcFolder.getParentFile().exists()) {
+                        srcFolder = new File(projectRootPath, "TA_System/TA_System/src/main/webapp/" + RESUME_RELATIVE_DIR);
+                    }
+
+                    uploadPaths.add(srcFolder.toPath().normalize());
+                    System.out.println("[ResumeUpload] 成功锁定源码目录: " + srcFolder.getAbsolutePath());
+                } else {
+                    System.err.println("[ResumeUpload] 警告：无法在运行路径中找到 target 或 out/artifacts 目录，源码同步可能失败！");
+                }
             }
 
             String fileExtension = getFileExtension(fileName);
             String uniqueFileName = enrollmentNo + "_" + UUID.randomUUID() + "." + fileExtension;
 
-            // 执行多路径同步保存
+            // ---------------------------------------------------------
+            // 执行双路同步保存
+            // ---------------------------------------------------------
             for (Path resumeDir : uploadPaths) {
                 if (!Files.exists(resumeDir)) {
                     Files.createDirectories(resumeDir);
                 }
+
                 Path targetFile = resumeDir.resolve(uniqueFileName).normalize();
 
                 try (InputStream in = filePart.getInputStream()) {
                     Files.copy(in, targetFile, StandardCopyOption.REPLACE_EXISTING);
                 }
+                System.out.println("[ResumeUpload] 成功保存简历至: " + targetFile.toAbsolutePath());
             }
 
             StudentProfileDao profileDao = new StudentProfileDao();

@@ -150,7 +150,12 @@
                             String rPath = (studentProfile != null) ? studentProfile.getResumePath() : null;
                             if (rPath != null && !rPath.trim().isEmpty()) {
                         %>
-                        <a href="DownloadResumeServlet?enrollment_no=<%= user.getEnrollmentNo() %>"
+<%--                        <a href="DownloadResumeServlet?enrollment_no=<%= user.getEnrollmentNo() %>"--%>
+<%--                           target="_blank"--%>
+<%--                           style="color: #18b394; text-decoration: underline; font-weight: bold;">--%>
+<%--                            Click to View Resume (PDF)--%>
+<%--                        </a>--%>
+                        <a href="${pageContext.request.contextPath}/<%= rPath %>"
                            target="_blank"
                            style="color: #18b394; text-decoration: underline; font-weight: bold;">
                             Click to View Resume (PDF)
