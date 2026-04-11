@@ -44,7 +44,18 @@
     .page-container { max-width: 1000px; margin: 0 auto; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
     .header h2 { margin: 0; font-size: 32px; color: #ffd166; }
-    .btn { background-color: #1e90ff; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+    /*.btn { background-color: #1e90ff; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s; }*/
+    .btn {
+      background-color: #1e90ff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      white-space: nowrap; /* 🌟 核心新增：防止按钮里的文字被挤成两行 */
+    }
     .btn:hover { background-color: #187bcd; }
     .btn-danger { background-color: #ff4d4d; }
     .btn-warning { background-color: #f39c12; }
@@ -79,7 +90,8 @@
       <p><strong>Deadline:</strong> <%= job.getApplicationDeadline() %></p>
       <p><strong>Positions:</strong> <%= job.getNumberOfPositions() %></p>
 
-      <div style="margin-top: 15px; display: flex; gap: 10px;">
+<%--      <div style="margin-top: 15px; display: flex; gap: 10px;">--%>
+      <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
         <a href="view_job.jsp?jobId=<%= job.getJobId() %>&from=MOJobServlet" class="btn" style="padding: 8px 12px; background-color: #17a2b8; text-decoration: none; text-align: center;">View</a>
 
         <button type="button" class="btn" style="padding: 8px 12px; background-color: #3498db;" onclick="openEditModal('<%= job.getJobId() %>')">Edit</button>

@@ -41,28 +41,96 @@ public class ApplicationDao {
     /**
      * MO端：更新申请状�?(Pass/Reject)
      */
+//    public boolean updateApplicationStatus(String studentId, String jobId, String newStatus) {
+//        File file = new File(FILE_PATH);
+//        if (!file.exists()) return false;
+//
+//        List<String> fileContent = new ArrayList<>();
+//        boolean found = false;
+//
+//        synchronized (this) {
+//            try {
+//                // 1. 读取并寻找匹配项
+//                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+//                    String line;
+//                    while ((line = br.readLine()) != null) {
+//                        if (line.contains("\"studentId\":\"" + studentId + "\"") && line.contains("\"jobId\":\"" + jobId + "\"")) {
+//                            // 替换状态�?                            line = line.replaceAll("\"status\":\"[^\"]+\"", "\"status\":\"" + newStatus + "\"");
+//                            found = true;
+//                        }
+//                        fileContent.add(line);
+//                    }
+//                }
+//
+//                if (!found) return false;
+//
+//                // 2. 写回文件
+//                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+//                    for (int i = 0; i < fileContent.size(); i++) {
+//                        bw.write(fileContent.get(i));
+//                        if (i < fileContent.size() - 1) bw.newLine();
+//                    }
+//                }
+//                return true;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//        }
+//    }
+    /**
+     * MO端：更新申请状态 (Pass/Reject)
+     */
+    /**
+     * MO端：更新申请状态 (Pass/Reject)
+     */
     public boolean updateApplicationStatus(String studentId, String jobId, String newStatus) {
         File file = new File(FILE_PATH);
         if (!file.exists()) return false;
 
+        System.out.println("\n====== [ApplicationDao] 准备更新申请状态 ======");
+        System.out.println(">>> 目标学生: " + studentId + ", 目标职位: " + jobId + ", 新状态: " + newStatus);
+
         List<String> fileContent = new ArrayList<>();
         boolean found = false;
+        boolean alreadyUpdated = false;
 
         synchronized (this) {
             try {
-                // 1. 读取并寻找匹配项
+                // 1. 读取文件
                 try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                     String line;
                     while ((line = br.readLine()) != null) {
+                        // 只要精准匹配到了学号和职位ID
                         if (line.contains("\"studentId\":\"" + studentId + "\"") && line.contains("\"jobId\":\"" + jobId + "\"")) {
-                            // 替换状态�?                            line = line.replaceAll("\"status\":\"[^\"]+\"", "\"status\":\"" + newStatus + "\"");
-                            found = true;
+
+                            // 防御性拦截：如果已经是这个状态了，千万别再改了（防止重复扣除名额）
+                            if (line.contains("\"status\":\"" + newStatus + "\"")) {
+                                System.out.println(">>> 拦截：该申请已经是 [" + newStatus + "] 状态，无需重复修改！");
+                                alreadyUpdated = true;
+                                found = true;
+                            } else {
+                                // 🌟 终极必杀技：提取旧日期，彻底粉碎并重新拼接标准的 JSON 字符串！
+                                String dateVal = "";
+                                if (line.contains("\"date\":\"")) {
+                                    dateVal = line.split("\"date\":\"")[1].split("\"")[0];
+                                }
+                                line = "{\"studentId\":\"" + studentId + "\", \"jobId\":\"" + jobId + "\", \"date\":\"" + dateVal + "\", \"status\":\"" + newStatus + "\"}";
+                                found = true;
+                                System.out.println(">>> 成功生成全新数据行: " + line);
+                            }
                         }
                         fileContent.add(line);
                     }
                 }
 
-                if (!found) return false;
+                if (!found) {
+                    System.out.println(">>> 失败：未找到对应的申请记录！");
+                    return false;
+                }
+
+                // 如果是重复点击，返回 false 让外层的 Servlet 停止扣减库存
+                if (alreadyUpdated) return false;
 
                 // 2. 写回文件
                 try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
@@ -71,6 +139,7 @@ public class ApplicationDao {
                         if (i < fileContent.size() - 1) bw.newLine();
                     }
                 }
+                System.out.println("====== [ApplicationDao] 文件写入成功！======\n");
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
