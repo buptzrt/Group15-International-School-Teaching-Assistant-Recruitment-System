@@ -74,12 +74,10 @@
         <servlet-name>CompanyApplicationsServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.CompanyApplicationsServlet</servlet-class>
     </servlet>
-    <!-- Mappings -->
-
-    <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/LoginServlet</url-pattern>
-    </servlet-mapping>
+    <servlet>
+        <servlet-name>MOAiMatchServlet</servlet-name>
+        <servlet-class>com.me.finaldesignproject.MOAiMatchServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.LogoutServlet</servlet-class>
@@ -109,6 +107,15 @@
         <servlet-name>MOLogoutServlet</servlet-name>
         <servlet-class>com.me.finaldesignproject.MOLogoutServlet</servlet-class>
     </servlet>
+    <!-- Mappings -->
+    <servlet-mapping>
+        <servlet-name>MOAiMatchServlet</servlet-name>
+        <url-pattern>/api/ai-match</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
 <!--    <servlet-mapping>-->
 <!--        <servlet-name>StudentLoginServlet</servlet-name>-->
 <!--        <url-pattern>/StudentLoginServlet</url-pattern>-->

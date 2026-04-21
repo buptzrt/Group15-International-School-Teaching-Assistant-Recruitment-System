@@ -199,7 +199,7 @@
             <a href="#" onclick="openSection('mo_job_list.jsp', event)">Job List</a>
             <a href="#" onclick="openSection('MOJobServlet', event)">Post Job</a>
             <a href="#" onclick="openSection('mo_view_applications.jsp', event)">View Applications</a>
-            <a href="#" onclick="openSection('filter_students.jsp', event)">Filter Students</a>
+            <a href="#" onclick="openSection('mo_filter_students.jsp', event)">Filter Students</a>
         </div>
         <div class="navbar-right">
             <form action="LogoutServlet" method="get" style="margin: 0;" onsubmit="confirmLogout(event);">
