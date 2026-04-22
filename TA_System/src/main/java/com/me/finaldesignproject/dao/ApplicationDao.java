@@ -128,12 +128,9 @@ public class ApplicationDao {
     }
 
     // ============================================================
-    // ✅ 新增逻辑：为了与 JobDao 和 UserDao 联动，计算时长汇总
+    // ✅ 辅助逻辑：获取所有申请的原始字符串行
     // ============================================================
 
-    /**
-     * 获取所有申请的原始字符串行（内部辅助）
-     */
     private List<String> getAllApplicationLines() {
         List<String> lines = new ArrayList<>();
         File file = new File(FILE_PATH);
@@ -148,59 +145,43 @@ public class ApplicationDao {
     }
 
     /**
-     * ✅ 核心方法：计算特定学生的总工作时长（已修复 String 转 int 报错）
-     */
-    /**
-     * ✅ 核心方法：计算特定学生的总工作时长
-     * 逻辑：遍历 applications.json，找到该学生所有 status 为 statusFilter 的记录，
-     * 然后去 JobDao 获取对应的 workingHours。
-     */
-    /**
-     * ✅ 核心方法：计算特定学生的总工作时长
-     * 适配点：处理了 String 转 int，并增加了匹配日志
+     * ✅ 核心修复方法：计算特定学生的总工作时长
+     * 增强点：通过正则清洗字符串，确保 "19"、"19h" 或带空格引号的工时都能被正确解析。
      */
     public int getTotalWorkingHours(String studentId, String statusFilter) {
         int totalHours = 0;
-
-        // 基础防错
         if (studentId == null || statusFilter == null) return 0;
 
         List<String> lines = getAllApplicationLines();
         JobDao jobDao = new JobDao();
         List<com.me.finaldesignproject.model.Job> allJobs = jobDao.getAllJobs();
 
-        // 调试日志（可选）：可以在控制台看到计算开始
-        // System.out.println(">>> Checking hours for: " + studentId + " with status: " + statusFilter);
-
         for (String line : lines) {
-            // 🌟 关键：使用 contains 匹配 JSON 片段，确保 studentId 和 status 完全对应
-            // 比如 line 包含 "studentId":"2023213099" 和 "status":"Accepted"
+            // 确保 studentId 和 status 同时匹配
             if (line.contains("\"studentId\":\"" + studentId + "\"") &&
                     line.contains("\"status\":\"" + statusFilter + "\"")) {
 
                 try {
-                    // 提取 jobId
                     String jId = line.split("\"jobId\":\"")[1].split("\"")[0];
 
-                    // 在 Job 列表中查找对应的工时
                     for (com.me.finaldesignproject.model.Job job : allJobs) {
                         if (job.getJobId() != null && job.getJobId().equals(jId)) {
                             String hoursStr = job.getWorkingHours();
                             if (hoursStr != null && !hoursStr.trim().isEmpty()) {
-                                int h = Integer.parseInt(hoursStr.trim());
-                                totalHours += h;
-                                // System.out.println(">>> Found match: Job " + jId + ", Hours: " + h);
+                                // 🌟 核心修复：只保留数字字符，防止 NumberFormatException
+                                String cleanHours = hoursStr.replaceAll("[^0-9]", "");
+                                if (!cleanHours.isEmpty()) {
+                                    totalHours += Integer.parseInt(cleanHours);
+                                }
                             }
                             break;
                         }
                     }
                 } catch (Exception e) {
-                    // 忽略单行解析错误
+                    // 解析异常时跳过当前行
                 }
             }
         }
-
-        // System.out.println(">>> Total calculated: " + totalHours);
         return totalHours;
     }
 }

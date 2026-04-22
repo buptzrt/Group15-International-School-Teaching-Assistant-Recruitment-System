@@ -22,7 +22,6 @@
             margin: 0;
             padding: 36px 18px;
             font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-            /* 关键点：这里必须透明，否则会挡住父页面的校园背景图 */
             background: transparent !important;
             color: #222;
             min-height: 100vh;
@@ -432,9 +431,9 @@
                             <% } else if (positionsLeft <= 0) { %>
                             <a class="apply-btn disabled" style="background: #777 !important;" href="javascript:void(0);">Full</a>
                             <% } else { %>
-                            <%-- 🌟 软提醒修改：传入 totalAccepted 和 jobHrs --%>
+                            <%-- 🌟 关键点：参数加单引号，防止解析带单位导致 JS 崩溃 --%>
                             <a class="apply-btn" href="javascript:void(0);"
-                               onclick="confirmApply('<%= job.getJobId() %>', '<%= job.getJobTitle().replace("'", "\\'") %>', event, <%= totalAccepted %>, <%= jobHrs %>)">Apply</a>
+                               onclick="confirmApply('<%= job.getJobId() %>', '<%= job.getJobTitle().replace("'", "\\'") %>', event, '<%= totalAccepted %>', '<%= jobHrs %>')">Apply</a>
                             <% } %>
                         </div>
                     </td>
@@ -455,19 +454,24 @@
 
 <script>
     /**
-     * 修改后的逻辑：软提醒。警告风险，但允许点确认后继续申请。
+     * 软提醒。警告风险，但允许点确认后继续申请。
      */
     function confirmApply(jobId, jobTitle, event, currentTotal, jobHours) {
         if (event) event.preventDefault();
         const btn = event.currentTarget;
         if (btn.classList.contains('disabled')) return;
 
+        // 🌟 深度转为数值，确保计算正确
+        const cTotal = Number(currentTotal.toString().replace(/[^\d]/g, '')) || 0;
+        const jHrs = Number(jobHours.toString().replace(/[^\d]/g, '')) || 0;
+        const totalProjected = cTotal + jHrs;
+
         let msg = "Are you sure you want to apply for the position: \n[" + jobTitle + "]?";
 
-        // 🌟 软性风险预警：仅做弹窗提醒，不拦截流程
-        if ((currentTotal + jobHours) > 20) {
+        // 🌟 软性风险预警：仅做弹窗提醒
+        if (totalProjected > 20) {
             msg = "⚠️ WORKLOAD WARNING!\n\nApplying for this job will bring your total approved workload ("
-                + (currentTotal + jobHours) + "h) to exceed the 20-hour limit.\n\nThe MO will NOT be able to approve this unless you reduce other workloads. Do you still want to apply?";
+                + totalProjected + "h) to exceed the 20-hour limit.\n\nThe MO will NOT be able to approve this unless you reduce other workloads. Do you still want to apply?";
         }
 
         if (confirm(msg)) {
@@ -475,7 +479,6 @@
                 .then(response => {
                     if (response.ok) {
                         alert("Applied successfully!");
-                        // 即时反馈
                         btn.classList.add('disabled');
                         btn.innerText = "Applied";
                         btn.onclick = null;
