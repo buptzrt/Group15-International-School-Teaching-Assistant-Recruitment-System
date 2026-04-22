@@ -169,16 +169,44 @@ public class MOAiMatchServlet extends HttpServlet {
     private List<String> getApplicantIds(String jobId) throws IOException {
         List<String> ids = new ArrayList<>();
         File file = new File(ApplicationDao.getFilePath());
-        if (file.exists()) {
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if (line.contains("\"jobId\":\"" + jobId + "\"")) {
-                        ids.add(line.split("\"studentId\":\"")[1].split("\"")[0]);
-                    }
+        if (!file.exists()) return ids;
+
+        try (FileReader reader = new FileReader(file)) {
+            // 使用 Gson 安全地解析整个 applications.json
+            JsonElement rootElement = GSON.fromJson(reader, JsonElement.class);
+            if (rootElement == null) return ids;
+
+            // 兼容处理：判断你的 JSON 最外层是数组 [...] 还是对象 {...}
+            if (rootElement.isJsonArray()) {
+                for (JsonElement e : rootElement.getAsJsonArray()) {
+                    checkAndAddPendingApplicant(e.getAsJsonObject(), jobId, ids);
+                }
+            } else if (rootElement.isJsonObject()) {
+                JsonObject rootObj = rootElement.getAsJsonObject();
+                for (String key : rootObj.keySet()) {
+                    checkAndAddPendingApplicant(rootObj.getAsJsonObject(key), jobId, ids);
                 }
             }
+        } catch (Exception e) {
+            System.err.println(">>> [MOAiMatchServlet] 解析 applications.json 失败: " + e.getMessage());
         }
         return ids;
+    }
+
+    // 辅助方法：进行逻辑校验
+    private void checkAndAddPendingApplicant(JsonObject app, String targetJobId, List<String> ids) {
+        if (!app.has("jobId") || !app.has("studentId")) return;
+
+        String currentJobId = app.get("jobId").getAsString();
+
+        // 获取申请状态（假设你的 application 对象里有 status 字段，没有则默认视为 Pending）
+        String status = app.has("status") ? app.get("status").getAsString() : "Pending";
+
+        // 🚨 核心逻辑校验：只有岗位 ID  匹配，并且状态【不是】已录用或已拒绝，才参与 AI 筛选！
+        boolean isPending = !status.equalsIgnoreCase("Accepted") && !status.equalsIgnoreCase("Rejected");
+
+        if (currentJobId.equals(targetJobId) && isPending) {
+            ids.add(app.get("studentId").getAsString());
+        }
     }
 }
