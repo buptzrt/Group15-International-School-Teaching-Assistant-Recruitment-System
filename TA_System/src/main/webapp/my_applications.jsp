@@ -17,7 +17,6 @@
         body {
             font-family: 'Poppins', 'Segoe UI', sans-serif;
             background: linear-gradient(to right, #141e30, #243b55);
-            /* 修改为 Job List 的深色字 */
             color: #2c3e50;
             padding: 40px;
             animation: fadeInBody 0.7s ease;
@@ -26,7 +25,6 @@
         h3 { text-align: center; color: #ffdd57; margin-bottom: 25px; font-size: 28px; }
 
         .table-container {
-            /* 背景改为半透明白色，使深色字体清晰可见 */
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(12px);
             border-radius: 18px;
@@ -38,7 +36,6 @@
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 
-        /* 单元格文字颜色改为深灰色 */
         th, td {
             padding: 14px 18px;
             text-align: left;
@@ -70,7 +67,6 @@
             box-shadow: 0 4px 8px rgba(30, 144, 255, 0.3);
         }
 
-        /* 状态标签样式 */
         .status-tag {
             padding: 4px 12px;
             border-radius: 6px;
@@ -81,10 +77,22 @@
             min-width: 80px;
             text-align: center;
         }
-        .status-timeout { background: #95a5a6; } /* 灰色：超时 */
-        .status-pass { background: #2ecc71; }    /* 绿色：通过 */
-        .status-reject { background: #e74c3c; }  /* 红色：拒绝 */
-        .status-pending { background: #f39c12; } /* 橙色：待处理 */
+        .status-timeout { background: #95a5a6; }
+        .status-pass { background: #2ecc71; }
+        .status-reject { background: #e74c3c; }
+        .status-pending { background: #f39c12; }
+
+        /* 🌟 新增：工时超限预警样式 */
+        .limit-warning {
+            display: block;
+            margin-top: 5px;
+            font-size: 10px;
+            color: #d35400;
+            font-weight: bold;
+            background: rgba(255, 230, 0, 0.3);
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
 
         .no-data { text-align: center; color: #555; font-style: italic; padding: 20px; }
 
@@ -116,7 +124,7 @@
         <%
         } else {
             try {
-                // 初始化 DAO 获取数据
+                ApplicationDao applicationDao = new ApplicationDao();
                 JobDao jobDao = new JobDao();
                 List<Job> allJobs = jobDao.getAllJobs();
                 Map<String, Job> jobLookup = new HashMap<>();
@@ -124,7 +132,9 @@
                     for (Job j : allJobs) { jobLookup.put(j.getJobId(), j); }
                 }
 
-                // 指定源码路径下的 JSON
+                // 🌟 1. 获取当前学生已录用的总时长 (Accepted)
+                int totalAcceptedHours = applicationDao.getTotalWorkingHours(userId, "Accepted");
+
                 String appPath = ApplicationDao.getFilePath();
                 File file = new File(appPath);
                 boolean hasData = false;
@@ -133,35 +143,39 @@
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                     long nowTime = new Date().getTime();
 
-                    // 使用 FileReader 和 BufferedReader 读取文件
                     try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                         String line;
                         while ((line = br.readLine()) != null) {
-                            // 只显示当前登录用户的申请
                             if (line.contains("\"studentId\":\"" + userId + "\"")) {
                                 hasData = true;
 
-                                // 提取 JSON 字段
                                 String jobId = line.split("\"jobId\":\"")[1].split("\"")[0];
                                 String appDateStr = line.split("\"date\":\"")[1].split("\"")[0];
 
-                                // 提取状态，默认为 Pending
                                 String status = "Pending";
                                 if(line.contains("\"status\":\"")) {
                                     status = line.split("\"status\":\"")[1].split("\"")[0];
                                 }
 
-                                // 逻辑判断：如果状态是 Pending 且申请时间超过 7 天 (604800000 毫秒)
                                 try {
                                     Date applyDate = sdf.parse(appDateStr);
                                     if ("Pending".equalsIgnoreCase(status) && (nowTime - applyDate.getTime() > 604800000L)) {
                                         status = "Timeout";
                                     }
-                                } catch(Exception dateEx) { /* 忽略日期解析异常 */ }
+                                } catch(Exception dateEx) { }
 
                                 Job jobDetail = jobLookup.get(jobId);
                                 if (jobDetail != null) {
                                     String courseInfo = jobDetail.getCourseName() + " (" + jobDetail.getModuleCode() + ")";
+
+                                    // 🌟 2. 解析该岗位工时，并计算如果通过是否会超限
+                                    int jobHrs = 0;
+                                    try {
+                                        String hStr = jobDetail.getWorkingHours() != null ? jobDetail.getWorkingHours().toLowerCase().replace("h","").trim() : "0";
+                                        jobHrs = Integer.parseInt(hStr);
+                                    } catch(Exception e) { jobHrs = 0; }
+
+                                    boolean willExceed = "Pending".equalsIgnoreCase(status) && (totalAcceptedHours + jobHrs > 20);
         %>
         <tr>
             <td><%= courseInfo %></td>
@@ -179,6 +193,10 @@
                 <span class="status-tag status-timeout">Untreated</span>
                 <% } else { %>
                 <span class="status-tag status-pending">Pending</span>
+                <%-- 🌟 3. 如果通过该岗会导致超 20h，显示预警 --%>
+                <% if(willExceed) { %>
+                <span class="limit-warning">⚠️ Limit Warning!</span>
+                <% } %>
                 <% } %>
             </td>
         </tr>

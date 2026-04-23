@@ -22,7 +22,6 @@
             margin: 0;
             padding: 36px 18px;
             font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-            /* 关键点：这里必须透明，否则会挡住父页面的校园背景图 */
             background: transparent !important;
             color: #222;
             min-height: 100vh;
@@ -299,16 +298,14 @@
             color: #fff;
         }
 
-        /* 新增橙色 Apply 按钮样式 */
-        /* 1. 基础 Apply 按钮样式 */
+        /* 基础 Apply 按钮样式 */
         .apply-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 7px 16px; /* 稍微增加宽度，更有质感 */
+            padding: 7px 16px;
             border-radius: 10px;
             color: #ffffff;
-            /* 使用渐变橙色，比纯色更现代 */
             background: linear-gradient(135deg, #ff9800, #f57c00);
             text-decoration: none;
             font-size: 13px;
@@ -319,26 +316,22 @@
             box-shadow: 0 4px 10px rgba(255, 152, 0, 0.25);
         }
 
-        /* 2. 悬浮效果：颜色变深且阴影增强 */
         .apply-btn:hover {
             background: linear-gradient(135deg, #fb8c00, #ef6c00);
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(255, 152, 0, 0.4);
         }
 
-        /* 3. 点击瞬间的缩放效果 */
         .apply-btn:active {
             transform: translateY(0);
             box-shadow: 0 2px 5px rgba(255, 152, 0, 0.3);
         }
 
-        /* 4. ✅ 关键修改：点击成功后的“变灰”禁用状态 */
         .apply-btn.disabled {
-            /* 使用你要求的深灰色 */
             background: #555555 !important;
             color: #999999 !important;
             cursor: not-allowed !important;
-            pointer-events: none; /* 彻底禁止点击事件 */
+            pointer-events: none;
             transform: none !important;
             box-shadow: none !important;
             opacity: 0.8;
@@ -356,7 +349,7 @@
                     <input id="jobSearch" class="search-input" type="text" placeholder="Search visible columns...">
                     <button id="btnSearch" class="search-btn" type="button" title="Search">Search</button>
                 </div>
-                <span class="hint">Click a header to filter.</span>
+                <span class="hint">Click a header to filter. Max workload: 20h.</span>
             </div>
             <div class="toolbar-right">
                 <button id="btnClearAll" class="top-filter-btn" type="button">Clear All Filters</button>
@@ -379,37 +372,42 @@
                 </thead>
 
                 <%
-                    // ✅ 修复 500 报错的 Java 逻辑
+                    // 🌟 获取已录用工时数据
                     String currentUserId = (String) session.getAttribute("userId");
                     Set<String> appliedJobIds = new HashSet<>();
+                    int totalAccepted = 0;
                     if (currentUserId != null) {
-                        appliedJobIds = new ApplicationDao().getAppliedJobIds(currentUserId);
+                        ApplicationDao appDao = new ApplicationDao();
+                        appliedJobIds = appDao.getAppliedJobIds(currentUserId);
+                        // 获取已 Accepted 状态的岗位总工时
+                        totalAccepted = appDao.getTotalWorkingHours(currentUserId, "Accepted");
                     }
                 %>
 
                 <tbody>
                 <% if (allJobs != null && !allJobs.isEmpty()) { %>
                 <% for (Job job : allJobs) {
-                    // 获取职位基本信息
                     String courseName = job.getCourseName() == null ? "" : job.getCourseName();
                     String moduleCode = job.getModuleCode() == null ? "-" : job.getModuleCode();
                     String course = courseName + " (" + moduleCode + ")";
                     String title = job.getJobTitle() == null ? "-" : job.getJobTitle();
                     String type = job.getActivityType() == null ? "-" : job.getActivityType();
                     String deadline = job.getApplicationDeadline() == null ? "-" : job.getApplicationDeadline();
-
-                    // ✅ 关键数据：剩余名额
                     int positionsLeft = job.getNumberOfPositions();
-                    String position = String.valueOf(positionsLeft);
-
                     String creatorName = (job.getCreatorName() == null || job.getCreatorName().isEmpty()) ? "Unknown" : job.getCreatorName();
 
-                    // 属性转义逻辑（用于 JS 筛选）
+                    // 🌟 解析当前职位的工时
+                    int jobHrs = 0;
+                    try {
+                        String hStr = job.getWorkingHours() != null ? job.getWorkingHours().toLowerCase().replace("h","").trim() : "0";
+                        jobHrs = Integer.parseInt(hStr);
+                    } catch(Exception e) { jobHrs = 0; }
+
                     String courseAttr = course.toLowerCase().replace("\"", "&quot;");
                     String titleAttr = title.toLowerCase().replace("\"", "&quot;");
                     String typeAttr = type.toLowerCase().replace("\"", "&quot;");
                     String deadlineAttr = deadline.replace("\"", "&quot;");
-                    String positionAttr = position.replace("\"", "&quot;");
+                    String positionAttr = String.valueOf(positionsLeft).replace("\"", "&quot;");
                     String creatorAttr = creatorName.toLowerCase().replace("\"", "&quot;");
                 %>
                 <tr data-course="<%= courseAttr %>"
@@ -423,33 +421,20 @@
                     <td><%= title %></td>
                     <td><%= type %></td>
                     <td><%= deadline %></td>
-                    <td><%= position %></td>
+                    <td><%= positionsLeft %></td>
                     <td>
                         <div style="display: flex; gap: 8px;">
                             <a class="view-btn" href="view_job.jsp?jobId=<%= job.getJobId() %>&from=StudentJobServlet">View</a>
 
-                            <%
-                                // ✅ 判定逻辑优先级：
-                                // 1. 是否已经申请过？ -> 显示 Applied (灰色)
-                                // 2. 名额是否已经为 0？ -> 显示 Full (灰色)
-                                // 3. 否则 -> 显示 Apply (橙色)
-
-                                if (appliedJobIds != null && appliedJobIds.contains(job.getJobId())) {
-                            %>
+                            <% if (appliedJobIds != null && appliedJobIds.contains(job.getJobId())) { %>
                             <a class="apply-btn disabled" href="javascript:void(0);">Applied</a>
-                            <%
-                            } else if (positionsLeft <= 0) {
-                            %>
-                            <%-- ✅ 新增：名额为 0 时显示为 Full 并禁用 --%>
+                            <% } else if (positionsLeft <= 0) { %>
                             <a class="apply-btn disabled" style="background: #777 !important;" href="javascript:void(0);">Full</a>
-                            <%
-                            } else {
-                            %>
+                            <% } else { %>
+                            <%-- 🌟 关键点：参数加单引号，防止解析带单位导致 JS 崩溃 --%>
                             <a class="apply-btn" href="javascript:void(0);"
-                               onclick="confirmApply('<%= job.getJobId() %>', '<%= job.getJobTitle().replace("'", "\\'") %>', event)">Apply</a>
-                            <%
-                                }
-                            %>
+                               onclick="confirmApply('<%= job.getJobId() %>', '<%= job.getJobTitle().replace("'", "\\'") %>', event, '<%= totalAccepted %>', '<%= jobHrs %>')">Apply</a>
+                            <% } %>
                         </div>
                     </td>
                 </tr>
@@ -469,24 +454,35 @@
 
 <script>
     /**
-     * 保持 confirmApply 在全局作用域，确保 onclick 能够调用
+     * 软提醒。警告风险，但允许点确认后继续申请。
      */
-    function confirmApply(jobId, jobTitle, event) {
+    function confirmApply(jobId, jobTitle, event, currentTotal, jobHours) {
         if (event) event.preventDefault();
         const btn = event.currentTarget;
         if (btn.classList.contains('disabled')) return;
 
-        const msg = "Are you sure you want to apply for the position: \n[" + jobTitle + "]?";
+        // 🌟 深度转为数值，确保计算正确
+        const cTotal = Number(currentTotal.toString().replace(/[^\d]/g, '')) || 0;
+        const jHrs = Number(jobHours.toString().replace(/[^\d]/g, '')) || 0;
+        const totalProjected = cTotal + jHrs;
+
+        let msg = "Are you sure you want to apply for the position: \n[" + jobTitle + "]?";
+
+        // 🌟 软性风险预警：仅做弹窗提醒
+        if (totalProjected > 20) {
+            msg = "⚠️ WORKLOAD WARNING!\n\nApplying for this job will bring your total approved workload ("
+                + totalProjected + "h) to exceed the 20-hour limit.\n\nThe MO will NOT be able to approve this unless you reduce other workloads. Do you still want to apply?";
+        }
+
         if (confirm(msg)) {
             fetch("ApplyJobServlet?jobId=" + jobId)
                 .then(response => {
                     if (response.ok) {
                         alert("Applied successfully!");
-                        // 即时反馈：变灰并锁定
                         btn.classList.add('disabled');
                         btn.innerText = "Applied";
                         btn.onclick = null;
-                        btn.style.background = ""; // 清除可能的自定义背景
+                        btn.style.background = "";
                     } else {
                         alert("Application failed. Please check your connection.");
                     }
@@ -508,22 +504,9 @@
         const filterPopup = document.getElementById("headerFilter");
         const headers = Array.from(table.querySelectorAll("thead th[data-key]"));
 
-        const state = {
-            textQuery: "",
-            onlyNotExpired: false,
-            columnFilters: {
-                course: "",
-                title: "",
-                type: "",
-                position: "",
-                creator: ""
-            },
-            deadlineBefore: ""
-        };
+        const state = { textQuery: "", onlyNotExpired: false, columnFilters: { course: "", title: "", type: "", position: "", creator: "" }, deadlineBefore: "" };
 
-        function normalize(str) {
-            return (str || "").toString().trim().toLowerCase();
-        }
+        function normalize(str) { return (str || "").toString().trim().toLowerCase(); }
 
         function buildSearchHay(row) {
             const visibleCols = [];
@@ -538,7 +521,6 @@
             if (!query) return true;
             const h = normalize(hay);
             const q = normalize(query);
-            if (!q) return true;
             return q.split(/\s+/).filter(Boolean).every(token => h.includes(token));
         }
 
@@ -560,11 +542,7 @@
                 const key = th.dataset.key;
                 const mark = th.querySelector(".filter-mark");
                 if (!mark) return;
-                if (key === "deadline") {
-                    mark.textContent = state.deadlineBefore ? "*" : "";
-                } else {
-                    mark.textContent = state.columnFilters[key] ? "*" : "";
-                }
+                mark.textContent = (key === "deadline") ? (state.deadlineBefore ? "*" : "") : (state.columnFilters[key] ? "*" : "");
             });
         }
 
@@ -584,7 +562,6 @@
                 const deadlineTime = parseYmdDate(deadlineVal);
 
                 let visible = true;
-
                 if (!matchesSearch(searchHay, q)) visible = false;
                 if (visible && state.onlyNotExpired) visible = deadlineTime !== null && deadlineTime >= today;
                 if (visible && state.columnFilters.course && courseVal !== state.columnFilters.course) visible = false;
@@ -601,14 +578,11 @@
             btnNotExpired.classList.toggle("active", state.onlyNotExpired);
         }
 
-        function closePopup() {
-            filterPopup.style.display = "none";
-            filterPopup.innerHTML = "";
-        }
+        function closePopup() { filterPopup.style.display = "none"; filterPopup.innerHTML = ""; }
 
         function placePopupNear(th) {
             const rect = th.getBoundingClientRect();
-            filterPopup.style.top = (rect.bottom + 6) + "px";
+            filterPopup.style.top = (rect.bottom + window.scrollY + 6) + "px";
             filterPopup.style.left = Math.max(10, rect.left) + "px";
             filterPopup.style.display = "block";
         }
@@ -625,111 +599,37 @@
 
         function openValueFilter(th) {
             const key = th.dataset.key;
-            const colIndex = {
-                creator: 0,
-                course: 1,
-                title: 2,
-                type: 3,
-                position: 5
-            }[key];
+            const colIndex = { creator: 0, course: 1, title: 2, type: 3, position: 5 }[key];
             const values = getUniqueValues(key, colIndex);
-
             let html = '<div class="filter-title">Filter ' + th.textContent.trim() + '</div>';
             html += '<button class="filter-option ' + (!state.columnFilters[key] ? 'active' : '') + '" data-val="">All</button>';
             values.forEach(([val, label]) => {
                 const active = state.columnFilters[key] === val ? 'active' : '';
                 html += '<button class="filter-option ' + active + '" data-val="' + val.replace(/"/g, '&quot;') + '">' + label + '</button>';
             });
-
             filterPopup.innerHTML = html;
             placePopupNear(th);
-
             filterPopup.querySelectorAll(".filter-option").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    state.columnFilters[key] = normalize(btn.getAttribute("data-val"));
-                    closePopup();
-                    applyFilters();
-                });
+                btn.addEventListener("click", () => { state.columnFilters[key] = normalize(btn.getAttribute("data-val")); closePopup(); applyFilters(); });
             });
         }
 
         function openDeadlineFilter(th) {
             const safeVal = state.deadlineBefore || "";
-            filterPopup.innerHTML = '' +
-                '<div class="filter-title">Deadline Filter</div>' +
-                '<div class="deadline-box">' +
-                '  <input type="date" id="deadlineFilterInput" value="' + safeVal + '">' +
-                '  <div class="hint">Show jobs with deadline on or before selected date.</div>' +
-                '  <div class="deadline-actions">' +
-                '    <button type="button" class="primary" id="deadlineApplyBtn">Apply</button>' +
-                '    <button type="button" id="deadlineClearBtn">Clear</button>' +
-                '  </div>' +
-                '</div>';
-
+            filterPopup.innerHTML = '<div class="filter-title">Deadline Filter</div><div class="deadline-box"><input type="date" id="deadlineFilterInput" value="' + safeVal + '"><div class="hint">On or before selected date.</div><div class="deadline-actions"><button type="button" class="primary" id="deadlineApplyBtn">Apply</button><button type="button" id="deadlineClearBtn">Clear</button></div></div>';
             placePopupNear(th);
-
             const input = document.getElementById("deadlineFilterInput");
-            document.getElementById("deadlineApplyBtn").addEventListener("click", () => {
-                state.deadlineBefore = (input.value || "").trim();
-                closePopup();
-                applyFilters();
-            });
-            document.getElementById("deadlineClearBtn").addEventListener("click", () => {
-                state.deadlineBefore = "";
-                closePopup();
-                applyFilters();
-            });
+            document.getElementById("deadlineApplyBtn").addEventListener("click", () => { state.deadlineBefore = (input.value || "").trim(); closePopup(); applyFilters(); });
+            document.getElementById("deadlineClearBtn").addEventListener("click", () => { state.deadlineBefore = ""; closePopup(); applyFilters(); });
         }
 
-        function runSearch() {
-            state.textQuery = searchInput.value || "";
-            applyFilters();
-        }
-
+        function runSearch() { state.textQuery = searchInput.value || ""; applyFilters(); }
         searchInput.addEventListener("input", runSearch);
         btnSearch.addEventListener("click", runSearch);
-        searchInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                runSearch();
-            }
-        });
-
-        btnNotExpired.addEventListener("click", () => {
-            state.onlyNotExpired = !state.onlyNotExpired;
-            applyFilters();
-        });
-
-        btnClearAll.addEventListener("click", () => {
-            state.textQuery = "";
-            state.onlyNotExpired = false;
-            state.columnFilters.course = "";
-            state.columnFilters.title = "";
-            state.columnFilters.type = "";
-            state.columnFilters.position = "";
-            state.columnFilters.creator = "";
-            state.deadlineBefore = "";
-            searchInput.value = "";
-            closePopup();
-            applyFilters();
-        });
-
-        headers.forEach(th => {
-            th.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const key = th.dataset.key;
-                if (!key) return;
-                closePopup();
-                if (key === "deadline") openDeadlineFilter(th);
-                else openValueFilter(th);
-            });
-        });
-
-        document.addEventListener("click", (e) => {
-            if (filterPopup.style.display !== "block") return;
-            if (!filterPopup.contains(e.target)) closePopup();
-        });
-
+        btnNotExpired.addEventListener("click", () => { state.onlyNotExpired = !state.onlyNotExpired; applyFilters(); });
+        btnClearAll.addEventListener("click", () => { state.textQuery = ""; state.onlyNotExpired = false; state.deadlineBefore = ""; Object.keys(state.columnFilters).forEach(k => state.columnFilters[k] = ""); searchInput.value = ""; closePopup(); applyFilters(); });
+        headers.forEach(th => { th.addEventListener("click", (e) => { e.stopPropagation(); const key = th.dataset.key; if (!key) return; closePopup(); if (key === "deadline") openDeadlineFilter(th); else openValueFilter(th); }); });
+        document.addEventListener("click", (e) => { if (filterPopup.style.display !== "block") return; if (!filterPopup.contains(e.target)) closePopup(); });
         applyFilters();
     })();
 </script>
