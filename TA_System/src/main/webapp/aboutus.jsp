@@ -7,11 +7,23 @@
     <title>About System - TA Recruitment System</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --page-text: #f4f7fb;
+            --muted-text: #d8e3ef;
+            --accent-text: #b0c4de;
+            --accent-line: #c0d9e8;
+            --card-bg: rgba(11, 27, 46, 0.76);
+            --card-border: rgba(255, 255, 255, 0.14);
+            --panel-bg: rgba(255, 255, 255, 0.08);
+            --panel-border: rgba(255, 255, 255, 0.16);
+            --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Nunito', "Arial Rounded MT Bold", sans-serif;
+            font-family: Georgia, "Times New Roman", serif;
         }
 
         html, body {
@@ -21,10 +33,24 @@
         }
 
         body {
-            background: url("images/bupt_campus_bg.jpg") no-repeat center center fixed;
+            background-image: url("images/bupt_campus_bg.jpg");
             background-size: cover;
-            color: #222;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--page-text);
             overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 22, 39, 0.84), rgba(18, 35, 61, 0.76));
+            z-index: 1;
         }
 
         .bg-mask {
@@ -33,7 +59,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.85);
+            background-color: transparent;
             z-index: 1;
         }
 
@@ -43,144 +69,201 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            padding: 30px 30px 24px;
         }
 
         .header-logos {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 20;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 24px;
+            width: fit-content;
+            padding: 28px 32px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            box-shadow: var(--nav-shadow);
+            backdrop-filter: blur(12px);
         }
 
         .logo-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         .logo-item img {
-            width: 75px;
-            height: 75px;
+            width: 65px;
+            height: 65px;
             object-fit: contain;
-            border-radius: 12px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.85);
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
         }
 
         .logo-text {
-            font-size: 17px;
-            color: #000;
+            font-size: 15px;
+            color: #e8eef7;
             font-weight: 600;
-            line-height: 1.4;
+            line-height: 1.5;
+            letter-spacing: 0.3px;
         }
 
-        .top-nav {
-            width: 100%;
+        .top-back-nav {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 20;
             display: flex;
-            justify-content: flex-end;
             align-items: center;
-            padding: 28px 40px 0 40px;
-            gap: 18px;
+            gap: 14px;
+            flex-wrap: wrap;
         }
 
-        .top-nav a {
+        .top-back-nav a {
             text-decoration: none;
-            color: #222;
-            font-size: 18px;
-            font-weight: 700;
-            padding: 10px 18px;
-            border: 2px solid #222;
-            border-radius: 14px;
-            background-color: rgba(255, 255, 255, 0.9);
+            color: #e8eef7;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 50px;
+            background: var(--panel-bg);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--nav-shadow);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .top-nav a:hover {
-            background-color: #ffe8e8;
+        .top-back-nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .top-back-nav a:hover::before {
+            left: 100%;
+        }
+
+        .top-back-nav a:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--page-text);
+            border-color: rgba(255, 255, 255, 0.35);
             transform: translateY(-2px);
         }
 
         .main-content {
             flex: 1;
-            width: 90%;
-            max-width: 1100px;
-            margin: 140px auto 80px auto;
+            width: 100%;
+            max-width: 1180px;
+            margin: 132px auto 80px auto;
             animation: fadeInUp 0.8s ease-out;
+        }
+
+        .intro-section {
+            text-align: center;
+            max-width: 860px;
+            margin: 0 auto 54px auto;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-text);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
         }
 
         .page-title {
             text-align: center;
-            font-size: 52px;
-            font-weight: 800;
-            color: #222;
+            font-size: clamp(42px, 5vw, 60px);
+            font-weight: 700;
+            color: var(--page-text);
             line-height: 1.2;
             margin-bottom: 18px;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
 
         .title-line {
-            width: 100%;
-            max-width: 760px;
-            height: 4px;
-            background-color: #222;
-            margin: 0 auto 40px auto;
-            border-radius: 4px;
+            width: 88px;
+            height: 3px;
+            background: linear-gradient(to right, var(--accent-line), rgba(192, 217, 232, 0.16));
+            margin: 0 auto 32px auto;
+            border-radius: 2px;
         }
 
         .intro-text {
             text-align: center;
-            font-size: 24px;
+            font-size: 20px;
             line-height: 1.7;
-            color: #d63031;
-            font-weight: 700;
-            max-width: 920px;
-            margin: 0 auto 45px auto;
+            color: var(--muted-text);
+            font-weight: 500;
+            max-width: 760px;
+            margin: 0 auto;
         }
 
         .content-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 28px;
         }
 
         .card {
-            background-color: rgba(255, 255, 255, 0.88);
-            border: 3px solid #222;
-            border-radius: 22px;
-            padding: 30px 28px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            background: linear-gradient(180deg, rgba(11, 27, 46, 0.82), var(--card-bg));
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 34px 30px;
+            box-shadow: 0 22px 40px rgba(4, 11, 21, 0.28);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+            box-shadow: 0 26px 44px rgba(4, 11, 21, 0.34);
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 30px;
+            width: 64px;
+            height: 3px;
+            background: linear-gradient(90deg, #18b394, rgba(24, 179, 148, 0.1));
+            border-radius: 999px;
         }
 
         .card h2 {
             font-size: 28px;
-            font-weight: 800;
+            font-weight: 700;
             margin-bottom: 16px;
-            color: #222;
+            color: var(--page-text);
         }
 
         .card p {
             font-size: 18px;
             line-height: 1.8;
-            color: #333;
+            color: var(--muted-text);
         }
 
         .card ul {
-            padding-left: 22px;
+            padding-left: 24px;
             margin-top: 8px;
         }
 
         .card ul li {
             font-size: 18px;
             line-height: 1.8;
-            color: #333;
+            color: var(--muted-text);
             margin-bottom: 8px;
         }
 
@@ -194,35 +277,36 @@
             justify-content: center;
             align-items: center;
             gap: 50px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
-            padding: 24px 0 30px 0;
+            padding: 24px 0 6px 0;
+            flex-wrap: wrap;
         }
 
         .footer-nav a {
             text-decoration: none;
-            color: #222;
+            color: #e8eef7;
             transition: all 0.2s ease;
-            padding: 5px 10px;
+            padding: 8px 14px;
             border-radius: 8px;
         }
 
         .footer-nav a:hover {
-            color: #d63031;
-            background-color: rgba(255,255,255,0.7);
+            color: var(--page-text);
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .divider {
             width: 2px;
-            height: 26px;
-            background-color: #222;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
             border-radius: 2px;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(26px);
             }
             to {
                 opacity: 1;
@@ -240,18 +324,16 @@
             }
 
             .intro-text {
-                font-size: 20px;
+                font-size: 17px;
             }
 
-            .top-nav {
-                justify-content: center;
-                flex-wrap: wrap;
-                padding-top: 120px;
+            .page-wrapper {
+                padding: 20px 20px 24px;
             }
 
             .header-logos {
-                position: static;
-                padding: 20px 20px 0 20px;
+                padding: 20px 24px;
+                gap: 18px;
             }
 
             .main-content {
@@ -261,7 +343,35 @@
             .footer-nav {
                 gap: 20px;
                 font-size: 16px;
-                flex-wrap: wrap;
+            }
+
+            .top-back-nav {
+                position: static;
+                justify-content: center;
+                margin-top: 18px;
+            }
+
+            .top-back-nav a {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+
+            .logo-item img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .card {
+                padding: 30px 24px;
+            }
+
+            .card h2 {
+                font-size: 24px;
+            }
+
+            .card p,
+            .card ul li {
+                font-size: 16px;
             }
         }
     </style>
@@ -281,20 +391,22 @@
             </div>
         </div>
 
-        <div class="top-nav">
-            <a href="index.html">Home</a>
+        <div class="top-back-nav">
+            <a href="index.html">Back to Home</a>
             <a href="contact.jsp">Contact</a>
             <a href="help.jsp">Help</a>
         </div>
 
         <main class="main-content">
-            <h1 class="page-title">About the TA Recruitment System</h1>
-            <div class="title-line"></div>
-
-            <p class="intro-text">
-                This system was developed for the International School of Beijing University of Posts and Telecommunications
-                to support the recruitment and management of Teaching Assistants in a clearer, faster, and more organized way.
-            </p>
+            <section class="intro-section">
+                <p class="page-subtitle">TA Recruitment System</p>
+                <h1 class="page-title">About the Platform</h1>
+                <div class="title-line"></div>
+                <p class="intro-text">
+                    This system was developed for the International School of Beijing University of Posts and Telecommunications
+                    to support the recruitment and management of Teaching Assistants in a clearer, faster, and more organized way.
+                </p>
+            </section>
 
             <div class="content-grid">
                 <section class="card">

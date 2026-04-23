@@ -11,13 +11,28 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Nunito', "Arial Rounded MT Bold", sans-serif;
+            font-family: Georgia, "Times New Roman", serif;
         }
 
         body {
-            background: url("images/bupt_campus_bg.jpg") no-repeat center center fixed;
+            background-image: url("images/bupt_campus_bg.jpg");
             background-size: cover;
-            color: #222;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #f4f7fb;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 35, 61, 0.78);
+            z-index: 1;
         }
 
         .bg-mask {
@@ -26,7 +41,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.85);
+            background-color: transparent;
             z-index: 1;
         }
 
@@ -47,86 +62,117 @@
 
         .top-nav a {
             text-decoration: none;
-            color: #222;
+            color: #e8eef7;
             font-weight: 700;
-            padding: 10px 18px;
-            border: 2px solid #222;
-            border-radius: 14px;
-            background-color: rgba(255,255,255,0.9);
+            font-size: 16px;
+            padding: 12px 24px;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-
+        .top-nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+        .top-nav a:hover::before {
+            left: 100%;
+        }
         .top-nav a:hover {
-            background-color: #ffe8e8;
+            background-color: rgba(255, 255, 255, 0.12);
+            color: #f4f7fb;
+            border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
         }
 
         .main-content {
             width: 90%;
-            max-width: 1000px;
-            margin: 100px auto;
+            max-width: 900px;
+            margin: 60px auto 80px auto;
             animation: fadeInUp 0.8s ease;
         }
 
         .title {
             text-align: center;
-            font-size: 48px;
-            font-weight: 800;
-            margin-bottom: 15px;
+            font-size: 44px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #f4f7fb;
         }
 
         .title-line {
-            width: 100%;
-            height: 4px;
-            background: #222;
-            margin-bottom: 40px;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #c0d9e8, rgba(192, 217, 232, 0.2));
+            margin: 0 auto 40px auto;
+            border-radius: 2px;
         }
 
         .intro {
             text-align: center;
-            font-size: 22px;
-            color: #d63031;
-            font-weight: 700;
+            font-size: 18px;
+            color: #b0c4de;
+            font-weight: 600;
             margin-bottom: 40px;
         }
 
         .card {
-            background: rgba(255,255,255,0.92);
-            border: 3px solid #222;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 20px;
-            padding: 28px;
-            margin-bottom: 25px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
         }
 
         .card h2 {
-            font-size: 26px;
-            margin-bottom: 15px;
+            font-size: 24px;
+            margin-bottom: 18px;
+            color: #f4f7fb;
+            font-weight: 700;
         }
 
         .card p, .card li {
-            font-size: 18px;
-            line-height: 1.7;
+            font-size: 17px;
+            line-height: 1.8;
+            color: #e8eef7;
         }
 
         .card ul {
-            padding-left: 20px;
+            padding-left: 24px;
+        }
+
+        .card li {
+            margin-bottom: 12px;
         }
 
         .github-box {
             margin-top: 20px;
             text-align: center;
-            border: 2px solid #222;
-            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
             padding: 20px;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .github-box a {
-            color: #d63031;
+            color: #b0c4de;
             font-weight: 700;
             text-decoration: none;
+            transition: all 0.2s ease;
         }
 
         .github-box a:hover {
+            color: #f4f7fb;
             text-decoration: underline;
         }
 
@@ -135,23 +181,47 @@
             justify-content: center;
             gap: 40px;
             margin-bottom: 30px;
+            font-size: 16px;
+            font-weight: 600;
         }
 
         .footer-nav a {
             text-decoration: none;
-            color: #222;
-            font-weight: 600;
+            color: #e8eef7;
+            transition: all 0.2s ease;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .footer-nav a:hover {
+            color: #f4f7fb;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .divider {
             width: 2px;
             height: 20px;
-            background: #222;
+            background: rgba(255, 255, 255, 0.3);
         }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px);}
             to { opacity: 1; transform: translateY(0);}
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 32px;
+            }
+            .card {
+                padding: 24px;
+            }
+            .card h2 {
+                font-size: 20px;
+            }
+            .main-content {
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
