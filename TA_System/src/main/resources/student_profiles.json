@@ -2,7 +2,7 @@
   "2023213099": {
     "enrollmentNo": "2023213099",
     "fullName": "张三",
-    "studentId": "S001",
+    "studentId": "2023213099",
     "chineseName": "张三",
     "gender": "男",
     "qmId": "231222084",
@@ -18,7 +18,29 @@
     "availability": "All semester",
     "availabilityNotes": "",
     "campusPreference": "BUPT Main Campus only",
-    "skills": "Programming Development(Java, Python, C/C++, software development), Signals, Systems \u0026 Multimedia Processing(signal analysis, system modelling, multimedia processing), Advanced Networking Concepts(Packet Tracer, ad hoc networks, advanced networking), Cybersecurity (encryption, authentication, secure communication), Hardware Design(logic gates, flip-flops, VHDL, FPGA tools), Management Knowledge(marketing, finance, operations, business strategy), Teaching Support (I am willing to travel to the Shahe Campus to help with teaching activities)",
-    "resumePath": "resumes/2023213099_414d018c-88e6-4636-9c74-5b8c7e4a00d7.pdf"
+    "skills": "Programming Development(Java, Python, C/C++, software development), Signals, Systems \u0026 Multimedia Processing(signal analysis, system modelling, multimedia processing), Advanced Networking Concepts(Packet Tracer, ad hoc networks, advanced networking), Cybersecurity (encryption, authentication, secure communication), 3D Programming　(OpenGL, 3D graphics programming), Teaching Support (I am willing to travel to the Shahe Campus to help with teaching activities)",
+    "resumePath": "resumes/2023213099_ccf55ce3-7703-4087-b487-f27bbf353a1a.pdf"
+  },
+  "2023212120": {
+    "enrollmentNo": "2023212120",
+    "fullName": "李四",
+    "studentId": "2023212120",
+    "chineseName": "李四",
+    "gender": "男",
+    "qmId": "231220014",
+    "buptId": "2023212120",
+    "buptClass": "2023215102",
+    "majorProgramme": "Software Engineering",
+    "grade": "3",
+    "email": "1521086250@qq.com",
+    "mobilePhone": "15908698080",
+    "wechatId": "lisi",
+    "priorProgramme": "",
+    "priorAnswer": "No",
+    "availability": "All semester",
+    "availabilityNotes": "",
+    "campusPreference": "BUPT Main Campus only",
+    "skills": "Programming Development(Java, Python, C/C++, software development), Data Processing (Hadoop, MapReduce, distributed data processing), Communication Electronics(AM/FM systems, amplifiers, modulators, high-frequency circuits), Cybersecurity (encryption, authentication, secure communication), Control Systems (Matlab, Simulink), Management Knowledge(marketing, finance, operations, business strategy)",
+    "resumePath": "resumes/2023212120_19c1c6c2-3b4b-4585-b7e2-e727cc4da199.pdf"
   }
 }
