@@ -14,7 +14,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,20 +30,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-//站在 MO 角度怎么选人？
-//真实的 MO 选人逻辑是**“三维漏斗”**：
-//
-//第一关（后勤与硬性条件）：时间地点冲不冲突？专业对不对口？
-//
-//第二关（技术实力）：技术能不能胜任 Lab Assistant？
-//
-//第三关（软素质）：有没有辅导耐心和表达能力？
-
-// 注意：这里删除了 @WebServlet 注解，因为我们在 web.xml 中注册了，避免冲突
 public class MOAiMatchServlet extends HttpServlet {
     private static final Gson GSON = new Gson();
 
-    // ⚠️ 记得填入你的 API KEY
+    // ⚠️ 建议测试完成后，去阿里云后台把这个 Key 删掉重新生成一个，防止被盗用额度
     private static final String QWEN_API_KEY = "sk-b1563cddb70642b2907dcb49fb883fca";
     private static final String QWEN_API_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
 
@@ -57,10 +46,11 @@ public class MOAiMatchServlet extends HttpServlet {
             Job targetJob = findJobById(jobId);
             if (targetJob == null) { response.getWriter().write("[]"); return; }
 
+            // 1. 调用最新重写的精准名单获取方法
             List<String> applicantIds = getApplicantIds(jobId);
             if (applicantIds.isEmpty()) { response.getWriter().write("[]"); return; }
 
-            // ====== 1. 构建候选人与岗位的全量上下文 ======
+            // ====== 2. 构建候选人与岗位的全量上下文 ======
             StudentProfileDao profileDao = new StudentProfileDao();
             StringBuilder candidatesContext = new StringBuilder();
 
@@ -68,12 +58,11 @@ public class MOAiMatchServlet extends HttpServlet {
                 StudentProfile profile = profileDao.getByEnrollment(sId);
                 if (profile != null) {
                     candidatesContext.append("### Candidate ID: ").append(sId).append(" ###\n");
-                    // 补充完整的硬性条件
-                    candidatesContext.append("[Logistics] Campus Preference: ").append(profile.getCampusPreference()).append("\n");
-                    candidatesContext.append("[Logistics] Availability: ").append(profile.getAvailability()).append("\n");
-                    candidatesContext.append("[Academic] Major: ").append(profile.getMajorProgramme()).append("\n");
-                    candidatesContext.append("[Academic] Grade: ").append(profile.getGrade()).append("\n");
-                    candidatesContext.append("[Skills] Stated: ").append(profile.getSkills()).append("\n");
+                    candidatesContext.append("[Logistics] Campus Preference: ").append(profile.getCampusPreference() != null ? profile.getCampusPreference() : "N/A").append("\n");
+                    candidatesContext.append("[Logistics] Availability: ").append(profile.getAvailability() != null ? profile.getAvailability() : "N/A").append("\n");
+                    candidatesContext.append("[Academic] Major: ").append(profile.getMajorProgramme() != null ? profile.getMajorProgramme() : "N/A").append("\n");
+                    candidatesContext.append("[Academic] Grade: ").append(profile.getGrade() != null ? profile.getGrade() : "N/A").append("\n");
+                    candidatesContext.append("[Skills] Stated: ").append(profile.getSkills() != null ? profile.getSkills() : "N/A").append("\n");
 
                     String pdfText = extractTextFromPdf(request, profile.getResumePath());
                     if (!pdfText.isEmpty()) {
@@ -83,7 +72,7 @@ public class MOAiMatchServlet extends HttpServlet {
                 }
             }
 
-            // ====== 2. 🌟 终极版 MO 视角的 Prompt ======
+            // ====== 3. MO 视角的 Prompt ======
             String systemPrompt = "You are an expert University Module Organizer (MO) hiring a Teaching/Lab Assistant. " +
                     "Evaluate candidates based on 3 dimensions: " +
                     "1) Logistics & Requirements: Check if the candidate's Campus Preference, Availability, and Major match the Job's Location, Working Hours, and Preferred Major. " +
@@ -118,32 +107,43 @@ public class MOAiMatchServlet extends HttpServlet {
                     .build();
 
             HttpResponse<String> aiResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            JsonObject jsonRes = GSON.fromJson(aiResponse.body(), JsonObject.class);
-            String aiResultText = jsonRes.getAsJsonArray("choices").get(0).getAsJsonObject()
-                    .getAsJsonObject("message").get("content").getAsString();
+            String responseBody = aiResponse.body();
 
-            aiResultText = aiResultText.replace("```json", "").replace("```", "").trim();
+            System.out.println(">>> [Debug] AI 原始返回报文: " + responseBody);
 
-            // ====== 3. 🌟 把 resumePath 一起发给前端 ======
-            JsonArray aiResultsArray = GSON.fromJson(aiResultText, JsonArray.class);
-            for (JsonElement element : aiResultsArray) {
-                JsonObject obj = element.getAsJsonObject();
-                String sId = obj.get("studentId").getAsString();
-                StudentProfile p = profileDao.getByEnrollment(sId);
+            JsonObject jsonRes = GSON.fromJson(responseBody, JsonObject.class);
 
-                if (p != null) {
-                    obj.addProperty("name", p.getFullName() != null ? p.getFullName() : "Unknown");
-                    obj.addProperty("major", p.getMajorProgramme() != null ? p.getMajorProgramme() : "Unknown");
-                    // 新增：把 PDF 路径传给前端
-                    obj.addProperty("resumePath", p.getResumePath() != null ? p.getResumePath() : "");
+            // 🚨 增加了防爆盾：确保有 choices 才去解析，防止报 NullPointerException
+            if (jsonRes.has("choices")) {
+                String aiResultText = jsonRes.getAsJsonArray("choices").get(0).getAsJsonObject()
+                        .getAsJsonObject("message").get("content").getAsString();
+
+                aiResultText = aiResultText.replace("```json", "").replace("```", "").trim();
+
+                // ====== 4. 把 resumePath 和其他信息传给前端 ======
+                JsonArray aiResultsArray = GSON.fromJson(aiResultText, JsonArray.class);
+                for (JsonElement element : aiResultsArray) {
+                    JsonObject obj = element.getAsJsonObject();
+                    String sId = obj.get("studentId").getAsString();
+                    StudentProfile p = profileDao.getByEnrollment(sId);
+
+                    if (p != null) {
+                        obj.addProperty("name", p.getFullName() != null ? p.getFullName() : "Unknown");
+                        obj.addProperty("major", p.getMajorProgramme() != null ? p.getMajorProgramme() : "Unknown");
+                        obj.addProperty("resumePath", p.getResumePath() != null ? p.getResumePath() : "");
+                    }
                 }
+                response.getWriter().write(GSON.toJson(aiResultsArray));
+            } else {
+                System.err.println(">>> [Error] 大模型接口报错: " + responseBody);
+                response.setStatus(500);
+                response.getWriter().write("{\"error\": \"AI 接口调用失败，请检查控制台\"}");
             }
-            response.getWriter().write(GSON.toJson(aiResultsArray));
 
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(500);
-            response.getWriter().write("{\"error\": \"AI service failed: " + e.getMessage() + "\"}");
+            response.getWriter().write("{\"error\": \"Server failed: " + e.getMessage() + "\"}");
         }
     }
 
@@ -166,47 +166,41 @@ public class MOAiMatchServlet extends HttpServlet {
         return null;
     }
 
-    private List<String> getApplicantIds(String jobId) throws IOException {
+    // 🌟 核心修复：完美适配你的按行存储 (NDJSON) 的 applications.json
+    private List<String> getApplicantIds(String jobId) {
         List<String> ids = new ArrayList<>();
         File file = new File(ApplicationDao.getFilePath());
         if (!file.exists()) return ids;
 
-        try (FileReader reader = new FileReader(file)) {
-            // 使用 Gson 安全地解析整个 applications.json
-            JsonElement rootElement = GSON.fromJson(reader, JsonElement.class);
-            if (rootElement == null) return ids;
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            // 逐行读取，因为你的每一行都是一个独立的 JSON 对象
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
 
-            // 兼容处理：判断你的 JSON 最外层是数组 [...] 还是对象 {...}
-            if (rootElement.isJsonArray()) {
-                for (JsonElement e : rootElement.getAsJsonArray()) {
-                    checkAndAddPendingApplicant(e.getAsJsonObject(), jobId, ids);
-                }
-            } else if (rootElement.isJsonObject()) {
-                JsonObject rootObj = rootElement.getAsJsonObject();
-                for (String key : rootObj.keySet()) {
-                    checkAndAddPendingApplicant(rootObj.getAsJsonObject(key), jobId, ids);
+                try {
+                    JsonObject app = GSON.fromJson(line, JsonObject.class);
+                    if (app.has("jobId") && app.has("studentId")) {
+                        String currentJobId = app.get("jobId").getAsString();
+                        String status = app.has("status") ? app.get("status").getAsString() : "Pending";
+
+                        // 只有 jobId 匹配，且状态为 Pending 的人才进入 AI 筛选
+                        boolean isPending = !"Accepted".equalsIgnoreCase(status) && !"Rejected".equalsIgnoreCase(status);
+
+                        if (currentJobId.equals(jobId) && isPending) {
+                            ids.add(app.get("studentId").getAsString());
+                        }
+                    }
+                } catch (Exception e) {
+                    // 忽略格式错误的行，继续下一行
                 }
             }
         } catch (Exception e) {
-            System.err.println(">>> [MOAiMatchServlet] 解析 applications.json 失败: " + e.getMessage());
+            e.printStackTrace();
         }
+
+        System.out.println(">>> [Debug] 最终提交给大模型筛选的待定名单: " + ids);
         return ids;
-    }
-
-    // 辅助方法：进行逻辑校验
-    private void checkAndAddPendingApplicant(JsonObject app, String targetJobId, List<String> ids) {
-        if (!app.has("jobId") || !app.has("studentId")) return;
-
-        String currentJobId = app.get("jobId").getAsString();
-
-        // 获取申请状态（假设你的 application 对象里有 status 字段，没有则默认视为 Pending）
-        String status = app.has("status") ? app.get("status").getAsString() : "Pending";
-
-        // 🚨 核心逻辑校验：只有岗位 ID  匹配，并且状态【不是】已录用或已拒绝，才参与 AI 筛选！
-        boolean isPending = !status.equalsIgnoreCase("Accepted") && !status.equalsIgnoreCase("Rejected");
-
-        if (currentJobId.equals(targetJobId) && isPending) {
-            ids.add(app.get("studentId").getAsString());
-        }
     }
 }
