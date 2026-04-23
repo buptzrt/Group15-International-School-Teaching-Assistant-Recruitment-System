@@ -3,9 +3,10 @@ package com.me.finaldesignproject.dao;
 import java.io.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
+import com.me.finaldesignproject.model.Job; // 确保导入了 Job 模型
 
 public class ApplicationDao {
-    // �?统一源码路径，确保全项目同步
+    // 统一源码路径，确保全项目同步
     private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/applications.json";
 
     public static String getFilePath() {
@@ -13,7 +14,8 @@ public class ApplicationDao {
     }
 
     /**
-     * 学生端：保存新申�?     */
+     * 学生端：保存新申请
+     */
     public boolean saveApplication(String studentId, String jobId) {
         File file = new File(FILE_PATH);
         try {
@@ -38,49 +40,6 @@ public class ApplicationDao {
         }
     }
 
-    /**
-     * MO端：更新申请状�?(Pass/Reject)
-     */
-//    public boolean updateApplicationStatus(String studentId, String jobId, String newStatus) {
-//        File file = new File(FILE_PATH);
-//        if (!file.exists()) return false;
-//
-//        List<String> fileContent = new ArrayList<>();
-//        boolean found = false;
-//
-//        synchronized (this) {
-//            try {
-//                // 1. 读取并寻找匹配项
-//                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-//                    String line;
-//                    while ((line = br.readLine()) != null) {
-//                        if (line.contains("\"studentId\":\"" + studentId + "\"") && line.contains("\"jobId\":\"" + jobId + "\"")) {
-//                            // 替换状态�?                            line = line.replaceAll("\"status\":\"[^\"]+\"", "\"status\":\"" + newStatus + "\"");
-//                            found = true;
-//                        }
-//                        fileContent.add(line);
-//                    }
-//                }
-//
-//                if (!found) return false;
-//
-//                // 2. 写回文件
-//                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-//                    for (int i = 0; i < fileContent.size(); i++) {
-//                        bw.write(fileContent.get(i));
-//                        if (i < fileContent.size() - 1) bw.newLine();
-//                    }
-//                }
-//                return true;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//        }
-//    }
-    /**
-     * MO端：更新申请状态 (Pass/Reject)
-     */
     /**
      * MO端：更新申请状态 (Pass/Reject)
      */
@@ -166,5 +125,63 @@ public class ApplicationDao {
             }
         } catch (Exception e) { e.printStackTrace(); }
         return appliedIds;
+    }
+
+    // ============================================================
+    // ✅ 辅助逻辑：获取所有申请的原始字符串行
+    // ============================================================
+
+    private List<String> getAllApplicationLines() {
+        List<String> lines = new ArrayList<>();
+        File file = new File(FILE_PATH);
+        if (!file.exists()) return lines;
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().startsWith("{")) lines.add(line);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return lines;
+    }
+
+    /**
+     * ✅ 核心修复方法：计算特定学生的总工作时长
+     * 增强点：通过正则清洗字符串，确保 "19"、"19h" 或带空格引号的工时都能被正确解析。
+     */
+    public int getTotalWorkingHours(String studentId, String statusFilter) {
+        int totalHours = 0;
+        if (studentId == null || statusFilter == null) return 0;
+
+        List<String> lines = getAllApplicationLines();
+        JobDao jobDao = new JobDao();
+        List<com.me.finaldesignproject.model.Job> allJobs = jobDao.getAllJobs();
+
+        for (String line : lines) {
+            // 确保 studentId 和 status 同时匹配
+            if (line.contains("\"studentId\":\"" + studentId + "\"") &&
+                    line.contains("\"status\":\"" + statusFilter + "\"")) {
+
+                try {
+                    String jId = line.split("\"jobId\":\"")[1].split("\"")[0];
+
+                    for (com.me.finaldesignproject.model.Job job : allJobs) {
+                        if (job.getJobId() != null && job.getJobId().equals(jId)) {
+                            String hoursStr = job.getWorkingHours();
+                            if (hoursStr != null && !hoursStr.trim().isEmpty()) {
+                                // 🌟 核心修复：只保留数字字符，防止 NumberFormatException
+                                String cleanHours = hoursStr.replaceAll("[^0-9]", "");
+                                if (!cleanHours.isEmpty()) {
+                                    totalHours += Integer.parseInt(cleanHours);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    // 解析异常时跳过当前行
+                }
+            }
+        }
+        return totalHours;
     }
 }
