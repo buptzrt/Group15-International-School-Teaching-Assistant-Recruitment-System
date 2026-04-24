@@ -6,178 +6,294 @@
     <title>TA Recruitment System</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --page-text: #f4f7fb;
+            --muted-text: #d8e3ef;
+            --accent-text: #b0c4de;
+            --accent-line: #c0d9e8;
+            --button-start: #18b394;
+            --button-end: #14977f;
+            --panel-border: rgba(255, 255, 255, 0.16);
+            --panel-bg: rgba(255, 255, 255, 0.08);
+            --shadow-strong: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Nunito', "Arial Rounded MT Bold", sans-serif;
+            font-family: Georgia, "Times New Roman", serif;
         }
 
         html, body {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
+            width: 100%;
+            min-height: 100%;
             position: relative;
         }
 
         body {
-            background: url("images/bupt_campus_bg.jpg") no-repeat center center;
+            background-image: url("images/bupt_campus_bg.jpg");
             background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #f4f7fb;
+            margin: 0;
+            padding: 0;
         }
-        .bg-mask {
-            position: absolute;
+
+        body::before {
+            content: '';
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.85);
+            background: linear-gradient(135deg, rgba(10, 22, 39, 0.82), rgba(18, 35, 61, 0.74));
             z-index: 1;
         }
 
+        .bg-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            z-index: 1;
+        }
 
-        .header-logos {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        .page-shell {
+            position: relative;
             z-index: 10;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            padding: 30px 30px 24px;
         }
+
+        .header-logos {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            padding: 14px 20px;
+            width: min(100%, 920px);
+            margin: 0 auto;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
+            backdrop-filter: blur(8px);
+        }
+
         .logo-item {
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
+            opacity: 0.9;
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
+
+        .logo-item:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
         .logo-item img {
-            width: 75px;
-            height: 75px;
+            width: 46px;
+            height: 46px;
             object-fit: contain;
-            border-radius: 12px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.94);
+            padding: 6px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+            flex-shrink: 0;
         }
         .logo-text {
-            font-size: 17px;
-            color: #000;
+            font-size: 12.5px;
+            color: rgba(232, 238, 247, 0.94);
             font-weight: 600;
-            line-height: 1.4;
+            line-height: 1.35;
+            letter-spacing: 0.2px;
+            max-width: 250px;
+        }
+
+        .hero-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 42px 0 64px;
         }
 
         .main-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+            position: relative;
+            z-index: 1;
             text-align: center;
             width: 90%;
-            max-width: 900px;
+            max-width: 760px;
             animation: fadeInUp 0.8s ease-out;
+            padding: 20px 0;
+        }
+
+        .main-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-text);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 18px;
         }
 
         .main-title {
-            font-size: 58px;
-            font-weight: 800;
-            color: #222;
-            line-height: 1.2;
-            margin-bottom: 22px;
-            letter-spacing: 1px;
+            font-size: clamp(42px, 6vw, 72px);
+            font-weight: 700;
+            color: var(--page-text);
+            line-height: 1.12;
+            margin-bottom: 20px;
+            letter-spacing: 0.6px;
         }
 
         .title-line {
-            width: 100%;
-            height: 4px;
-            background-color: #222;
-            margin: 0 auto 38px auto;
-            border-radius: 4px;
+            width: 88px;
+            height: 3px;
+            background: linear-gradient(to right, var(--accent-line), rgba(192, 217, 232, 0.16));
+            margin: 0 auto 30px auto;
+            border-radius: 2px;
         }
 
         .sub-desc {
-            font-size: 30px;
-            color: #d63031;
-            line-height: 1.5;
-            margin-bottom: 50px;
-            font-weight: 600;
+            font-size: 20px;
+            color: var(--muted-text);
+            line-height: 1.8;
+            margin-bottom: 44px;
+            font-weight: 500;
+            max-width: 620px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .btn-group {
             display: flex;
             justify-content: center;
-            gap: 50px;
+            gap: 24px;
+            flex-wrap: wrap;
         }
         .action-btn {
-            padding: 14px 48px;
-            font-size: 26px;
+            padding: 15px 42px;
+            font-size: 18px;
             font-weight: 700;
-            background-color: #fff;
-            border: 3px solid #222;
-            border-radius: 18px;
+            background: linear-gradient(135deg, var(--button-start) 0%, var(--button-end) 100%);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
             text-decoration: none;
-            color: #222;
+            color: #fff;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: Georgia, "Times New Roman", serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.5s ease;
+            z-index: -1;
+        }
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
         .action-btn:hover {
-            background-color: #ffe8e8;
-            transform: scale(1.05) translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #1acd9f 0%, var(--button-start) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(24, 179, 148, 0.4);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .action-btn.secondary {
+            background: transparent;
+            color: var(--page-text);
+            border-color: rgba(255, 255, 255, 0.24);
+            box-shadow: none;
+        }
+
+        .action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 28px rgba(8, 18, 31, 0.28);
         }
 
         .ta-illustration {
             position: absolute;
-            right: 40px;
-            bottom: 70px;
-            z-index: 10;
-            animation: float 3s ease-in-out infinite;
+            right: min(5vw, 48px);
+            bottom: clamp(68px, 9vh, 110px);
+            z-index: 0;
+            animation: float 4s ease-in-out infinite;
+            opacity: 0.92;
+            pointer-events: none;
         }
+
         .ta-illustration img {
-            height: 400px;
+            height: min(42vw, 370px);
             object-fit: contain;
+            filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.3));
         }
 
         .footer-nav {
-            position: absolute;
-            bottom: 25px;
-            left: 0;
             width: 100%;
             z-index: 10;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 50px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
-        }
-        .footer-nav a {
-            text-decoration: none;
-            color: #222;
-            transition: all 0.2s ease;
-            padding: 5px 10px;
-            border-radius: 8px;
-        }
-        .footer-nav a:hover {
-            color: #d63031;
-            background-color: rgba(255,255,255,0.7);
-        }
-        .divider {
-            width: 2px;
-            height: 26px;
-            background-color: #222;
-            border-radius: 2px;
+            margin-top: auto;
         }
 
+        .footer-nav a {
+            text-decoration: none;
+            color: #e8eef7;
+            transition: all 0.2s ease;
+            padding: 8px 14px;
+            border-radius: 8px;
+        }
+
+        .footer-nav a:hover {
+            color: #f4f7fb;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider {
+            width: 2px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translate(-50%, -45%);
+                transform: translateY(26px);
             }
             to {
                 opacity: 1;
-                transform: translate(-50%, -50%);
+                transform: translateY(0);
             }
         }
+
         @keyframes float {
             0%, 100% {
                 transform: translateY(0);
@@ -189,25 +305,72 @@
 
         @media (max-width: 768px) {
             .main-title {
-                font-size: 38px;
+                font-size: 36px;
             }
+
+            .main-subtitle {
+                font-size: 14px;
+                letter-spacing: 3px;
+            }
+
             .sub-desc {
-                font-size: 22px;
-            }
-            .action-btn {
-                font-size: 20px;
-                padding: 10px 30px;
-            }
-            .footer-nav {
                 font-size: 16px;
-                gap: 25px;
+                margin-bottom: 36px;
             }
+
+            .action-btn {
+                font-size: 16px;
+                padding: 12px 30px;
+                width: min(100%, 280px);
+            }
+
+            .footer-nav {
+                font-size: 14px;
+                gap: 25px;
+                flex-wrap: wrap;
+            }
+
             .ta-illustration {
                 display: none;
             }
+
             .logo-item img {
-                width: 50px;
-                height: 50px;
+                width: 40px;
+                height: 40px;
+            }
+
+            .main-content {
+                width: 100%;
+                padding: 24px 0;
+            }
+
+            .page-shell {
+                padding: 20px 20px 24px;
+            }
+
+            .header-logos {
+                flex-direction: column;
+                width: min(100%, 360px);
+                padding: 14px 18px;
+                gap: 14px;
+            }
+
+            .logo-item {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .logo-text {
+                font-size: 12px;
+                max-width: 220px;
+            }
+
+            .hero-wrap {
+                padding: 36px 0 48px;
+            }
+
+            .btn-group {
+                gap: 16px;
             }
         }
     </style>
@@ -215,37 +378,42 @@
 <body>
     <div class="bg-mask"></div>
 
-    <div class="header-logos">
-        <div class="logo-item">
-            <img src="images/bupt_logo.png" alt="Beijing University of Posts and Telecommunications">
-            <div class="logo-text">Beijing University of Posts and<br>Telecommunications</div>
+    <div class="page-shell">
+        <div class="header-logos">
+            <div class="logo-item">
+                <img src="images/bupt_logo.png" alt="Beijing University of Posts and Telecommunications">
+                <div class="logo-text">Beijing University of Posts and<br>Telecommunications</div>
+            </div>
+            <div class="logo-item">
+                <img src="images/qmul_logo.png" alt="Queen Mary University of London">
+                <div class="logo-text">Queen Mary University of London</div>
+            </div>
         </div>
-        <div class="logo-item">
-            <img src="images/qmul_logo.png" alt="Queen Mary University of London">
-            <div class="logo-text">Queen Mary University of London</div>
+
+        <main class="hero-wrap">
+            <div class="main-content">
+                <p class="main-subtitle">TA Recruitment System</p>
+                <h1 class="main-title">Teaching Assistant Recruitment</h1>
+                <div class="title-line"></div>
+                <p class="sub-desc">View open opportunities, submit applications, and manage the process in one clear flow.</p>
+                <div class="btn-group">
+                    <a href="login.jsp" class="action-btn">Login</a>
+                    <a href="register.jsp" class="action-btn secondary">Register</a>
+                </div>
+            </div>
+
+            <div class="ta-illustration">
+                <img src="images/ta_illustration.png" alt="Teaching Assistant Illustration">
+            </div>
+        </main>
+
+        <div class="footer-nav">
+            <a href="aboutus.jsp">About System</a>
+            <div class="divider"></div>
+            <a href="help.jsp">Help</a>
+            <div class="divider"></div>
+            <a href="contact.jsp">Contact</a>
         </div>
     </div>
-
-    <div class="main-content">
-        <h1 class="main-title">Welcome to<br>Teaching Assistant Portal!</h1>
-        <div class="title-line"></div>
-        <p class="sub-desc">View available opportunities and manage<br>your teaching assistant applications.</p>
-        <div class="btn-group">
-            <a href="login.jsp" class="action-btn">Login</a>
-            <a href="register.jsp" class="action-btn">Register</a>
-        </div>
-    </div>
-
-    <div class="ta-illustration">
-        <img src="images/ta_illustration.png" alt="Teaching Assistant Illustration">
-    </div>
-
-    <div class="footer-nav">
-    <a href="aboutus.jsp">About System</a>
-    <div class="divider"></div>
-    <a href="help.jsp">Help</a>
-    <div class="divider"></div>
-    <a href="contact.jsp">Contact</a>
-</div>
 </body>
 </html>

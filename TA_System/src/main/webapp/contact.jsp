@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Nunito', "Arial Rounded MT Bold", sans-serif;
+            font-family: Georgia, "Times New Roman", serif;
         }
 
         html, body {
@@ -21,10 +21,24 @@
         }
 
         body {
-            background: url("images/bupt_campus_bg.jpg") no-repeat center center fixed;
+            background-image: url("images/bupt_campus_bg.jpg");
             background-size: cover;
-            color: #222;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #f4f7fb;
             overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 35, 61, 0.78);
+            z-index: 1;
         }
 
         .bg-mask {
@@ -33,7 +47,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.85);
+            background-color: transparent;
             z-index: 1;
         }
 
@@ -53,6 +67,12 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
+            padding: 24px 28px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
         }
 
         .logo-item {
@@ -62,18 +82,21 @@
         }
 
         .logo-item img {
-            width: 75px;
-            height: 75px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
-            border-radius: 12px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.85);
+            padding: 8px;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
         }
 
         .logo-text {
-            font-size: 17px;
-            color: #000;
+            font-size: 14px;
+            color: #e8eef7;
             font-weight: 600;
             line-height: 1.4;
+            letter-spacing: 0.2px;
         }
 
         .top-nav {
@@ -82,146 +105,166 @@
             justify-content: flex-end;
             align-items: center;
             padding: 28px 40px 0 40px;
-            gap: 18px;
+            gap: 14px;
         }
 
         .top-nav a {
             text-decoration: none;
-            color: #222;
-            font-size: 18px;
-            font-weight: 700;
-            padding: 10px 18px;
-            border: 2px solid #222;
-            border-radius: 14px;
-            background-color: rgba(255, 255, 255, 0.9);
+            color: #e8eef7;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 24px;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-
+        .top-nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+        .top-nav a:hover::before {
+            left: 100%;
+        }
         .top-nav a:hover {
-            background-color: #ffe8e8;
+            background-color: rgba(255, 255, 255, 0.12);
+            color: #f4f7fb;
+            border-color: rgba(255, 255, 255, 0.35);
             transform: translateY(-2px);
         }
 
         .main-content {
             flex: 1;
             width: 90%;
-            max-width: 1100px;
-            margin: 140px auto 80px auto;
+            max-width: 1000px;
+            margin: 120px auto 80px auto;
             animation: fadeInUp 0.8s ease-out;
         }
 
         .page-title {
             text-align: center;
-            font-size: 52px;
-            font-weight: 800;
-            color: #222;
+            font-size: 44px;
+            font-weight: 700;
+            color: #f4f7fb;
             line-height: 1.2;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
             letter-spacing: 1px;
         }
 
         .title-line {
-            width: 100%;
-            max-width: 760px;
-            height: 4px;
-            background-color: #222;
-            margin: 0 auto 35px auto;
-            border-radius: 4px;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #c0d9e8, rgba(192, 217, 232, 0.2));
+            margin: 0 auto 36px auto;
+            border-radius: 2px;
         }
 
         .intro-text {
             text-align: center;
-            font-size: 24px;
+            font-size: 18px;
             line-height: 1.7;
-            color: #d63031;
-            font-weight: 700;
-            max-width: 920px;
-            margin: 0 auto 45px auto;
+            color: #b0c4de;
+            font-weight: 600;
+            max-width: 900px;
+            margin: 0 auto 42px auto;
         }
 
         .contact-card {
-            background-color: rgba(255, 255, 255, 0.90);
-            border: 3px solid #222;
-            border-radius: 22px;
-            padding: 35px 30px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            background-color: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            padding: 40px 36px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
             transition: all 0.3s ease;
         }
 
         .contact-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
 
         .section-title {
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 24px;
-            color: #222;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: #f4f7fb;
             text-align: center;
         }
 
         .member-list {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 22px;
+            gap: 20px;
+            margin-bottom: 24px;
         }
 
         .member-item {
-            background-color: #fff;
-            border: 2px solid #222;
-            border-radius: 18px;
+            background-color: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
             padding: 22px 20px;
             transition: all 0.3s ease;
         }
 
         .member-item:hover {
-            background-color: #fff5f5;
-            transform: translateY(-3px);
+            background-color: rgba(24, 179, 148, 0.1);
+            border-color: rgba(24, 179, 148, 0.3);
+            transform: translateY(-2px);
         }
 
         .member-name {
-            font-size: 22px;
-            font-weight: 800;
-            color: #222;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f4f7fb;
             margin-bottom: 10px;
         }
 
         .member-info {
-            font-size: 17px;
+            font-size: 15px;
             line-height: 1.8;
-            color: #333;
+            color: #e8eef7;
         }
 
         .support-box {
-            margin-top: 32px;
-            background-color: #fff;
-            border: 2px solid #222;
-            border-radius: 18px;
-            padding: 24px;
+            margin-top: 24px;
+            background-color: rgba(24, 179, 148, 0.1);
+            border: 1px solid rgba(24, 179, 148, 0.3);
+            border-radius: 16px;
+            padding: 22px;
             text-align: center;
         }
 
         .support-box h3 {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 20px;
+            font-weight: 700;
             margin-bottom: 12px;
-            color: #222;
+            color: #f4f7fb;
         }
 
         .support-box p {
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1.8;
-            color: #333;
+            color: #e8eef7;
         }
 
         .support-box a {
-            color: #d63031;
+            color: #b0c4de;
             text-decoration: none;
-            font-weight: 700;
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
         .support-box a:hover {
+            color: #f4f7fb;
             text-decoration: underline;
         }
 
@@ -230,36 +273,36 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 50px;
-            font-size: 20px;
+            gap: 40px;
+            font-size: 16px;
             font-weight: 600;
             padding: 24px 0 30px 0;
         }
 
         .footer-nav a {
             text-decoration: none;
-            color: #222;
+            color: #e8eef7;
             transition: all 0.2s ease;
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 8px;
         }
 
         .footer-nav a:hover {
-            color: #d63031;
-            background-color: rgba(255,255,255,0.7);
+            color: #f4f7fb;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .divider {
             width: 2px;
-            height: 26px;
-            background-color: #222;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
             border-radius: 2px;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -273,22 +316,23 @@
             }
 
             .page-title {
-                font-size: 38px;
+                font-size: 36px;
             }
 
             .intro-text {
-                font-size: 20px;
+                font-size: 16px;
             }
 
             .top-nav {
                 justify-content: center;
                 flex-wrap: wrap;
-                padding-top: 120px;
+                padding-top: 100px;
             }
 
             .header-logos {
                 position: static;
                 padding: 20px 20px 0 20px;
+                margin-bottom: 20px;
             }
 
             .main-content {
@@ -297,8 +341,12 @@
 
             .footer-nav {
                 gap: 20px;
-                font-size: 16px;
+                font-size: 14px;
                 flex-wrap: wrap;
+            }
+
+            .contact-card {
+                padding: 24px 20px;
             }
         }
     </style>

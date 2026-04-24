@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import com.me.finaldesignproject.model.Job; // 确保导入了 Job 模型
 
 public class ApplicationDao {
-    // 统一源码路径，确保全项目同步
-    private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/applications.json";
+    // �?统一源码路径，确保全项目同步
+    private static final String FILE_PATH = "E:\\study\\software engineer\\newdebug\\newdebug\\TA_System\\src\\main\\resources\\applications.json";
 
     public static String getFilePath() {
         return FILE_PATH;
