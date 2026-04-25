@@ -27,6 +27,7 @@ public class JobDao {
 
     public List<Job> getJobsByMoId(String moId) {
         return getAllJobs().stream()
+                .filter(job -> !job.isDeleted())
                 .filter(job -> job.getCreatorId() != null && job.getCreatorId().equals(moId))
                 .collect(Collectors.toList());
     }

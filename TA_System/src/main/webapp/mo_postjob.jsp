@@ -195,10 +195,35 @@
     contactEmail: "<%= j.getContactEmail() != null ? j.getContactEmail().replace("\"", "\\\"") : "" %>",
     contactPhone: "<%= j.getContactPhone() != null ? j.getContactPhone().replace("\"", "\\\"") : "" %>",
     requiredSkills: "<%= j.getRequiredSkills() != null ? j.getRequiredSkills().replace("\"", "\\\"") : "" %>",
-    jobResponsibilities: "<%= j.getJobResponsibilities() != null ? j.getJobResponsibilities().replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "") : "" %>"
+    jobResponsibilities: "<%= j.getJobResponsibilities() != null ? j.getJobResponsibilities().replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "") : "" %>",
+    postedDate: "<%= j.getPostedDate() != null ? j.getPostedDate() : "" %>"
   };
   <%  }
   } %>
+
+  function todayYmd() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, "0");
+    var day = String(now.getDate()).padStart(2, "0");
+    return year + "-" + month + "-" + day;
+  }
+
+  function laterDate(a, b) {
+    if (!a) return b || "";
+    if (!b) return a || "";
+    return a > b ? a : b;
+  }
+
+  function setDeadlineMin(postedDate) {
+    var deadlineInput = document.getElementById("form_applicationDeadline");
+    var minDate = laterDate(todayYmd(), postedDate || "");
+    deadlineInput.min = minDate;
+
+    if (deadlineInput.value && deadlineInput.value < minDate) {
+      deadlineInput.value = minDate;
+    }
+  }
 
   function openCreateModal() {
     document.getElementById("jobForm").reset(); // 清空表单
@@ -206,6 +231,7 @@
     document.getElementById("modalJobId").value = "";
     document.getElementById("modalTitle").innerText = "Create TA Vacancy";
     document.getElementById("modalSubmitBtn").innerText = "Submit Vacancy";
+    setDeadlineMin(todayYmd());
     modal.style.display = "block";
   }
 
@@ -232,11 +258,21 @@
     document.getElementById("form_contactPhone").value = data.contactPhone;
     document.getElementById("form_requiredSkills").value = data.requiredSkills;
     document.getElementById("form_jobResponsibilities").value = data.jobResponsibilities;
+    setDeadlineMin(data.postedDate);
 
     document.getElementById("modalTitle").innerText = "Edit TA Vacancy";
     document.getElementById("modalSubmitBtn").innerText = "Save Changes";
     modal.style.display = "block";
   }
+
+  document.getElementById("jobForm").addEventListener("submit", function(event) {
+    var deadlineInput = document.getElementById("form_applicationDeadline");
+    var minDate = deadlineInput.min || todayYmd();
+    if (deadlineInput.value && deadlineInput.value < minDate) {
+      event.preventDefault();
+      alert("The application deadline cannot be earlier than the posting date.");
+    }
+  });
 
   function closeModal() { modal.style.display = "none"; }
   window.onclick = function(event) { if (event.target == modal) { modal.style.display = "none"; } }

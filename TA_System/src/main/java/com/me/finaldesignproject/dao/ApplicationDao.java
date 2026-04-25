@@ -127,6 +127,25 @@ public class ApplicationDao {
         return appliedIds;
     }
 
+    public boolean hasApplicationsForJob(String jobId) {
+        if (jobId == null || jobId.trim().isEmpty()) return false;
+
+        File file = new File(FILE_PATH);
+        if (!file.exists()) return false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("\"jobId\":\"" + jobId + "\"")) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // ============================================================
     // ✅ 辅助逻辑：获取所有申请的原始字符串行
     // ============================================================

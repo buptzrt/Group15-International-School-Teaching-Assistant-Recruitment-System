@@ -13,214 +13,272 @@
     <meta charset="UTF-8">
     <title>My Applications</title>
     <style>
-        /* 保持深色渐变背景 */
         body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            background: linear-gradient(to right, #141e30, #243b55);
+            margin: 0;
+            padding: 36px 20px;
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #141e30, #243b55);
             color: #2c3e50;
-            padding: 40px;
-            animation: fadeInBody 0.7s ease;
         }
 
-        h3 { text-align: center; color: #ffdd57; margin-bottom: 25px; font-size: 28px; }
+        .page-wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        h3 {
+            margin: 0 0 22px;
+            text-align: center;
+            color: #ffdd57;
+            font-size: 30px;
+            font-weight: 700;
+        }
 
         .table-container {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.78);
             backdrop-filter: blur(12px);
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            overflow-x: auto;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow-x: auto;
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 980px;
+        }
 
         th, td {
-            padding: 14px 18px;
+            padding: 15px 16px;
             text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            color: #333;
+            color: #2d3436;
+            vertical-align: middle;
         }
 
         th {
-            background-color: rgba(0, 0, 0, 0.04);
-            color: #2c3e50;
+            background: rgba(0, 0, 0, 0.05);
+            color: #1f2d3d;
             font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.02em;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .info-primary {
+            display: block;
+            font-weight: 700;
+            color: #22313f;
+        }
+
+        .info-secondary {
+            display: block;
+            margin-top: 4px;
+            font-size: 13px;
+            color: #66707a;
+        }
+
+        .mono {
+            font-family: "Consolas", "Courier New", monospace;
+            letter-spacing: 0.02em;
         }
 
         .detail-btn {
             display: inline-block;
-            padding: 6px 16px;
-            border-radius: 8px;
+            padding: 7px 16px;
+            border-radius: 10px;
             background: #1e90ff;
             color: #fff !important;
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
-            transition: 0.3s;
+            transition: 0.25s ease;
         }
 
         .detail-btn:hover {
             background: #0072ff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(30, 144, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(30, 144, 255, 0.25);
         }
 
         .status-tag {
-            padding: 4px 12px;
-            border-radius: 6px;
+            padding: 5px 12px;
+            border-radius: 999px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             color: #fff;
             display: inline-block;
-            min-width: 80px;
+            min-width: 84px;
             text-align: center;
         }
+
         .status-timeout { background: #95a5a6; }
         .status-pass { background: #2ecc71; }
         .status-reject { background: #e74c3c; }
         .status-pending { background: #f39c12; }
 
-        /* 🌟 新增：工时超限预警样式 */
         .limit-warning {
-            display: block;
-            margin-top: 5px;
-            font-size: 10px;
-            color: #d35400;
-            font-weight: bold;
-            background: rgba(255, 230, 0, 0.3);
-            border-radius: 4px;
-            padding: 2px 4px;
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #8a4b08;
+            font-weight: 700;
+            background: rgba(255, 214, 102, 0.55);
+            border-radius: 999px;
+            padding: 4px 10px;
         }
 
-        .no-data { text-align: center; color: #555; font-style: italic; padding: 20px; }
-
-        @keyframes fadeInBody { from { opacity: 0; } to { opacity: 1; } }
+        .no-data {
+            text-align: center;
+            color: #555;
+            font-style: italic;
+            padding: 24px;
+        }
     </style>
 </head>
 <body>
+<div class="page-wrap">
+    <h3>My Applications</h3>
 
-<h3>My Applications</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Course Information</th>
+                <th>Job Information</th>
+                <th>MO Creator</th>
+                <th>Application Date</th>
+                <th>Action</th>
+                <th style="text-align: center;">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%
+                String userId = (String) session.getAttribute("userId");
 
-<div class="table-container">
-    <table>
-        <thead>
-        <tr>
-            <th>Course</th>
-            <th>Job Title & Type</th>
-            <th>Application Date</th>
-            <th>Action</th>
-            <th style="text-align: center;">Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        <%
-            String userId = (String) session.getAttribute("userId");
-
-            if (userId == null) {
-        %>
-        <tr><td colspan='5' class="no-data">You are not logged in. <a href='login.jsp' style="color:#1e90ff;">Login here</a>.</td></tr>
-        <%
-        } else {
-            try {
-                ApplicationDao applicationDao = new ApplicationDao();
-                JobDao jobDao = new JobDao();
-                List<Job> allJobs = jobDao.getAllJobs();
-                Map<String, Job> jobLookup = new HashMap<>();
-                if(allJobs != null) {
-                    for (Job j : allJobs) { jobLookup.put(j.getJobId(), j); }
-                }
-
-                // 🌟 1. 获取当前学生已录用的总时长 (Accepted)
-                int totalAcceptedHours = applicationDao.getTotalWorkingHours(userId, "Accepted");
-
-                String appPath = ApplicationDao.getFilePath();
-                File file = new File(appPath);
-                boolean hasData = false;
-
-                if (file.exists()) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                    long nowTime = new Date().getTime();
-
-                    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                        String line;
-                        while ((line = br.readLine()) != null) {
-                            if (line.contains("\"studentId\":\"" + userId + "\"")) {
-                                hasData = true;
-
-                                String jobId = line.split("\"jobId\":\"")[1].split("\"")[0];
-                                String appDateStr = line.split("\"date\":\"")[1].split("\"")[0];
-
-                                String status = "Pending";
-                                if(line.contains("\"status\":\"")) {
-                                    status = line.split("\"status\":\"")[1].split("\"")[0];
-                                }
-
-                                try {
-                                    Date applyDate = sdf.parse(appDateStr);
-                                    if ("Pending".equalsIgnoreCase(status) && (nowTime - applyDate.getTime() > 604800000L)) {
-                                        status = "Timeout";
-                                    }
-                                } catch(Exception dateEx) { }
-
-                                Job jobDetail = jobLookup.get(jobId);
-                                if (jobDetail != null) {
-                                    String courseInfo = jobDetail.getCourseName() + " (" + jobDetail.getModuleCode() + ")";
-
-                                    // 🌟 2. 解析该岗位工时，并计算如果通过是否会超限
-                                    int jobHrs = 0;
-                                    try {
-                                        String hStr = jobDetail.getWorkingHours() != null ? jobDetail.getWorkingHours().toLowerCase().replace("h","").trim() : "0";
-                                        jobHrs = Integer.parseInt(hStr);
-                                    } catch(Exception e) { jobHrs = 0; }
-
-                                    boolean willExceed = "Pending".equalsIgnoreCase(status) && (totalAcceptedHours + jobHrs > 20);
-        %>
-        <tr>
-            <td><%= courseInfo %></td>
-            <td><%= jobDetail.getJobTitle() %> [<%= jobDetail.getActivityType() %>]</td>
-            <td><%= appDateStr %></td>
-            <td>
-                <a href="view_job.jsp?jobId=<%= jobDetail.getJobId() %>&from=my_applications.jsp" class="detail-btn">Detail</a>
-            </td>
-            <td style="text-align: center;">
-                <% if("Pass".equalsIgnoreCase(status) || "Accepted".equalsIgnoreCase(status)) { %>
-                <span class="status-tag status-pass">Accepted</span>
-                <% } else if("Reject".equalsIgnoreCase(status)) { %>
-                <span class="status-tag status-reject">Rejected</span>
-                <% } else if("Timeout".equalsIgnoreCase(status)) { %>
-                <span class="status-tag status-timeout">Untreated</span>
-                <% } else { %>
-                <span class="status-tag status-pending">Pending</span>
-                <%-- 🌟 3. 如果通过该岗会导致超 20h，显示预警 --%>
-                <% if(willExceed) { %>
-                <span class="limit-warning">⚠️ Limit Warning!</span>
-                <% } %>
-                <% } %>
-            </td>
-        </tr>
-        <%
+                if (userId == null) {
+            %>
+            <tr><td colspan="6" class="no-data">You are not logged in. <a href="login.jsp" style="color:#1e90ff;">Login here</a>.</td></tr>
+            <%
+                } else {
+                    try {
+                        ApplicationDao applicationDao = new ApplicationDao();
+                        JobDao jobDao = new JobDao();
+                        List<Job> allJobs = jobDao.getAllJobs();
+                        Map<String, Job> jobLookup = new HashMap<>();
+                        if (allJobs != null) {
+                            for (Job j : allJobs) {
+                                jobLookup.put(j.getJobId(), j);
                             }
                         }
+
+                        int totalAcceptedHours = applicationDao.getTotalWorkingHours(userId, "Accepted");
+
+                        String appPath = ApplicationDao.getFilePath();
+                        File file = new File(appPath);
+                        boolean hasData = false;
+
+                        if (file.exists()) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            long nowTime = new Date().getTime();
+
+                            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                    if (line.contains("\"studentId\":\"" + userId + "\"")) {
+                                        hasData = true;
+
+                                        String jobId = line.split("\"jobId\":\"")[1].split("\"")[0];
+                                        String appDateStr = line.split("\"date\":\"")[1].split("\"")[0];
+
+                                        String status = "Pending";
+                                        if (line.contains("\"status\":\"")) {
+                                            status = line.split("\"status\":\"")[1].split("\"")[0];
+                                        }
+
+                                        try {
+                                            Date applyDate = sdf.parse(appDateStr);
+                                            if ("Pending".equalsIgnoreCase(status) && (nowTime - applyDate.getTime() > 604800000L)) {
+                                                status = "Timeout";
+                                            }
+                                        } catch (Exception dateEx) { }
+
+                                        Job jobDetail = jobLookup.get(jobId);
+                                        if (jobDetail != null) {
+                                            String courseName = jobDetail.getCourseName() == null ? "Unknown Course" : jobDetail.getCourseName();
+                                            String moduleCode = jobDetail.getModuleCode() == null ? "-" : jobDetail.getModuleCode();
+                                            String jobTitle = jobDetail.getJobTitle() == null ? "Unknown Job" : jobDetail.getJobTitle();
+                                            String activityType = jobDetail.getActivityType() == null ? "-" : jobDetail.getActivityType();
+                                            String creatorName = jobDetail.getCreatorName() == null || jobDetail.getCreatorName().trim().isEmpty() ? "Unknown" : jobDetail.getCreatorName();
+
+                                            int jobHrs = 0;
+                                            try {
+                                                String hStr = jobDetail.getWorkingHours() != null ? jobDetail.getWorkingHours().toLowerCase().replace("h", "").trim() : "0";
+                                                jobHrs = Integer.parseInt(hStr);
+                                            } catch (Exception e) { jobHrs = 0; }
+
+                                            boolean willExceed = "Pending".equalsIgnoreCase(status) && (totalAcceptedHours + jobHrs > 20);
+            %>
+            <tr>
+                <td>
+                    <span class="info-primary"><%= courseName %></span>
+                    <span class="info-secondary mono">Module Code: <%= moduleCode %></span>
+                </td>
+                <td>
+                    <span class="info-primary"><%= jobTitle %></span>
+                    <span class="info-secondary">Type: <%= activityType %></span>
+                </td>
+                <td>
+                    <span class="info-primary"><%= creatorName %></span>
+                </td>
+                <td>
+                    <span class="info-primary mono"><%= appDateStr %></span>
+                </td>
+                <td>
+                    <a href="view_job.jsp?jobId=<%= jobDetail.getJobId() %>&from=my_applications.jsp" class="detail-btn">Detail</a>
+                </td>
+                <td style="text-align: center;">
+                    <% if ("Pass".equalsIgnoreCase(status) || "Accepted".equalsIgnoreCase(status)) { %>
+                    <span class="status-tag status-pass">Accepted</span>
+                    <% } else if ("Reject".equalsIgnoreCase(status)) { %>
+                    <span class="status-tag status-reject">Rejected</span>
+                    <% } else if ("Timeout".equalsIgnoreCase(status)) { %>
+                    <span class="status-tag status-timeout">Untreated</span>
+                    <% } else { %>
+                    <span class="status-tag status-pending">Pending</span>
+                    <% if (willExceed) { %>
+                    <span class="limit-warning">Limit Warning</span>
+                    <% } %>
+                    <% } %>
+                </td>
+            </tr>
+            <%
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!hasData) {
+            %>
+            <tr><td colspan="6" class="no-data">No applications found.</td></tr>
+            <%
+                        }
+                    } catch (Exception e) {
+            %>
+            <tr><td colspan="6" class="no-data" style="color:red;">Error: <%= e.getMessage() %></td></tr>
+            <%
                     }
                 }
-            }
-
-            if (!hasData) {
-        %>
-        <tr><td colspan='5' class="no-data">No applications found.</td></tr>
-        <%
-            }
-        } catch (Exception e) {
-        %>
-        <tr><td colspan='5' class="no-data" style="color:red;">Error: <%= e.getMessage() %></td></tr>
-        <%
-                }
-            }
-        %>
-        </tbody>
-    </table>
+            %>
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>

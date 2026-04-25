@@ -1,17 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.me.finaldesignproject.dao.JobDao" %>
 <%@ page import="com.me.finaldesignproject.model.Job" %>
+<%@ page import="java.time.LocalDate" %>
 <%
-    // 1. 权限校验：只允许 MO 或 Student 进入
     String userRole = (session != null) ? (String) session.getAttribute("role") : null;
     if (session == null || userRole == null) {
         response.sendRedirect("login.jsp");
         return;
     }
 
-    // 校验角色：必须是 MO 或 Student（即你们系统中的 TA）
     boolean isAuthorized = "MO".equalsIgnoreCase(userRole) || "Student".equalsIgnoreCase(userRole);
-
     if (!isAuthorized) {
         response.sendRedirect("login.jsp");
         return;
@@ -20,12 +18,11 @@
     String jobId = request.getParameter("jobId");
     String from = request.getParameter("from");
 
-    // 2. 动态设置返回路径
-    // 如果是从学生列表过来的，from 会是 "StudentJobServlet"
     String backUrl = "mo_job_list.jsp";
     if (from != null && !from.trim().isEmpty()) {
         backUrl = from;
     }
+    boolean fromMyApplications = "my_applications.jsp".equalsIgnoreCase(backUrl);
 
     JobDao jobDao = new JobDao();
     Job currentJob = null;
@@ -45,7 +42,27 @@
         return;
     }
 
-    // --- 数据提取逻辑（保持原样） ---
+    boolean isStudent = "Student".equalsIgnoreCase(userRole);
+    boolean isClosedForStudent = "Closed".equalsIgnoreCase(currentJob.getStatus()) || !currentJob.isStudentCanApply();
+    boolean isOverdueForStudent = false;
+    try {
+        String deadlineValue = currentJob.getApplicationDeadline();
+        if (deadlineValue != null && !deadlineValue.trim().isEmpty()) {
+            isOverdueForStudent = LocalDate.parse(deadlineValue.trim()).isBefore(LocalDate.now());
+        }
+    } catch (Exception e) {
+        isOverdueForStudent = false;
+    }
+
+    boolean allowClosedFromMyApplications = isStudent && fromMyApplications && isClosedForStudent && !isOverdueForStudent;
+
+    if (isStudent && (currentJob.isDeleted() || (!allowClosedFromMyApplications && isClosedForStudent) || isOverdueForStudent)) {
+        String blockedLabel = isOverdueForStudent ? "Overdue" : (isClosedForStudent ? "Close" : "Unavailable");
+        out.println("<h2 style='color:#ffb366; text-align:center; margin-top:100px; font-family:sans-serif;'>This job is " + blockedLabel + " and can no longer be viewed.</h2>");
+        out.println("<div style='text-align:center; margin-top:16px;'><a href='" + backUrl + "' style='color:#9bd3ff; text-decoration:none;'>&#8592; Return to Job List</a></div>");
+        return;
+    }
+
     String moduleCode = currentJob.getModuleCode() != null ? currentJob.getModuleCode() : "N/A";
     String courseName = currentJob.getCourseName() != null ? currentJob.getCourseName() : "N/A";
     String jobTitle = currentJob.getJobTitle() != null ? currentJob.getJobTitle() : "N/A";
