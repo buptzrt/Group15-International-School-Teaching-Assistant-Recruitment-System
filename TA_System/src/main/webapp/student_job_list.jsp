@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
+<%@ page import="java.time.LocalDate" %>
 <%@ page import="com.me.finaldesignproject.model.Job" %>
 <%@ page import="com.me.finaldesignproject.dao.ApplicationDao" %>
 <%
@@ -214,6 +215,18 @@
             background: #187bcd;
         }
 
+        .view-btn.closed {
+            background: #b9770e;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .view-btn.overdue {
+            background: #e67e22;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .empty {
             color: #666;
             margin-top: 10px;
@@ -386,7 +399,8 @@
 
                 <tbody>
                 <% if (allJobs != null && !allJobs.isEmpty()) { %>
-                <% for (Job job : allJobs) {
+                <% LocalDate today = LocalDate.now();
+                   for (Job job : allJobs) {
                     String courseName = job.getCourseName() == null ? "" : job.getCourseName();
                     String moduleCode = job.getModuleCode() == null ? "-" : job.getModuleCode();
                     String course = courseName + " (" + moduleCode + ")";
@@ -402,6 +416,20 @@
                         String hStr = job.getWorkingHours() != null ? job.getWorkingHours().toLowerCase().replace("h","").trim() : "0";
                         jobHrs = Integer.parseInt(hStr);
                     } catch(Exception e) { jobHrs = 0; }
+
+                    boolean isClosed = "Closed".equalsIgnoreCase(job.getStatus()) || !job.isStudentCanApply();
+                    boolean isOverdue = false;
+                    try {
+                        if (job.getApplicationDeadline() != null && !job.getApplicationDeadline().trim().isEmpty()) {
+                            isOverdue = LocalDate.parse(job.getApplicationDeadline().trim()).isBefore(today);
+                        }
+                    } catch (Exception e) {
+                        isOverdue = false;
+                    }
+
+                    boolean blockView = isClosed || isOverdue;
+                    String viewClass = isOverdue ? "view-btn overdue" : (isClosed ? "view-btn closed" : "view-btn");
+                    String viewLabel = isOverdue ? "Overdue" : (isClosed ? "Close" : "View");
 
                     String courseAttr = course.toLowerCase().replace("\"", "&quot;");
                     String titleAttr = title.toLowerCase().replace("\"", "&quot;");
@@ -424,10 +452,18 @@
                     <td><%= positionsLeft %></td>
                     <td>
                         <div style="display: flex; gap: 8px;">
-                            <a class="view-btn" href="view_job.jsp?jobId=<%= job.getJobId() %>&from=StudentJobServlet">View</a>
+                            <% if (blockView) { %>
+                            <span class="<%= viewClass %>"><%= viewLabel %></span>
+                            <% } else { %>
+                            <a class="<%= viewClass %>" href="view_job.jsp?jobId=<%= job.getJobId() %>&from=StudentJobServlet">View</a>
+                            <% } %>
 
                             <% if (appliedJobIds != null && appliedJobIds.contains(job.getJobId())) { %>
                             <a class="apply-btn disabled" href="javascript:void(0);">Applied</a>
+                            <% } else if (isOverdue) { %>
+                            <a class="apply-btn disabled" href="javascript:void(0);">Apply</a>
+                            <% } else if (isClosed) { %>
+                            <a class="apply-btn disabled" style="background: #b9770e !important;" href="javascript:void(0);">Close</a>
                             <% } else if (positionsLeft <= 0) { %>
                             <a class="apply-btn disabled" style="background: #777 !important;" href="javascript:void(0);">Full</a>
                             <% } else { %>

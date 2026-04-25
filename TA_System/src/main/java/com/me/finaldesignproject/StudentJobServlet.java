@@ -4,9 +4,8 @@ import com.me.finaldesignproject.dao.JobDao;
 import com.me.finaldesignproject.model.Job;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.stream.Collectors;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -31,10 +30,9 @@ public class StudentJobServlet extends HttpServlet {
             return;
         }
 
-        // Hall only shows positions still valid for students.
-        LocalDate today = LocalDate.now();
+        // Student list keeps closed/overdue jobs visible, but hidden deleted records should not appear.
         List<Job> allJobs = jobDao.getAllJobs().stream()
-                .filter(job -> jobDao.isVisibleInHall(job, today))
+                .filter(job -> !job.isDeleted())
                 .collect(Collectors.toList());
 
         // 将数据传递给 JSP 页面
