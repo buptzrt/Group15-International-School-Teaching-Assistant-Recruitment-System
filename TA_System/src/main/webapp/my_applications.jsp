@@ -126,11 +126,13 @@
             display: inline-block;
             margin-top: 8px;
             font-size: 11px;
-            color: #8a4b08;
+            color: #ffffff;
             font-weight: 700;
-            background: rgba(255, 214, 102, 0.55);
+            background: #d35400;
             border-radius: 999px;
             padding: 4px 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            white-space: nowrap;
         }
 
         .no-data {
@@ -165,64 +167,64 @@
             %>
             <tr><td colspan="6" class="no-data">You are not logged in. <a href="login.jsp" style="color:#1e90ff;">Login here</a>.</td></tr>
             <%
-                } else {
-                    try {
-                        ApplicationDao applicationDao = new ApplicationDao();
-                        JobDao jobDao = new JobDao();
-                        List<Job> allJobs = jobDao.getAllJobs();
-                        Map<String, Job> jobLookup = new HashMap<>();
-                        if (allJobs != null) {
-                            for (Job j : allJobs) {
-                                jobLookup.put(j.getJobId(), j);
-                            }
+            } else {
+                try {
+                    ApplicationDao applicationDao = new ApplicationDao();
+                    JobDao jobDao = new JobDao();
+                    List<Job> allJobs = jobDao.getAllJobs();
+                    Map<String, Job> jobLookup = new HashMap<>();
+                    if (allJobs != null) {
+                        for (Job j : allJobs) {
+                            jobLookup.put(j.getJobId(), j);
                         }
+                    }
 
-                        int totalAcceptedHours = applicationDao.getTotalWorkingHours(userId, "Accepted");
+                    // 🌟 1. 核心逻辑切换：获取已申请所有岗位的总时长累积 (不分状态)
+                    int totalAppliedHours = applicationDao.getAppliedTotalHours(userId);
 
-                        String appPath = ApplicationDao.getFilePath();
-                        File file = new File(appPath);
-                        boolean hasData = false;
+                    String appPath = ApplicationDao.getFilePath();
+                    File file = new File(appPath);
+                    boolean hasData = false;
 
-                        if (file.exists()) {
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                            long nowTime = new Date().getTime();
+                    if (file.exists()) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        long nowTime = System.currentTimeMillis();
 
-                            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                                String line;
-                                while ((line = br.readLine()) != null) {
-                                    if (line.contains("\"studentId\":\"" + userId + "\"")) {
-                                        hasData = true;
+                        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                            String line;
+                            while ((line = br.readLine()) != null) {
+                                // 🌟 2. 匹配逻辑优化
+                                if (line.replace(" ", "").contains("\"studentId\":\"" + userId + "\"")) {
+                                    hasData = true;
 
-                                        String jobId = line.split("\"jobId\":\"")[1].split("\"")[0];
-                                        String appDateStr = line.split("\"date\":\"")[1].split("\"")[0];
+                                    String jobId = line.split("\"jobId\":\"")[1].split("\"")[0];
+                                    String appDateStr = line.split("\"date\":\"")[1].split("\"")[0];
 
-                                        String status = "Pending";
-                                        if (line.contains("\"status\":\"")) {
-                                            status = line.split("\"status\":\"")[1].split("\"")[0];
+                                    String status = "Pending";
+                                    if (line.contains("\"status\":\"")) {
+                                        status = line.split("\"status\":\"")[1].split("\"")[0];
+                                    }
+
+                                    boolean isActuallyTimeout = false;
+                                    try {
+                                        Date applyDate = sdf.parse(appDateStr);
+                                        // 7天超时逻辑
+                                        if ("Pending".equalsIgnoreCase(status) && (nowTime - applyDate.getTime() > 604800000L)) {
+                                            isActuallyTimeout = true;
                                         }
+                                    } catch (Exception dateEx) { }
 
-                                        try {
-                                            Date applyDate = sdf.parse(appDateStr);
-                                            if ("Pending".equalsIgnoreCase(status) && (nowTime - applyDate.getTime() > 604800000L)) {
-                                                status = "Timeout";
-                                            }
-                                        } catch (Exception dateEx) { }
+                                    Job jobDetail = jobLookup.get(jobId);
+                                    if (jobDetail != null) {
+                                        String courseName = jobDetail.getCourseName() == null ? "Unknown Course" : jobDetail.getCourseName();
+                                        String moduleCode = jobDetail.getModuleCode() == null ? "-" : jobDetail.getModuleCode();
+                                        String jobTitle = jobDetail.getJobTitle() == null ? "Unknown Job" : jobDetail.getJobTitle();
+                                        String activityType = jobDetail.getActivityType() == null ? "-" : jobDetail.getActivityType();
+                                        String creatorName = jobDetail.getCreatorName() == null || jobDetail.getCreatorName().trim().isEmpty() ? "Unknown" : jobDetail.getCreatorName();
 
-                                        Job jobDetail = jobLookup.get(jobId);
-                                        if (jobDetail != null) {
-                                            String courseName = jobDetail.getCourseName() == null ? "Unknown Course" : jobDetail.getCourseName();
-                                            String moduleCode = jobDetail.getModuleCode() == null ? "-" : jobDetail.getModuleCode();
-                                            String jobTitle = jobDetail.getJobTitle() == null ? "Unknown Job" : jobDetail.getJobTitle();
-                                            String activityType = jobDetail.getActivityType() == null ? "-" : jobDetail.getActivityType();
-                                            String creatorName = jobDetail.getCreatorName() == null || jobDetail.getCreatorName().trim().isEmpty() ? "Unknown" : jobDetail.getCreatorName();
-
-                                            int jobHrs = 0;
-                                            try {
-                                                String hStr = jobDetail.getWorkingHours() != null ? jobDetail.getWorkingHours().toLowerCase().replace("h", "").trim() : "0";
-                                                jobHrs = Integer.parseInt(hStr);
-                                            } catch (Exception e) { jobHrs = 0; }
-
-                                            boolean willExceed = "Pending".equalsIgnoreCase(status) && (totalAcceptedHours + jobHrs > 20);
+                                        // 🌟 3. 判定：只要总申请时长 >= 20h，且该条申请不是“已通过”或“已拒绝”，就显示警告（包含超时岗）
+                                        boolean showHoursWarning = (totalAppliedHours >= 20) &&
+                                                !("Accepted".equalsIgnoreCase(status) || "Pass".equalsIgnoreCase(status) || "Reject".equalsIgnoreCase(status));
             %>
             <tr>
                 <td>
@@ -247,31 +249,30 @@
                     <span class="status-tag status-pass">Accepted</span>
                     <% } else if ("Reject".equalsIgnoreCase(status)) { %>
                     <span class="status-tag status-reject">Rejected</span>
-                    <% } else if ("Timeout".equalsIgnoreCase(status)) { %>
+                    <% } else if (isActuallyTimeout) { %>
                     <span class="status-tag status-timeout">Untreated</span>
+                    <%-- 🌟 超时岗位现在也会正确触发时长限制提醒 --%>
+                    <% if (showHoursWarning) { %><br><span class="limit-warning">Workload limit reached (<%= totalAppliedHours %>h)</span><% } %>
                     <% } else { %>
                     <span class="status-tag status-pending">Pending</span>
-                    <% if (willExceed) { %>
-                    <span class="limit-warning">Limit Warning</span>
-                    <% } %>
+                    <% if (showHoursWarning) { %><br><span class="limit-warning">Workload limit reached (<%= totalAppliedHours %>h)</span><% } %>
                     <% } %>
                 </td>
             </tr>
             <%
-                                        }
-                                    }
                                 }
                             }
                         }
-
-                        if (!hasData) {
+                    }
+                }
+                if (!hasData) {
             %>
             <tr><td colspan="6" class="no-data">No applications found.</td></tr>
             <%
-                        }
-                    } catch (Exception e) {
+                }
+            } catch (Exception e) {
             %>
-            <tr><td colspan="6" class="no-data" style="color:red;">Error: <%= e.getMessage() %></td></tr>
+            <tr><td colspan="6" class="no-data" style="color:red;">Error loading data: <%= e.getMessage() %></td></tr>
             <%
                     }
                 }
