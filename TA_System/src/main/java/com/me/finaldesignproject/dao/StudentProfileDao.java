@@ -23,7 +23,7 @@ public class StudentProfileDao {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static Path resolvePath() {
-        return Paths.get("E:\\study\\software engineer\\newdebug\\newdebug\\TA_System\\src\\main\\resources\\" + FILE_NAME);
+        return Paths.get("D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/" + FILE_NAME);
 
     }
 

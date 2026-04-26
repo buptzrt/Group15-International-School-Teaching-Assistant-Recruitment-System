@@ -34,6 +34,15 @@ public class StudentJobServlet extends HttpServlet {
         List<Job> allJobs = jobDao.getAllJobs().stream()
                 .filter(job -> !job.isDeleted())
                 .collect(Collectors.toList());
+        System.out.println("==========[StudentJobServlet] JOB LIST DEBUG ==========");
+        if (allJobs == null || allJobs.isEmpty()) {
+            System.out.println("❌ jobList 是空的！");
+        } else {
+            for (Job job : allJobs) {
+                System.out.println("JOB ID = [" + job.getJobId() + "]");
+            }
+        }
+        System.out.println("====================================");
 
         // 将数据传递给 JSP 页面
         request.setAttribute("jobList", allJobs);

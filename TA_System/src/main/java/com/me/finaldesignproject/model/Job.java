@@ -59,6 +59,10 @@ public class Job implements Serializable {
 
     private String creatorName; // 新增字段
 
+    // 在 Job.java 中增加
+    private int aiScore = 0; // 匹配度分数
+    private String aiReason = ""; // 匹配理由
+
     // 无参构造
     public Job() {}
 
@@ -207,6 +211,12 @@ public class Job implements Serializable {
 
     public String getCreatorName() { return creatorName; }
     public void setCreatorName(String creatorName) { this.creatorName = creatorName; }
+
+    // 对应的 Getter 和 Setter
+    public int getAiScore() { return aiScore; }
+    public void setAiScore(int aiScore) { this.aiScore = aiScore; }
+    public String getAiReason() { return aiReason; }
+    public void setAiReason(String aiReason) { this.aiReason = aiReason; }
 
     @Override
     public String toString() {

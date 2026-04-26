@@ -7,14 +7,14 @@ import com.me.finaldesignproject.model.Job; // 确保导入了 Job 模型
 
 public class ApplicationDao {
     // �?统一源码路径，确保全项目同步
-    private static final String FILE_PATH = "E:\\study\\software engineer\\newdebug\\newdebug\\TA_System\\src\\main\\resources\\applications.json";
+    private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/applications.json";
 
     public static String getFilePath() {
         return FILE_PATH;
     }
 
     /**
-     * 学生端：保存新申请
+     * 学生端：保存新申请 (🌟 已重构：先清洗后重写，彻底杜绝空行)
      */
     public boolean saveApplication(String studentId, String jobId) {
         File file = new File(FILE_PATH);
@@ -24,15 +24,36 @@ public class ApplicationDao {
                 file.createNewFile();
             }
             String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
-            // 默认状态为 Pending
             String jsonEntry = "{\"studentId\":\"" + studentId + "\", \"jobId\":\"" + jobId + "\", \"date\":\"" + currentTime + "\", \"status\":\"Pending\"}";
 
             synchronized (this) {
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
-                    if (file.length() > 0) bw.newLine();
-                    bw.write(jsonEntry);
-                    return true;
+                // 1. 先读取并清洗现有数据
+                List<String> validLines = new ArrayList<>();
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        line = line.trim();
+                        // 🌟 源头防爆盾：不要空行，不要非 JSON 数据！
+                        if (!line.isEmpty() && line.startsWith("{")) {
+                            validLines.add(line);
+                        }
+                    }
                 }
+
+                // 2. 加入新申请的数据
+                validLines.add(jsonEntry);
+
+                // 3. 统一重写文件，精准控制换行
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) { // false 代表覆盖写入
+                    for (int i = 0; i < validLines.size(); i++) {
+                        bw.write(validLines.get(i));
+                        // 🌟 只有当前行不是最后一行时才换行，保证文件末尾绝对干干净净！
+                        if (i < validLines.size() - 1) {
+                            bw.newLine();
+                        }
+                    }
+                }
+                return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,14 +62,11 @@ public class ApplicationDao {
     }
 
     /**
-     * MO端：更新申请状态 (Pass/Reject)
+     * MO端：更新申请状态 (🌟 已重构：附带清洗功能)
      */
     public boolean updateApplicationStatus(String studentId, String jobId, String newStatus) {
         File file = new File(FILE_PATH);
         if (!file.exists()) return false;
-
-        System.out.println("\n====== [ApplicationDao] 准备更新申请状态 ======");
-        System.out.println(">>> 目标学生: " + studentId + ", 目标职位: " + jobId + ", 新状态: " + newStatus);
 
         List<String> fileContent = new ArrayList<>();
         boolean found = false;
@@ -56,49 +74,40 @@ public class ApplicationDao {
 
         synchronized (this) {
             try {
-                // 1. 读取文件
+                // 1. 读取并清洗文件
                 try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                     String line;
                     while ((line = br.readLine()) != null) {
-                        // 只要精准匹配到了学号和职位ID
-                        if (line.contains("\"studentId\":\"" + studentId + "\"") && line.contains("\"jobId\":\"" + jobId + "\"")) {
+                        line = line.trim();
+                        // 🌟 源头防爆盾：抛弃一切空行和非 JSON 行！
+                        if (line.isEmpty() || !line.startsWith("{")) continue;
 
-                            // 防御性拦截：如果已经是这个状态了，千万别再改了（防止重复扣除名额）
+                        if (line.contains("\"studentId\":\"" + studentId + "\"") && line.contains("\"jobId\":\"" + jobId + "\"")) {
                             if (line.contains("\"status\":\"" + newStatus + "\"")) {
-                                System.out.println(">>> 拦截：该申请已经是 [" + newStatus + "] 状态，无需重复修改！");
                                 alreadyUpdated = true;
                                 found = true;
                             } else {
-                                // 🌟 终极必杀技：提取旧日期，彻底粉碎并重新拼接标准的 JSON 字符串！
                                 String dateVal = "";
                                 if (line.contains("\"date\":\"")) {
                                     dateVal = line.split("\"date\":\"")[1].split("\"")[0];
                                 }
                                 line = "{\"studentId\":\"" + studentId + "\", \"jobId\":\"" + jobId + "\", \"date\":\"" + dateVal + "\", \"status\":\"" + newStatus + "\"}";
                                 found = true;
-                                System.out.println(">>> 成功生成全新数据行: " + line);
                             }
                         }
                         fileContent.add(line);
                     }
                 }
 
-                if (!found) {
-                    System.out.println(">>> 失败：未找到对应的申请记录！");
-                    return false;
-                }
+                if (!found || alreadyUpdated) return false;
 
-                // 如果是重复点击，返回 false 让外层的 Servlet 停止扣减库存
-                if (alreadyUpdated) return false;
-
-                // 2. 写回文件
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                // 2. 干净利落地写回文件
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) {
                     for (int i = 0; i < fileContent.size(); i++) {
                         bw.write(fileContent.get(i));
                         if (i < fileContent.size() - 1) bw.newLine();
                     }
                 }
-                System.out.println("====== [ApplicationDao] 文件写入成功！======\n");
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();

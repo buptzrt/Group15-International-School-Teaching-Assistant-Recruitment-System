@@ -151,8 +151,9 @@
         <div class="navbar-left">
             <h2>Student Dashboard</h2>
             <a href="#" onclick="loadStudentSection('welcome_student.jsp', event)">Home</a>
-            <a href="#" onclick="loadStudentSection('student_profile.html', event)">Manage Profile</a>
-            <a href="#" onclick="loadStudentSection('StudentProfileServlet', event)">View My Profile</a>
+            <a href="#" onclick="loadStudentSection('student_profile.html', event)">My Profile</a>
+<%--            <a href="#" onclick="loadStudentSection('student_profile.html', event)">Manage Profile</a>--%>
+<%--            <a href="#" onclick="loadStudentSection('StudentProfileServlet', event)">View My Profile</a>--%>
             <a href="#" onclick="loadStudentSection('StudentJobServlet', event)">View Job List</a>
             <a href="#" onclick="loadStudentSection('my_applications.jsp', event)">My Applications</a>
         </div>

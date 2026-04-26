@@ -3,69 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Student Profile</title>
+    <title>Student Profile</title>
     <style>
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-            background: linear-gradient(135deg, #f3f1ec 0%, #e6edf5 100%);
-            color: #1f2933;
-        }
+        body { margin: 0; font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: linear-gradient(135deg, #f3f1ec 0%, #e6edf5 100%); color: #1f2933; min-height: 100vh; }
         .page { max-width: 980px; margin: 0 auto; padding: 26px 18px 40px; }
-        h1 { margin: 6px 0 12px; font-size: 34px; color: #0f172a; font-weight: 700; letter-spacing: 0.2px; }
-        p.lead { margin: 0 0 18px; color: #475569; line-height: 1.6; }
-        .panel {
-            background: #fff;
-            border-radius: 18px;
-            border: 1px solid #d8e1ec;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-            padding: 22px 22px 26px;
-        }
-        .section-title {
-            margin: 20px 0 10px;
-            color: #0f172a;
-            font-size: 19px;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-        }
-        label { display: block; margin-bottom: 6px; font-weight: 700; color: #1e293b; font-size: 14px; letter-spacing: 0.15px; }
+        .panel { background: #fff; border-radius: 18px; border: 1px solid #d8e1ec; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08); padding: 28px 32px; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 2px solid #f1f5f9; padding-bottom: 16px; }
+        .header-row h1 { margin: 0; font-size: 28px; color: #0f172a; font-weight: 700; }
+
+        .icon-btn { background: transparent; border: none; color: #64748b; cursor: pointer; padding: 10px; border-radius: 50%; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:hover { background: #e0f2fe; color: #0ea5e9; transform: scale(1.05); }
+        .icon-btn svg { width: 22px; height: 22px; }
+
+        .section-title { margin: 24px 0 12px; color: #0f172a; font-size: 19px; font-weight: 700; }
+
+        /* View Mode */
+        .view-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .view-card { background: #f8fafc; padding: 14px 18px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 15px;}
+        .view-label { color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;}
+        .view-value { color: #0f172a; font-weight: 600; word-break: break-word; white-space: pre-line; line-height: 1.6;}
+        .view-empty { color: #94a3b8; font-style: italic; font-weight: 400; }
+        .full-width { grid-column: 1 / -1; }
+
+        /* Edit Mode */
+        label { display: block; margin-bottom: 6px; font-weight: 700; color: #1e293b; font-size: 14px; }
         .required::after { content: " *"; color: #b42318; }
-        input[type="text"], input[type="email"], input[type="tel"], textarea {
-            width: 100%; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 10px;
-            font: inherit; color: #0f172a; background: #f8fafc;
-            text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
-            font-size: 16px; font-weight: 500; letter-spacing: 0.1px; font-variant-numeric: tabular-nums;
-        }
-        textarea { min-height: 72px; resize: vertical; }
+        input[type="text"], input[type="email"], input[type="tel"], textarea { width: 100%; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 10px; font: inherit; color: #0f172a; background: #f8fafc; font-size: 15px; font-weight: 500; }
+        textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
         input:focus, textarea:focus { outline: none; border-color: #1f6fb5; box-shadow: 0 0 0 3px rgba(31,111,181,0.16); }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 18px; }
         .row { margin: 10px 0; }
         .checkbox-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 8px 12px; }
         .checkbox-item { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px; display:flex; gap:8px; align-items:flex-start; }
-        .actions { margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap; }
-        button {
-            border: none; border-radius: 999px; padding: 11px 18px; font-weight: 700; cursor: pointer;
-            transition: transform .15s ease, box-shadow .15s ease; font-size: 15px;
-        }
-        button.primary { background: linear-gradient(135deg,#1e3c72,#2a5298); color:#fff; box-shadow:0 10px 20px rgba(42,82,152,.25); }
-        button.secondary { background: #e2e8f0; color:#0f172a; }
-        button:disabled { opacity: .6; cursor: not-allowed; }
-        .alert { display:none; margin-bottom:14px; padding:12px 14px; border-radius:10px; font-size:14px; }
-        .alert.ok { background:#e8f7ee; color:#14532d; border:1px solid #b9e2c6; }
-        .alert.err { background:#fdecec; color:#8a1c23; border:1px solid #f5c2c7; }
-        small.hint { color:#64748b; display:block; margin-top:4px; }
-        @media (max-width:700px){ .checkbox-group{grid-template-columns:1fr;} }
+
+        .upload-banner { background: linear-gradient(to right, #e0f2fe, #f0f9ff); border: 1px dashed #7dd3fc; border-radius: 12px; padding: 20px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .upload-text { flex: 1; min-width: 200px; }
+        .upload-text h3 { margin: 0 0 5px 0; color: #0284c7; font-size: 16px; }
+        .upload-text p { margin: 0; color: #0369a1; font-size: 14px; }
+
+        .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; border-top: 1px solid #f1f5f9; padding-top: 20px;}
+        button.primary { background: #0ea5e9; color:#fff; border:none; border-radius:8px; padding:10px 18px; font-weight:700; cursor:pointer; transition:0.2s; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);}
+        button.primary:hover { background: #0284c7; transform: translateY(-1px); }
+        button.secondary { background: #f1f5f9; color:#334155; border: 1px solid #cbd5e1; border-radius:8px; padding:10px 18px; font-weight:700; cursor:pointer; transition:0.2s;}
+        button.secondary:hover { background: #e2e8f0; }
+        button:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow:none;}
+
+        .alert { display:none; margin-bottom:18px; padding:12px 16px; border-radius:10px; font-size:14px; }
+        .alert.ok { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+        .alert.err { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+
+        #viewMode, #editMode, #pageLoading { display: none; }
+        #pageLoading { text-align: center; padding: 50px; color: #64748b; font-size: 18px; font-weight: bold; }
     </style>
 </head>
 <body>
 <div class="page">
-    <h1>Manage Student Profile</h1>
-    <p class="lead">Fill in the basic information and skills. Required fields are marked with *.</p>
-    <div class="panel">
-        <div id="toast" class="alert"></div>
+    <div id="toast" class="alert"></div>
+    <div id="pageLoading">Loading profile data...</div>
+
+    <div id="viewMode" class="panel">
+        <div class="header-row">
+            <h1>My Profile Overview</h1>
+            <button class="icon-btn" onclick="switchToEdit()" title="Edit Profile">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+        </div>
+
+        <div class="section-title" style="margin-top:0;">Basic Information</div>
+        <div class="view-grid">
+            <div class="view-card"><div class="view-label">Name</div><div class="view-value" id="v_name"></div></div>
+            <div class="view-card"><div class="view-label">Chinese Name</div><div class="view-value" id="v_chineseName"></div></div>
+            <div class="view-card"><div class="view-label">Gender</div><div class="view-value" id="v_gender"></div></div>
+            <div class="view-card"><div class="view-label">QM ID</div><div class="view-value" id="v_qmId"></div></div>
+            <div class="view-card"><div class="view-label">BUPT ID</div><div class="view-value" id="v_buptId"></div></div>
+            <div class="view-card"><div class="view-label">BUPT Class</div><div class="view-value" id="v_class"></div></div>
+            <div class="view-card"><div class="view-label">Major / Programme</div><div class="view-value" id="v_major"></div></div>
+            <div class="view-card"><div class="view-label">Grade</div><div class="view-value" id="v_grade"></div></div>
+            <div class="view-card"><div class="view-label">Email</div><div class="view-value" id="v_email"></div></div>
+            <div class="view-card"><div class="view-label">Mobile Phone</div><div class="view-value" id="v_phone"></div></div>
+        </div>
+
+        <div class="section-title">Experience & Evaluation</div>
+        <div class="view-grid">
+            <div class="view-card full-width"><div class="view-label">Project Experience</div><div class="view-value" id="v_projExp"></div></div>
+            <div class="view-card full-width"><div class="view-label">TA / Mentoring Experience</div><div class="view-value" id="v_taExp"></div></div>
+            <div class="view-card full-width"><div class="view-label">Self Evaluation</div><div class="view-value" id="v_selfEval"></div></div>
+        </div>
+
+        <div class="section-title">Logistics & Preferences</div>
+        <div class="view-grid">
+            <div class="view-card"><div class="view-label">Availability</div><div class="view-value" id="v_avail"></div></div>
+            <div class="view-card"><div class="view-label">Campus Preference</div><div class="view-value" id="v_campus"></div></div>
+            <div class="view-card"><div class="view-label">Prior Joint Programme</div><div class="view-value" id="v_prior"></div></div>
+        </div>
+
+        <div class="section-title">Skills</div>
+        <div class="view-grid">
+            <div class="view-card full-width"><div class="view-label">Skills</div><div class="view-value" id="v_skills"></div></div>
+            <div class="view-card full-width">
+                <div class="view-label">Resume / CV</div>
+                <div class="view-value" id="v_resume"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editMode" class="panel">
+        <div class="header-row">
+            <h1 id="editTitle">Create Your Profile</h1>
+        </div>
+
+        <div class="upload-banner">
+            <div class="upload-text">
+                <h3>Auto-fill with Resume</h3>
+                <p>Upload your PDF/Word resume, and we will extract the details to save you time.</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input id="resumeFile" type="file" accept=".pdf,.doc,.docx" style="max-width:220px; font-size: 13px;">
+                <button id="uploadBtn" type="button" class="primary">📄 Upload & Auto-fill</button>
+            </div>
+        </div>
+
         <form id="profileForm">
-            <div class="section-title">Basic Information</div>
+            <div class="section-title" style="margin-top:0;">Basic Information</div>
             <div class="grid">
                 <div class="row"><label class="required" for="fullName">Name</label><input id="fullName" type="text"></div>
                 <div class="row"><label for="chineseName">Chinese name</label><input id="chineseName" type="text"></div>
@@ -77,396 +137,287 @@
                 <div class="row"><label class="required" for="grade">Grade</label><input id="grade" type="text"></div>
                 <div class="row"><label class="required" for="email">Email</label><input id="email" type="email"></div>
                 <div class="row"><label for="mobilePhone">Mobile Phone</label><input id="mobilePhone" type="tel"></div>
-                <div class="row"><label for="wechatId">WeChat ID</label><input id="wechatId" type="text"></div>
+            </div>
+
+            <div class="section-title">Experience & Evaluation</div>
+            <div class="row">
+                <label for="projectExperience">Project Experience</label>
+                <textarea id="projectExperience" placeholder="Describe your key technical projects, roles, and achievements..."></textarea>
+            </div>
+            <div class="row">
+                <label for="taExperience">TA / Mentoring Experience</label>
+                <textarea id="taExperience" placeholder="Any previous experience as a Teaching Assistant, peer tutor, or study group leader..."></textarea>
+            </div>
+            <div class="row">
+                <label for="selfEvaluation">Self Evaluation & Motivation</label>
+                <textarea id="selfEvaluation" placeholder="Why do you want to be a TA? What are your strengths?"></textarea>
+            </div>
+
+            <div class="section-title">Logistics & Preferences</div>
+            <div class="grid">
+                <div class="row">
+                    <label>Availability</label>
+                    <div class="checkbox-group" style="grid-template-columns:1fr;">
+                        <label class="checkbox-item"><input type="radio" name="availability" value="All semester">All semester</label>
+                        <label class="checkbox-item"><input type="radio" name="availability" value="Others">Others</label>
+                    </div>
+                    <input id="availabilityNotes" type="text" placeholder="If others, specify" style="margin-top: 10px;">
+                </div>
+                <div class="row">
+                    <label>Campus Preference</label>
+                    <div class="checkbox-group" style="grid-template-columns:1fr;">
+                        <label class="checkbox-item"><input type="radio" name="campusPreference" value="BUPT Main Campus only">Main Campus only</label>
+                        <label class="checkbox-item"><input type="radio" name="campusPreference" value="BUPT Shahe Campus only">Shahe Campus only</label>
+                        <label class="checkbox-item"><input type="radio" name="campusPreference" value="Both campuses">Both campuses</label>
+                    </div>
+                </div>
             </div>
 
             <div class="section-title">Queen Mary-BUPT Joint Programme</div>
             <div class="row">
-                <label>Have you ever been a student on the Queen Mary-BUPT Joint Programme?</label>
+                <label>Have you ever been a student on the Joint Programme?</label>
                 <div class="checkbox-group" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
                     <label class="checkbox-item"><input type="radio" name="priorAnswer" value="Yes">Yes</label>
                     <label class="checkbox-item"><input type="radio" name="priorAnswer" value="No">No</label>
                 </div>
-                <input id="priorProgramme" type="text" placeholder="If Yes, programme and graduation year">
-            </div>
-
-            <div class="section-title">Availability</div>
-            <div class="row">
-                <div class="checkbox-group" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
-                    <label class="checkbox-item"><input type="radio" name="availability" value="All semester">All semester</label>
-                    <label class="checkbox-item"><input type="radio" name="availability" value="Others">Others</label>
-                </div>
-                <input id="availabilityNotes" type="text" placeholder="If others, please specify">
-            </div>
-
-            <div class="section-title">Campus Preference</div>
-            <div class="checkbox-group" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
-                <label class="checkbox-item"><input type="radio" name="campusPreference" value="BUPT Main Campus only">BUPT Main Campus only</label>
-                <label class="checkbox-item"><input type="radio" name="campusPreference" value="BUPT Shahe Campus only">BUPT Shahe Campus only</label>
-                <label class="checkbox-item"><input type="radio" name="campusPreference" value="Both campuses">Both campuses</label>
+                <input id="priorProgramme" type="text" placeholder="If Yes, programme and graduation year" style="margin-top: 10px;">
             </div>
 
             <div class="section-title">Select Your Skills</div>
-            <div class="checkbox-group" id="skillsGroup">
-                <!-- skills checkboxes inserted by JS -->
-            </div>
+            <div class="checkbox-group" id="skillsGroup"></div>
 
-            <div class="section-title">Resume</div>
+            <div class="section-title">Resume File</div>
             <div class="row">
-                <label for="resumePath">CV / Resume Path</label>
-                <input id="resumePath" type="text" placeholder="Will be auto-filled after upload">
-            </div>
-            <div class="row" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-                <input id="resumeFile" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="max-width:260px;">
-                <button id="uploadBtn" type="button" class="secondary">Upload PDF</button>
-                <small class="hint">PDF/Word only, up to 10MB. Upload fills the path above.</small>
+                <input id="resumePath" type="text" readonly placeholder="No resume uploaded yet. It will appear here after upload." style="background: #e2e8f0; color: #475569; cursor: not-allowed;">
+                <small style="color: #64748b; margin-top: 6px; display: block;">* This path is automatically generated when you upload a file in the blue box above.</small>
             </div>
 
             <div class="actions">
-                <button type="button" class="secondary" id="reloadBtn">Reload Profile</button>
-                <button type="submit" class="primary" id="saveBtn">Save Profile</button>
+                <button type="submit" class="primary" id="saveBtn">💾 Save Profile</button>
+                <button type="button" class="secondary" id="cancelBtn" onclick="switchToView()" style="display:none;">Cancel</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-const apiProfile = "api/student/profile";
-const apiUpload = "api/student/resume/upload";
+    const apiProfile = "api/student/profile";
+    const apiUpload = "api/student/resume/upload";
+    let hasExistingProfile = false;
 
-const skillsList = [
-    "Programming Development(Java, Python, C/C++, software development)",
-    "Web Application Development(HTML5, JavaScript, JSP, Servlets, MVC)",
-    "Artificial Intelligence, Algorithms & Computer Vision(AI theory, machine learning, computer vision, image processing)",
-    "Data Processing (Hadoop, MapReduce, distributed data processing)",
-    "Signals, Systems & Multimedia Processing(signal analysis, system modelling, multimedia processing)",
-    "Telecommunications (modulation, multiplexing, radio propagation, cellular systems)",
-    "Communication Electronics(AM/FM systems, amplifiers, modulators, high-frequency circuits)",
-    "Internet Protocols(TCP/IP, routing protocols, network architecture)",
-    "Advanced Networking Concepts(Packet Tracer, ad hoc networks, advanced networking)",
-    "Cybersecurity (encryption, authentication, secure communication)",
-    "Distributed Systems　(AWS, EC2, cloud deployment)",
-    "Server Configuration(Tomcat, Linux/Windows deployment, remote configuration)",
-    "Control Systems (Matlab, Simulink)",
-    "3D Programming　(OpenGL, 3D graphics programming)",
-    "Hardware Design(logic gates, flip-flops, VHDL, FPGA tools)",
-    "Management Knowledge(marketing, finance, operations, business strategy)",
-    "Teaching Support (I am willing to travel to the Shahe Campus to help with teaching activities)"
-];
-
-const el = {
-    toast: document.getElementById("toast"),
-    fullName: document.getElementById("fullName"),
-    chineseName: document.getElementById("chineseName"),
-    gender: document.getElementById("gender"),
-    qmId: document.getElementById("qmId"),
-    buptId: document.getElementById("buptId"),
-    buptClass: document.getElementById("buptClass"),
-    majorProgramme: document.getElementById("majorProgramme"),
-    grade: document.getElementById("grade"),
-    email: document.getElementById("email"),
-    mobilePhone: document.getElementById("mobilePhone"),
-    wechatId: document.getElementById("wechatId"),
-    priorProgramme: document.getElementById("priorProgramme"),
-    availabilityNotes: document.getElementById("availabilityNotes"),
-    campusPreference: () => document.querySelector("input[name='campusPreference']:checked"),
-    availability: () => document.querySelector("input[name='availability']:checked"),
-    priorAnswer: () => document.querySelector("input[name='priorAnswer']:checked"),
-    resumePath: document.getElementById("resumePath"),
-    resumeFile: document.getElementById("resumeFile"),
-    uploadBtn: document.getElementById("uploadBtn"),
-    reloadBtn: document.getElementById("reloadBtn"),
-    saveBtn: document.getElementById("saveBtn"),
-    skillsGroup: document.getElementById("skillsGroup"),
-};
-
-function renderSkills() {
-    el.skillsGroup.innerHTML = "";
-    skillsList.forEach((text, idx) => {
-        const id = "skill_" + idx;
-        const div = document.createElement("label");
-        div.className = "checkbox-item";
-        div.innerHTML = `<input type="checkbox" value="${text.replace(/"/g,'&quot;')}" id="${id}"> <span>${text}</span>`;
-        el.skillsGroup.appendChild(div);
-    });
-}
-renderSkills();
-
-function showToast(msg, ok=true) {
-    el.toast.textContent = msg;
-    el.toast.className = "alert " + (ok ? "ok" : "err");
-    el.toast.style.display = "block";
-}
-function clearToast(){ el.toast.style.display="none"; }
-
-function getSelectedSkills() {
-    const selected = Array.from(el.skillsGroup.querySelectorAll("input[type='checkbox']:checked"))
-        .map(c => c.value).join(", ");
-    console.log("getSelectedSkills: Selected skills =", selected);
-    return selected;
-}
-function setSelectedSkills(skillsStr) {
-    console.log("setSelectedSkills: Input string =", skillsStr);
-    const set = new Set((skillsStr || "").split(",").map(s=>s.trim()).filter(Boolean));
-    console.log("setSelectedSkills: Parsed skills set =", Array.from(set));
-    el.skillsGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
-        const shouldCheck = set.has(cb.value);
-        cb.checked = shouldCheck;
-        if (shouldCheck) {
-            console.log("setSelectedSkills: Checked =", cb.value);
-        }
-    });
-}
-
-function getPayload() {
-    return {
-        fullName: el.fullName.value.trim(),
-        chineseName: el.chineseName.value.trim(),
-        gender: el.gender.value.trim(),
-        qmId: el.qmId.value.trim(),
-        buptId: el.buptId.value.trim(),
-        studentId: el.buptId.value.trim(),
-        buptClass: el.buptClass.value.trim(),
-        majorProgramme: el.majorProgramme.value.trim(),
-        grade: el.grade.value.trim(),
-        email: el.email.value.trim(),
-        mobilePhone: el.mobilePhone.value.trim(),
-        wechatId: el.wechatId.value.trim(),
-        priorProgramme: el.priorProgramme.value.trim(),
-        priorAnswer: el.priorAnswer() ? el.priorAnswer().value : "",
-        availability: el.availability() ? el.availability().value : "",
-        availabilityNotes: el.availabilityNotes.value.trim(),
-        campusPreference: el.campusPreference() ? el.campusPreference().value : "",
-        skills: getSelectedSkills(),
-        resumePath: el.resumePath.value.trim()
-    };
-}
-
-function fillForm(data) {
-    // 填充文本输入框
-    el.fullName.value = data.fullName || "";
-    el.chineseName.value = data.chineseName || "";
-    el.gender.value = data.gender || "";
-    el.qmId.value = data.qmId || "";
-    el.buptId.value = data.buptId || data.studentId || "";
-    el.buptClass.value = data.buptClass || "";
-    el.majorProgramme.value = data.majorProgramme || "";
-    el.grade.value = data.grade || "";
-    el.email.value = data.email || "";
-    el.mobilePhone.value = data.mobilePhone || "";
-    el.wechatId.value = data.wechatId || "";
-    el.priorProgramme.value = data.priorProgramme || "";
-    el.availabilityNotes.value = data.availabilityNotes || "";
-    
-    // 填充 radio buttons（先清除所有）
-    document.querySelectorAll('input[name="priorAnswer"]').forEach(r => r.checked = false);
-    if (data.priorAnswer) {
-        const r = document.querySelector(`input[name='priorAnswer'][value='${data.priorAnswer}']`);
-        if (r) r.checked = true;
-    }
-    
-    document.querySelectorAll('input[name="availability"]').forEach(r => r.checked = false);
-    if (data.availability) {
-        const r = document.querySelector(`input[name='availability'][value='${data.availability}']`);
-        if (r) r.checked = true;
-    }
-    
-    document.querySelectorAll('input[name="campusPreference"]').forEach(r => r.checked = false);
-    if (data.campusPreference) {
-        const r = document.querySelector(`input[name='campusPreference'][value='${data.campusPreference}']`);
-        if (r) r.checked = true;
-    }
-    
-    // 填充 skills（先清除所有，然后设置新的）
-    setSelectedSkills(data.skills || data.skillTags || "");
-    el.resumePath.value = data.resumePath || "";
-    
-    console.log("Profile filled successfully. Skills:", data.skills);
-}
-
-function validate(payload) {
-    if (!payload.fullName) return "Name is required.";
-    if (!payload.qmId) return "QM ID is required.";
-    if (!payload.buptId) return "BUPT ID is required.";
-    if (!payload.majorProgramme) return "Major / Programme is required.";
-    if (!payload.grade) return "Grade is required.";
-    if (!payload.email) return "Email is required.";
-    return null;
-}
-
-async function loadProfile() {
-    clearToast();
-    el.saveBtn.disabled = true; el.reloadBtn.disabled = true; el.uploadBtn.disabled = true;
-    showToast("Loading profile...", true);
-    console.log("loadProfile: Starting to load profile...");
-    try {
-        const resp = await fetch(apiProfile, { credentials:"same-origin" });
-        console.log("loadProfile: Response status =", resp.status);
-        
-        // 检查会话过期 - 改为显示警告而不是立即重定向
-        if (resp.status === 401 || resp.status === 403) { 
-            console.error("loadProfile: Session expired or unauthorized");
-            showToast("Session expired. Please refresh the page or go back to Dashboard.", false);
-            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
-            return; 
-        }
-        
-        // 检查响应是否为JSON
-        const contentType = resp.headers.get("content-type");
-        console.log("loadProfile: Content-Type =", contentType);
-        if (!contentType || !contentType.includes("application/json")) {
-            console.error("loadProfile: Invalid content type");
-            showToast("Server error. Please try again later.", false);
-            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
-            return;
-        }
-        
-        const data = await resp.json();
-        console.log("loadProfile: Data received =", data);
-        if (data.success === false) { 
-            console.error("loadProfile: API returned success=false");
-            showToast(data.message || "Failed to load.", false); 
-            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
-            return; 
-        }
-        
-        console.log("loadProfile: Filling form with data. Skills from server:", data.skills);
-        fillForm(data);
-        console.log("loadProfile: Form filled successfully");
-        showToast("Profile loaded successfully.", true);
-    } catch(e){ 
-        console.error("Load profile error:", e);
-        showToast("Load failed: "+e.message, false); 
-    }
-    finally { el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false; }
-}
-
-document.getElementById("reloadBtn").addEventListener("click", function() {
-    if (confirm("⚠️ This will discard any unsaved changes. Are you sure you want to reload?")) {
-        loadProfile();
-    }
-});
-
-// 页面加载时自动加载用户的Student Profile
-window.addEventListener("DOMContentLoaded", function() {
-    console.log("student_profile.html loaded, auto-loading profile...");
-    console.log("当前 URL: " + window.location.href);
-    console.log("当前时间: " + new Date().toLocaleString());
-    
-    // 【诊断】检查浏览器中的 JSESSIONID cookie
-    const cookies = document.cookie.split(';');
-    console.log("浏览器 Cookie 数量: " + cookies.length);
-    cookies.forEach(cookie => {
-        const [name, value] = cookie.split('=');
-        if (name.includes('SESSION') || name.includes('login')) {
-            console.log("  - " + name.trim() + " = " + (value ? value.substring(0, 20) + "..." : ""));
-        }
-    });
-    
-    loadProfile();
-});
-
-document.getElementById("profileForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    clearToast();
-    const payload = getPayload();
-    const err = validate(payload);
-    if (err) { showToast(err, false); return; }
-    el.saveBtn.disabled = true; el.reloadBtn.disabled = true; el.uploadBtn.disabled = true;
-    try {
-        const resp = await fetch(apiProfile, {
-            method:"PUT",
-            credentials:"same-origin",
-            headers:{ "Content-Type":"application/json;charset=UTF-8" },
-            body: JSON.stringify(payload)
-        });
-        
-        // 检查会话过期 - 改为显示警告而不是立即重定向
-        if (resp.status === 401 || resp.status === 403) {
-            console.error("Save failed: Session expired");
-            showToast("Session expired. Please go back to Dashboard and log in again.", false);
-            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
-            return;
-        }
-        
-        // 检查响应是否为JSON
-        const contentType = resp.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            console.error("Save failed: Invalid content type");
-            showToast("Server error. Please try again later.", false);
-            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
-            return;
-        }
-        
-        const data = await resp.json();
-        if (!resp.ok || data.success === false) { 
-            console.error("Save failed:", data.message);
-            showToast(data.message || "Save failed.", false); 
-            el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false;
-            return;
-        }
-        console.log("Save successful");
-        showToast(data.message || "Profile saved successfully. ✅", true);
-    } catch(e){ 
-        console.error("Save error:", e);
-        showToast("Save failed: "+e.message,false); 
-    }
-    finally { el.saveBtn.disabled=false; el.reloadBtn.disabled=false; el.uploadBtn.disabled=false; }
-});
-
-el.uploadBtn.addEventListener("click", async () => {
-    clearToast();
-    const file = el.resumeFile.files[0];
-    if (!file) { showToast("Please choose a file first.", false); return; }
-    const okTypes = [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    const skillsList = [
+        "Programming Development(Java, Python, C/C++, software development)",
+        "Web Application Development(HTML5, JavaScript, JSP, Servlets, MVC)",
+        "Artificial Intelligence, Algorithms & Computer Vision",
+        "Data Processing (Hadoop, MapReduce, distributed data processing)",
+        "Signals, Systems & Multimedia Processing",
+        "Telecommunications (modulation, multiplexing, radio propagation)",
+        "Communication Electronics(AM/FM systems, amplifiers, modulators)",
+        "Internet Protocols(TCP/IP, routing protocols, network architecture)",
+        "Cybersecurity (encryption, authentication, secure communication)",
+        "Server Configuration(Tomcat, Linux/Windows deployment)",
+        "Control Systems (Matlab, Simulink)",
+        "Management Knowledge(marketing, finance, operations)",
+        "Teaching Support (willing to travel to Shahe Campus)"
     ];
-    const extOk = /\.(pdf|doc|docx)$/i.test(file.name || "");
-    if (!okTypes.includes(file.type) && !extOk) {
-        showToast("Only PDF or Word files are allowed.", false); return;
+
+    const el = {
+        toast: document.getElementById("toast"), viewMode: document.getElementById("viewMode"),
+        editMode: document.getElementById("editMode"), loading: document.getElementById("pageLoading"),
+        editTitle: document.getElementById("editTitle"), cancelBtn: document.getElementById("cancelBtn"),
+
+        // Form Inputs
+        fullName: document.getElementById("fullName"), chineseName: document.getElementById("chineseName"),
+        gender: document.getElementById("gender"), qmId: document.getElementById("qmId"),
+        buptId: document.getElementById("buptId"), buptClass: document.getElementById("buptClass"),
+        majorProgramme: document.getElementById("majorProgramme"), grade: document.getElementById("grade"),
+        email: document.getElementById("email"), mobilePhone: document.getElementById("mobilePhone"),
+
+        // 🌟 绑定的新字段
+        projectExperience: document.getElementById("projectExperience"),
+        taExperience: document.getElementById("taExperience"),
+        selfEvaluation: document.getElementById("selfEvaluation"),
+
+        priorProgramme: document.getElementById("priorProgramme"), availabilityNotes: document.getElementById("availabilityNotes"),
+        resumePath: document.getElementById("resumePath"),
+        campusPreference: () => document.querySelector("input[name='campusPreference']:checked"),
+        availability: () => document.querySelector("input[name='availability']:checked"),
+        priorAnswer: () => document.querySelector("input[name='priorAnswer']:checked"),
+        skillsGroup: document.getElementById("skillsGroup"),
+
+        resumeFile: document.getElementById("resumeFile"), uploadBtn: document.getElementById("uploadBtn"), saveBtn: document.getElementById("saveBtn")
+    };
+
+    function renderSkills() {
+        el.skillsGroup.innerHTML = "";
+        skillsList.forEach(text => {
+            const div = document.createElement("label"); div.className = "checkbox-item";
+            div.innerHTML = `<input type="checkbox" value="${text.replace(/"/g,'&quot;')}"> <span>${text}</span>`;
+            el.skillsGroup.appendChild(div);
+        });
     }
-    if (file.size > 10*1024*1024) { showToast("File too large (max 10MB).", false); return; }
-    el.uploadBtn.disabled=true; el.saveBtn.disabled=true; el.reloadBtn.disabled=true;
-    try {
-        const fd = new FormData();
-        fd.append("file", file);
-        const resp = await fetch(apiUpload, { method:"POST", credentials:"same-origin", body: fd });
-        
-        // 检查会话过期 - 改为显示警告而不是立即重定向
-        if (resp.status === 401 || resp.status === 403) {
-            console.error("Upload failed: Session expired");
-            showToast("Session expired. Please go back to Dashboard and log in again.", false);
-            el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false;
-            return;
-        }
-        
-        // 检查响应是否为JSON
-        const contentType = resp.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            console.error("Upload failed: Invalid content type");
-            showToast("Server error. Please try again later.", false);
-            el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false;
-            return;
-        }
-        
-        const data = await resp.json();
-        if (!resp.ok || data.success === false) { 
-            console.error("Upload failed:", data.message);
-            showToast(data.message || "Upload failed.", false); 
-            el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false;
-            return;
-        }
-        el.resumePath.value = data.path || "";
-        console.log("Upload successful. Resume path:", data.path);
-        showToast(data.message || "Upload succeeded. ✅", true);
-    } catch(e){ 
-        console.error("Upload error:", e);
-        showToast("Upload failed: "+e.message,false); 
+    renderSkills();
+
+    function showToast(msg, ok=true) {
+        el.toast.innerHTML = msg; el.toast.className = "alert " + (ok ? "ok" : "err"); el.toast.style.display = "block";
+        if(ok) setTimeout(() => el.toast.style.display = "none", 5000);
     }
-    finally { el.uploadBtn.disabled=false; el.saveBtn.disabled=false; el.reloadBtn.disabled=false; }
-});
+    function clearToast() { el.toast.style.display="none"; }
+
+    function switchToEdit() {
+        el.viewMode.style.display = "none"; el.editMode.style.display = "block";
+        el.editTitle.innerText = hasExistingProfile ? "Manage Your Profile" : "Create Your Profile";
+        el.cancelBtn.style.display = hasExistingProfile ? "block" : "none";
+    }
+
+    function switchToView() {
+        if(!hasExistingProfile) return;
+        el.editMode.style.display = "none"; el.viewMode.style.display = "block";
+        window.scrollTo(0,0);
+    }
+
+    function renderViewField(id, value) {
+        const node = document.getElementById(id);
+        if (!value || value.trim() === "") { node.innerHTML = `<span class="view-empty">Not Provided</span>`; }
+        else { node.innerText = value; }
+    }
+
+    function populateView(data) {
+        renderViewField("v_name", data.fullName); renderViewField("v_chineseName", data.chineseName);
+        renderViewField("v_gender", data.gender); renderViewField("v_qmId", data.qmId);
+        renderViewField("v_buptId", data.buptId || data.studentId); renderViewField("v_class", data.buptClass);
+        renderViewField("v_major", data.majorProgramme); renderViewField("v_grade", data.grade);
+        renderViewField("v_email", data.email); renderViewField("v_phone", data.mobilePhone);
+
+        // 🌟 渲染新字段
+        renderViewField("v_projExp", data.projectExperience);
+        renderViewField("v_taExp", data.taExperience);
+        renderViewField("v_selfEval", data.selfEvaluation);
+
+        let priorStr = data.priorAnswer || "";
+        if(priorStr === "Yes" && data.priorProgramme) priorStr += ` (${data.priorProgramme})`;
+        renderViewField("v_prior", priorStr);
+
+        let availStr = data.availability || "";
+        if(availStr === "Others" && data.availabilityNotes) availStr += ` - ${data.availabilityNotes}`;
+        renderViewField("v_avail", availStr);
+
+        renderViewField("v_campus", data.campusPreference);
+        renderViewField("v_skills", data.skills);
+
+        const resNode = document.getElementById("v_resume");
+        if (data.resumePath) {
+            resNode.innerHTML = `📄 <a href="${data.resumePath}" target="_blank" style="color:#0ea5e9; font-weight:bold; text-decoration:none;">View Uploaded Resume</a>`;
+        } else {
+            resNode.innerHTML = `<span class="view-empty">No Resume Uploaded</span>`;
+        }
+    }
+
+    function populateForm(data) {
+        el.fullName.value = data.fullName || ""; el.chineseName.value = data.chineseName || "";
+        el.gender.value = data.gender || ""; el.qmId.value = data.qmId || "";
+        el.buptId.value = data.buptId || data.studentId || ""; el.buptClass.value = data.buptClass || "";
+        el.majorProgramme.value = data.majorProgramme || ""; el.grade.value = data.grade || "";
+        el.email.value = data.email || ""; el.mobilePhone.value = data.mobilePhone || "";
+
+        // 🌟 填入新字段
+        el.projectExperience.value = data.projectExperience || "";
+        el.taExperience.value = data.taExperience || "";
+        el.selfEvaluation.value = data.selfEvaluation || "";
+
+        el.priorProgramme.value = data.priorProgramme || ""; el.availabilityNotes.value = data.availabilityNotes || "";
+        el.resumePath.value = data.resumePath || "";
+
+        const setRadio = (name, val) => { document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = (r.value === val)); };
+        setRadio("priorAnswer", data.priorAnswer); setRadio("availability", data.availability); setRadio("campusPreference", data.campusPreference);
+
+        // 🌟 修复复选框回显Bug：因为技能文本自身含有逗号，直接使用 includes() 暴力且精准匹配完整子串
+        const savedSkillsStr = data.skills || "";
+        el.skillsGroup.querySelectorAll("input[type='checkbox']").forEach(cb => {
+            cb.checked = savedSkillsStr.includes(cb.value);
+        });
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+        el.loading.style.display = "block";
+        try {
+            const resp = await fetch(apiProfile + "?t=" + new Date().getTime(), { credentials:"same-origin", headers: { 'Cache-Control': 'no-cache' } });
+            if (!resp.ok) throw new Error("Network issue");
+            const rawData = await resp.json();
+            const data = rawData.data ? rawData.data : rawData;
+            el.loading.style.display = "none";
+
+            if (data && data.majorProgramme && data.majorProgramme.trim() !== "") {
+                hasExistingProfile = true; populateView(data); populateForm(data); switchToView();
+            } else {
+                hasExistingProfile = false;
+                if(data.studentId) el.buptId.value = data.studentId; if(data.fullName) el.fullName.value = data.fullName; if(data.email) el.email.value = data.email;
+                switchToEdit();
+            }
+        } catch(e) { el.loading.style.display = "none"; showToast("Failed to load profile. Please log in again.", false); }
+    });
+
+    el.uploadBtn.addEventListener("click", async () => {
+        clearToast(); const file = el.resumeFile.files[0];
+        if (!file) { showToast("Please select a file first.", false); return; }
+
+        el.uploadBtn.disabled = true; el.saveBtn.disabled = true;
+        showToast("⏳ Uploading and AI parsing... please wait 5-10 seconds.", true);
+
+        try {
+            const fd = new FormData(); fd.append("file", file);
+            const resp = await fetch(apiUpload, { method:"POST", credentials:"same-origin", body: fd });
+            const data = await resp.json();
+
+            if (!resp.ok || data.success === false) { showToast(data.message || "Upload failed.", false); return; }
+            el.resumePath.value = data.path || "";
+
+            if (data.parsedData && Object.keys(data.parsedData).length > 0) {
+                data.parsedData.resumePath = data.path; populateForm(data.parsedData);
+                showToast("✨ AI Auto-fill complete! Please verify the details and click Save.", true);
+                el.saveBtn.style.transform = "scale(1.05)"; setTimeout(() => el.saveBtn.style.transform = "none", 1000);
+            } else {
+                showToast("✅ Upload succeeded. (No AI text extracted)", true);
+            }
+        } catch(e) { showToast("Upload failed: " + e.message, false); }
+        finally { el.uploadBtn.disabled=false; el.saveBtn.disabled=false; }
+    });
+
+    document.getElementById("profileForm").addEventListener("submit", async e => {
+        e.preventDefault(); clearToast();
+        if (!el.fullName.value.trim() || !el.qmId.value.trim() || !el.buptId.value.trim() || !el.majorProgramme.value.trim() || !el.email.value.trim()) {
+            showToast("Please fill all required (*) fields.", false); return;
+        }
+        el.saveBtn.disabled = true;
+
+        const payload = {
+            fullName: el.fullName.value.trim(), chineseName: el.chineseName.value.trim(), gender: el.gender.value.trim(),
+            qmId: el.qmId.value.trim(), buptId: el.buptId.value.trim(), studentId: el.buptId.value.trim(),
+            buptClass: el.buptClass.value.trim(), majorProgramme: el.majorProgramme.value.trim(), grade: el.grade.value.trim(),
+            email: el.email.value.trim(), mobilePhone: el.mobilePhone.value.trim(),
+
+            // 🌟 保存新字段
+            projectExperience: el.projectExperience.value.trim(),
+            taExperience: el.taExperience.value.trim(),
+            selfEvaluation: el.selfEvaluation.value.trim(),
+
+            priorProgramme: el.priorProgramme.value.trim(), availabilityNotes: el.availabilityNotes.value.trim(),
+            priorAnswer: el.priorAnswer() ? el.priorAnswer().value : "", availability: el.availability() ? el.availability().value : "",
+            campusPreference: el.campusPreference() ? el.campusPreference().value : "",
+            skills: Array.from(el.skillsGroup.querySelectorAll("input[type='checkbox']:checked")).map(c => c.value).join(", "),
+            resumePath: el.resumePath.value.trim()
+        };
+
+        try {
+            const resp = await fetch(apiProfile, { method:"PUT", credentials:"same-origin", headers:{ "Content-Type":"application/json;charset=UTF-8" }, body: JSON.stringify(payload) });
+            const data = await resp.json();
+            if (!resp.ok || data.success === false) { showToast(data.message || "Save failed.", false); return; }
+
+            showToast("✅ Profile saved successfully!", true);
+            hasExistingProfile = true; populateView(payload); setTimeout(switchToView, 1000);
+        } catch(e) { showToast("Save failed: "+e.message,false); }
+        finally { el.saveBtn.disabled=false; }
+    });
 </script>
 </body>
 </html>
