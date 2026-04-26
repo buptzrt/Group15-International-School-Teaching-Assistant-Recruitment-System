@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import com.me.finaldesignproject.model.Job;
 
 public class ApplicationDao {
-    // �?统一源码路径，确保全项目同步
+    // 统一源码路径，确保全项目同步
     private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/applications.json";
 
     public static String getFilePath() {
@@ -15,7 +15,7 @@ public class ApplicationDao {
     }
 
     /**
-     * 学生端：保存新申请 (🌟 已重构：先清洗后重写，彻底杜绝空行)
+     * 学生端：保存新申请 (🌟 融合版：UTF-8 防乱码 + 新增 ignoreOvertime + 彻底杜绝空行)
      */
     public boolean saveApplication(String studentId, String jobId) {
         File file = new File(FILE_PATH);
@@ -29,17 +29,24 @@ public class ApplicationDao {
             String jsonEntry = "{\"studentId\":\"" + studentId + "\", \"jobId\":\"" + jobId + "\", \"date\":\"" + currentTime + "\", \"status\":\"Pending\", \"ignoreOvertime\":\"false\"}";
 
             synchronized (this) {
-                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8))) {
-                    if (file.length() > 0) bw.newLine();
-                    bw.write(jsonEntry);
-                    return true;
+                // 1. 先读取并清洗现有数据 (解决报错：重新加上 validLines 的声明和读取逻辑)
+                List<String> validLines = new ArrayList<>();
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        line = line.trim();
+                        // 🌟 源头防爆盾：不要空行，不要非 JSON 数据！
+                        if (!line.isEmpty() && line.startsWith("{")) {
+                            validLines.add(line);
+                        }
+                    }
                 }
 
                 // 2. 加入新申请的数据
                 validLines.add(jsonEntry);
 
-                // 3. 统一重写文件，精准控制换行
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) { // false 代表覆盖写入
+                // 3. 统一重写文件，精准控制换行 (使用 UTF-8 编码)
+                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
                     for (int i = 0; i < validLines.size(); i++) {
                         bw.write(validLines.get(i));
                         // 🌟 只有当前行不是最后一行时才换行，保证文件末尾绝对干干净净！
@@ -57,7 +64,7 @@ public class ApplicationDao {
     }
 
     /**
-     * 更新申请状态及忽略超标标志 (用于 MO 接受/拒绝 或 AD 撤回)
+     * MO端：更新申请状态及忽略超标标志 (🌟 融合版：附带清洗功能)
      */
     public boolean updateApplicationStatus(String studentId, String jobId, String newStatus, String ignoreOvertime) {
         File file = new File(FILE_PATH);
@@ -71,11 +78,15 @@ public class ApplicationDao {
 
         synchronized (this) {
             try {
+                // 1. 读取并清洗文件
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
                     String line;
                     while ((line = br.readLine()) != null) {
-                        if (line.contains("\"studentId\":\"" + studentId + "\"") && line.contains("\"jobId\":\"" + jobId + "\"")) {
+                        line = line.trim();
+                        // 🌟 源头防爆盾：抛弃一切空行和非 JSON 行！
+                        if (line.isEmpty() || !line.startsWith("{")) continue;
 
+                        if (line.contains("\"studentId\":\"" + studentId + "\"") && line.contains("\"jobId\":\"" + jobId + "\"")) {
                             String dateVal = "";
                             if (line.contains("\"date\":\"")) {
                                 dateVal = line.split("\"date\":\"")[1].split("\"")[0];
@@ -103,12 +114,14 @@ public class ApplicationDao {
                     return false;
                 }
 
-                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+                // 2. 干净利落地写回文件
+                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
                     for (int i = 0; i < fileContent.size(); i++) {
                         bw.write(fileContent.get(i));
                         if (i < fileContent.size() - 1) bw.newLine();
                     }
                 }
+                System.out.println("====== [ApplicationDao] 文件写入成功！======\n");
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -149,11 +162,9 @@ public class ApplicationDao {
         int totalHours = 0;
         if (studentId == null) return 0;
 
-        // 1. 先拿到该学生在 applications.json 中申请过的所有岗位 ID
         Set<String> appliedJobIds = getAppliedJobIds(studentId);
         if (appliedJobIds.isEmpty()) return 0;
 
-        // 2. 查出所有岗位详情进行工时累加
         JobDao jobDao = new JobDao();
         List<Job> allJobs = jobDao.getAllJobs();
 
@@ -162,7 +173,6 @@ public class ApplicationDao {
                 if (job.getJobId() != null && job.getJobId().equals(jId)) {
                     String hoursStr = job.getWorkingHours();
                     if (hoursStr != null && !hoursStr.trim().isEmpty()) {
-                        // 提取数字，例如 "10h" 变成 10
                         String cleanHours = hoursStr.replaceAll("[^0-9]", "");
                         if (!cleanHours.isEmpty()) {
                             totalHours += Integer.parseInt(cleanHours);
@@ -202,6 +212,7 @@ public class ApplicationDao {
         if (jobId == null || jobId.trim().isEmpty()) return false;
         File file = new File(FILE_PATH);
         if (!file.exists()) return false;
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -215,6 +226,7 @@ public class ApplicationDao {
         List<String> lines = new ArrayList<>();
         File file = new File(FILE_PATH);
         if (!file.exists()) return lines;
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
