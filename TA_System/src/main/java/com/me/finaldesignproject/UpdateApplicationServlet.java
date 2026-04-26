@@ -23,13 +23,19 @@ public class UpdateApplicationServlet extends HttpServlet {
         String jobId = request.getParameter("jobId");
         String status = request.getParameter("status");
 
+        // 🌟 核心配合修改：将 force 接收改为 ignoreOvertime (由 manage_students 或 manage_applications 传回)
+        String ignoreOvertime = request.getParameter("ignoreOvertime");
+        if (ignoreOvertime == null) {
+            ignoreOvertime = request.getParameter("force"); // 兼容可能存在的旧参数名
+        }
+
         if (studentId == null || jobId == null || status == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing required parameters.");
             return;
         }
 
-        // --- 核心修改：20小时硬性拦截逻辑 ---
-        if ("Accepted".equalsIgnoreCase(status) || "Pass".equalsIgnoreCase(status)) {
+        // --- 核心修改：增加 ignoreOvertime 判断，如果为 true 则跳过拦截 ---
+        if (("Accepted".equalsIgnoreCase(status) || "Pass".equalsIgnoreCase(status)) && !"true".equalsIgnoreCase(ignoreOvertime)) {
             int acceptedHours = appDao.getTotalWorkingHours(studentId, "Accepted");
 
             int currentJobHours = 0;
@@ -38,36 +44,46 @@ public class UpdateApplicationServlet extends HttpServlet {
                 if (j.getJobId().equals(jobId)) {
                     try {
                         // 移除单位 'h' 后解析
-                        String hStr = j.getWorkingHours().toLowerCase().replace("h", "").trim();
+                        String workHrsStr = (j.getWorkingHours() != null) ? String.valueOf(j.getWorkingHours()) : "0";
+                        String hStr = workHrsStr.toLowerCase().replace("h", "").trim();
                         currentJobHours = Integer.parseInt(hStr);
                     } catch (Exception e) { currentJobHours = 0; }
                     break;
                 }
             }
 
-            // 🌟 核心改动：如果超限，弹窗后使用 history.back() 或者是原地待命，而不是跳往 manage_students.jsp
+            // 如果超限且没有 ignoreOvertime 标志，则拦截
             if (acceptedHours + currentJobHours > 20) {
                 response.setContentType("text/html;charset=UTF-8");
                 response.getWriter().println("<script>");
                 response.getWriter().println("alert('Error: This student\\'s total workload will exceed 20 hours!');");
-                // 🛑 关键：禁止跳转到 manage_students.jsp，改为返回上一页或留在原地
                 response.getWriter().println("history.back();");
                 response.getWriter().println("</script>");
                 return;
             }
         }
 
+        // 识别是否为“撤回”操作 (状态设回 Pending)
+        boolean isWithdraw = "Pending".equalsIgnoreCase(status);
         boolean isAccepted = "Accepted".equalsIgnoreCase(status) || "Pass".equalsIgnoreCase(status);
         String normalizedStatus = isAccepted ? "Accepted" : status;
 
-        boolean isSuccess = appDao.updateApplicationStatus(studentId, jobId, normalizedStatus);
+        // 🌟 执行状态更新：同时传入 ignoreOvertime 标志，确保状态被持久化到 JSON
+        boolean isSuccess = appDao.updateApplicationStatus(studentId, jobId, normalizedStatus, ignoreOvertime);
 
-        if (isSuccess && isAccepted) {
-            jobDao.decreasePosition(jobId);
+        // 名额联动逻辑
+        if (isSuccess) {
+            if (isAccepted) {
+                // 接受申请：名额 -1
+                jobDao.decreasePosition(jobId);
+            } else if (isWithdraw) {
+                // 撤回申请：名额 +1 (调用 JobDao 方法)
+                jobDao.increasePosition(jobId);
+            }
         }
 
         if (isSuccess) {
-            // 🌟 正常处理成功后，返回来源页面，而不是写死管理员页面
+            // 正常处理成功后，返回来源页面
             String referer = request.getHeader("Referer");
             if (referer != null && !referer.isEmpty()) {
                 response.sendRedirect(referer);

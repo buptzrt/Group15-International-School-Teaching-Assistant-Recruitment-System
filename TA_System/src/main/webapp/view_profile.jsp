@@ -122,7 +122,7 @@
         String currentRole = (String) session.getAttribute("role");
         if ("MO".equalsIgnoreCase(currentRole)) {
     %>
-    <a href="#" class="back-btn" onclick="history.back(); return false;">&larr; Back to Applications</a>
+    <a href="#" id="moBackBtn" class="back-btn" onclick="history.back(); return false;">&larr; Back to Applications</a>
     <% } %>
 
     <% if (user == null) { %>
@@ -179,10 +179,21 @@
 
     <div id="msg" class="card" style="display:none; color:#ffd166; font-weight:700; background:rgba(255,255,255,0.08); margin-top:10px;"></div>
     <% if (!"MO".equalsIgnoreCase(currentRole)) { %>
-    <a class="cta" href="student_profile.html">Edit / Manage Profile</a>
+    <a id="editBtn" class="cta" href="student_profile.html">Edit / Manage Profile</a>
     <% } %>
     <% } %>
     <% } %>
 </div>
+
+<script>
+    // 🌟 仅仅增加这一段 JS 逻辑：如果是弹窗打开，隐藏掉 Back 按钮和 Edit 按钮，防止误操作
+    if (window.self !== window.top) {
+        var backBtn = document.getElementById('moBackBtn');
+        var editBtn = document.getElementById('editBtn');
+        if(backBtn) backBtn.style.display = 'none';
+        if(editBtn) editBtn.style.display = 'none';
+    }
+</script>
+
 </body>
 </html>

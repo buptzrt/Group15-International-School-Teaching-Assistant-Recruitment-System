@@ -18,7 +18,7 @@
     <meta charset="UTF-8">
     <title>Job List</title>
     <style>
-        /* 核心修改：将子页面 body 设为透明，以便透出 Home 页的背景图和 0.85 蒙层 */
+        /* 核心修改：将子页面 body 设为透明，以便透出 Home 页的背景图 and 0.85 蒙层 */
         body {
             margin: 0;
             padding: 36px 18px;
@@ -362,7 +362,7 @@
                     <input id="jobSearch" class="search-input" type="text" placeholder="Search visible columns...">
                     <button id="btnSearch" class="search-btn" type="button" title="Search">Search</button>
                 </div>
-                <span class="hint">Click a header to filter. Max workload: 20h.</span>
+                <span class="hint">Click a header to filter. Max Applications Workload: 20h.</span>
             </div>
             <div class="toolbar-right">
                 <button id="btnClearAll" class="top-filter-btn" type="button">Clear All Filters</button>
@@ -385,58 +385,58 @@
                 </thead>
 
                 <%
-                    // 🌟 获取已录用工时数据
+                    // 🌟 获取已申请岗位的总工时累积
                     String currentUserId = (String) session.getAttribute("userId");
                     Set<String> appliedJobIds = new HashSet<>();
-                    int totalAccepted = 0;
+                    int totalAppliedHours = 0;
                     if (currentUserId != null) {
                         ApplicationDao appDao = new ApplicationDao();
                         appliedJobIds = appDao.getAppliedJobIds(currentUserId);
-                        // 获取已 Accepted 状态的岗位总工时
-                        totalAccepted = appDao.getTotalWorkingHours(currentUserId, "Accepted");
+                        // 🌟 调用新增方法：累加已申请的所有岗位的时长
+                        totalAppliedHours = appDao.getAppliedTotalHours(currentUserId);
                     }
                 %>
 
                 <tbody>
                 <% if (allJobs != null && !allJobs.isEmpty()) { %>
                 <% LocalDate today = LocalDate.now();
-                   for (Job job : allJobs) {
-                    String courseName = job.getCourseName() == null ? "" : job.getCourseName();
-                    String moduleCode = job.getModuleCode() == null ? "-" : job.getModuleCode();
-                    String course = courseName + " (" + moduleCode + ")";
-                    String title = job.getJobTitle() == null ? "-" : job.getJobTitle();
-                    String type = job.getActivityType() == null ? "-" : job.getActivityType();
-                    String deadline = job.getApplicationDeadline() == null ? "-" : job.getApplicationDeadline();
-                    int positionsLeft = job.getNumberOfPositions();
-                    String creatorName = (job.getCreatorName() == null || job.getCreatorName().isEmpty()) ? "Unknown" : job.getCreatorName();
+                    for (Job job : allJobs) {
+                        String courseName = job.getCourseName() == null ? "" : job.getCourseName();
+                        String moduleCode = job.getModuleCode() == null ? "-" : job.getModuleCode();
+                        String course = courseName + " (" + moduleCode + ")";
+                        String title = job.getJobTitle() == null ? "-" : job.getJobTitle();
+                        String type = job.getActivityType() == null ? "-" : job.getActivityType();
+                        String deadline = job.getApplicationDeadline() == null ? "-" : job.getApplicationDeadline();
+                        int positionsLeft = job.getNumberOfPositions();
+                        String creatorName = (job.getCreatorName() == null || job.getCreatorName().isEmpty()) ? "Unknown" : job.getCreatorName();
 
-                    // 🌟 解析当前职位的工时
-                    int jobHrs = 0;
-                    try {
-                        String hStr = job.getWorkingHours() != null ? job.getWorkingHours().toLowerCase().replace("h","").trim() : "0";
-                        jobHrs = Integer.parseInt(hStr);
-                    } catch(Exception e) { jobHrs = 0; }
+                        // 解析当前职位的工时
+                        int thisJobHours = 0;
+                        try {
+                            String hStr = (job.getWorkingHours() != null) ? job.getWorkingHours().replaceAll("[^0-9]", "") : "0";
+                            thisJobHours = hStr.isEmpty() ? 0 : Integer.parseInt(hStr);
+                        } catch(Exception e) { thisJobHours = 0; }
 
-                    boolean isClosed = "Closed".equalsIgnoreCase(job.getStatus()) || !job.isStudentCanApply();
-                    boolean isOverdue = false;
-                    try {
-                        if (job.getApplicationDeadline() != null && !job.getApplicationDeadline().trim().isEmpty()) {
-                            isOverdue = LocalDate.parse(job.getApplicationDeadline().trim()).isBefore(today);
+                        boolean isClosed = "Closed".equalsIgnoreCase(job.getStatus()) || !job.isStudentCanApply();
+                        boolean isOverdue = false;
+                        try {
+                            if (job.getApplicationDeadline() != null && !job.getApplicationDeadline().trim().isEmpty()) {
+                                isOverdue = LocalDate.parse(job.getApplicationDeadline().trim()).isBefore(today);
+                            }
+                        } catch (Exception e) {
+                            isOverdue = false;
                         }
-                    } catch (Exception e) {
-                        isOverdue = false;
-                    }
 
-                    boolean blockView = isClosed || isOverdue;
-                    String viewClass = isOverdue ? "view-btn overdue" : (isClosed ? "view-btn closed" : "view-btn");
-                    String viewLabel = isOverdue ? "Overdue" : (isClosed ? "Close" : "View");
+                        boolean blockView = isClosed || isOverdue;
+                        String viewClass = isOverdue ? "view-btn overdue" : (isClosed ? "view-btn closed" : "view-btn");
+                        String viewLabel = isOverdue ? "Overdue" : (isClosed ? "Close" : "View");
 
-                    String courseAttr = course.toLowerCase().replace("\"", "&quot;");
-                    String titleAttr = title.toLowerCase().replace("\"", "&quot;");
-                    String typeAttr = type.toLowerCase().replace("\"", "&quot;");
-                    String deadlineAttr = deadline.replace("\"", "&quot;");
-                    String positionAttr = String.valueOf(positionsLeft).replace("\"", "&quot;");
-                    String creatorAttr = creatorName.toLowerCase().replace("\"", "&quot;");
+                        String courseAttr = course.toLowerCase().replace("\"", "&quot;");
+                        String titleAttr = title.toLowerCase().replace("\"", "&quot;");
+                        String typeAttr = type.toLowerCase().replace("\"", "&quot;");
+                        String deadlineAttr = deadline.replace("\"", "&quot;");
+                        String positionAttr = String.valueOf(positionsLeft).replace("\"", "&quot;");
+                        String creatorAttr = creatorName.toLowerCase().replace("\"", "&quot;");
                 %>
                 <tr data-course="<%= courseAttr %>"
                     data-title="<%= titleAttr %>"
@@ -467,9 +467,9 @@
                             <% } else if (positionsLeft <= 0) { %>
                             <a class="apply-btn disabled" style="background: #777 !important;" href="javascript:void(0);">Full</a>
                             <% } else { %>
-                            <%-- 🌟 关键点：参数加单引号，防止解析带单位导致 JS 崩溃 --%>
+                            <%-- 🌟 核心传参：传递累积时长和本次岗位的时长 --%>
                             <a class="apply-btn" href="javascript:void(0);"
-                               onclick="confirmApply('<%= job.getJobId() %>', '<%= job.getJobTitle().replace("'", "\\'") %>', event, '<%= totalAccepted %>', '<%= jobHrs %>')">Apply</a>
+                               onclick="confirmApply('<%= job.getJobId() %>', '<%= title.replace("'", "\\'").replace("\n", " ").replace("\r", " ") %>', event, <%= totalAppliedHours %>, <%= thisJobHours %>)">Apply</a>
                             <% } %>
                         </div>
                     </td>
@@ -490,40 +490,53 @@
 
 <script>
     /**
-     * 软提醒。警告风险，但允许点确认后继续申请。
+     * 🌟 修复后的时长警告弹窗逻辑
      */
-    function confirmApply(jobId, jobTitle, event, currentTotal, jobHours) {
+    function confirmApply(jobId, jobTitle, event, totalAppliedHours, thisJobHours) {
         if (event) event.preventDefault();
         const btn = event.currentTarget;
+
         if (btn.classList.contains('disabled')) return;
 
-        // 🌟 深度转为数值，确保计算正确
-        const cTotal = Number(currentTotal.toString().replace(/[^\d]/g, '')) || 0;
-        const jHrs = Number(jobHours.toString().replace(/[^\d]/g, '')) || 0;
-        const totalProjected = cTotal + jHrs;
+        // 🌟 核心：计算预期总工时
+        const currentTotal = parseInt(totalAppliedHours) || 0;
+        const adding = parseInt(thisJobHours) || 0;
+        const nextTotal = currentTotal + adding;
+
+        console.log("Applied Hours:", currentTotal, "Current Job:", adding, "Estimated Total:", nextTotal);
 
         let msg = "Are you sure you want to apply for the position: \n[" + jobTitle + "]?";
 
-        // 🌟 软性风险预警：仅做弹窗提醒
-        if (totalProjected > 20) {
-            msg = "⚠️ WORKLOAD WARNING!\n\nApplying for this job will bring your total approved workload ("
-                + totalProjected + "h) to exceed the 20-hour limit.\n\nThe MO will NOT be able to approve this unless you reduce other workloads. Do you still want to apply?";
+        // 🌟 时长超过 20 小时的强警告逻辑
+        if (nextTotal > 20) {
+            msg = "⚠️ WORKLOAD LIMIT WARNING!\n\n" +
+                "Your current applied workload is " + currentTotal + "h.\n" +
+                "Applying for this " + adding + "h job will bring your total workload to " + nextTotal + "h.\n\n" +
+                "This exceeds the 20h limit. The Module Leader may reject your application. Do you still want to proceed?";
         }
 
         if (confirm(msg)) {
-            fetch("ApplyJobServlet?jobId=" + jobId)
+            btn.classList.add('disabled');
+            btn.innerText = "Processing...";
+
+            fetch("ApplyJobServlet?jobId=" + jobId, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
                 .then(response => {
                     if (response.ok) {
                         alert("Applied successfully!");
-                        btn.classList.add('disabled');
-                        btn.innerText = "Applied";
-                        btn.onclick = null;
-                        btn.style.background = "";
+                        window.location.reload();
                     } else {
-                        alert("Application failed. Please check your connection.");
+                        alert("Application failed. You may have already applied or the session expired.");
+                        btn.classList.remove('disabled');
+                        btn.innerText = "Apply";
                     }
                 })
-                .catch(err => alert("Server error. Please try again later."));
+                .catch(err => {
+                    alert("Server error, please try again.");
+                    btn.classList.remove('disabled');
+                    btn.innerText = "Apply";
+                });
         }
     }
 

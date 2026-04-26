@@ -18,7 +18,7 @@ public class UserDao {
     private static final String USER_JSON_FILE = "users.json";
 
     private static String getUserJsonPath() {
-        return "E:\\study\\software engineer\\newdebug\\newdebug\\TA_System\\src\\main\\resources\\" + USER_JSON_FILE;
+        return "E:\\Group15_TA_SYSTEM\\TA_System\\src\\main\\resources\\" + USER_JSON_FILE;
     }
 
     public List<User> getAllUsers() {
