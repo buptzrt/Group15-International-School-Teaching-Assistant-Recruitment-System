@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Student 个人资料（与登录用户学号 enrollmentNo 关联）
- * 
+ *
  * 【重要】实现 Serializable 接口
  * 虽然 StudentProfile 主要作为 JSON 数据传输对象，但为了安全起见实现 Serializable，
  * 防止 Tomcat 或其他容器在某些场景下需要序列化此对象时出错。
@@ -33,6 +33,10 @@ public class StudentProfile implements Serializable {
     private String campusPreference; // BUPT main / Shahe / Both
     private String skills; // comma separated skills selection
     private String resumePath;
+
+    private String projectExperience;
+    private String taExperience;
+    private String selfEvaluation;
 
     public StudentProfile() {
     }
@@ -111,4 +115,13 @@ public class StudentProfile implements Serializable {
     public void setResumePath(String resumePath) {
         this.resumePath = resumePath;
     }
+
+    public String getProjectExperience() { return projectExperience; }
+    public void setProjectExperience(String projectExperience) { this.projectExperience = projectExperience; }
+
+    public String getTaExperience() { return taExperience; }
+    public void setTaExperience(String taExperience) { this.taExperience = taExperience; }
+
+    public String getSelfEvaluation() { return selfEvaluation; }
+    public void setSelfEvaluation(String selfEvaluation) { this.selfEvaluation = selfEvaluation; }
 }

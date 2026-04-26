@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JobDao {
-    private static final String FILE_PATH = "E:\\Group15_TA_SYSTEM\\TA_System\\src\\main\\resources\\jobs.json";
+    private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/jobs.json";
 
     private static final Type JOB_LIST_TYPE = new TypeToken<ArrayList<Job>>() {}.getType();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();

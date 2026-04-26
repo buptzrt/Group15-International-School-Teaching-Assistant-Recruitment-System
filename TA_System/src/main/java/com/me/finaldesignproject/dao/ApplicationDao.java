@@ -7,15 +7,15 @@ import java.nio.charset.StandardCharsets;
 import com.me.finaldesignproject.model.Job;
 
 public class ApplicationDao {
-    // 统一源码路径
-    private static final String FILE_PATH = "E:\\Group15_TA_SYSTEM\\TA_System\\src\\main\\resources\\applications.json";
+    // �?统一源码路径，确保全项目同步
+    private static final String FILE_PATH = "D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/applications.json";
 
     public static String getFilePath() {
         return FILE_PATH;
     }
 
     /**
-     * 学生端：保存新申请
+     * 学生端：保存新申请 (🌟 已重构：先清洗后重写，彻底杜绝空行)
      */
     public boolean saveApplication(String studentId, String jobId) {
         File file = new File(FILE_PATH);
@@ -34,6 +34,21 @@ public class ApplicationDao {
                     bw.write(jsonEntry);
                     return true;
                 }
+
+                // 2. 加入新申请的数据
+                validLines.add(jsonEntry);
+
+                // 3. 统一重写文件，精准控制换行
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, false))) { // false 代表覆盖写入
+                    for (int i = 0; i < validLines.size(); i++) {
+                        bw.write(validLines.get(i));
+                        // 🌟 只有当前行不是最后一行时才换行，保证文件末尾绝对干干净净！
+                        if (i < validLines.size() - 1) {
+                            bw.newLine();
+                        }
+                    }
+                }
+                return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,7 +109,6 @@ public class ApplicationDao {
                         if (i < fileContent.size() - 1) bw.newLine();
                     }
                 }
-                System.out.println("====== [ApplicationDao] 文件写入成功！======\n");
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
