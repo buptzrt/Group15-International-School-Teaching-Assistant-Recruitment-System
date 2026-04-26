@@ -88,6 +88,39 @@ public class JobDao {
         return updated && saveToFile(jobs);
     }
 
+    // 🌟 核心新增：撤回申请时返还名额逻辑 🌟
+    public synchronized boolean increasePosition(String jobId) {
+        List<Job> jobs = getAllJobs();
+        boolean updated = false;
+
+        for (Job job : jobs) {
+            if (!jobId.equals(job.getJobId())) {
+                continue;
+            }
+
+            // 增加名额
+            int current = job.getNumberOfPositions();
+            job.setNumberOfPositions(current + 1);
+
+            // 减少已接受数（如果不小于0）
+            int accepted = job.getApplicationsAccepted();
+            if (accepted > 0) {
+                job.setApplicationsAccepted(accepted - 1);
+            }
+
+            // 如果名额增加后大于0，且职位原来被关闭了，可以考虑恢复状态
+            if (job.getNumberOfPositions() > 0 && "Closed".equalsIgnoreCase(job.getStatus())) {
+                job.setStatus("Open");
+                job.setStudentCanApply(true);
+            }
+
+            updated = true;
+            break;
+        }
+
+        return updated && saveToFile(jobs);
+    }
+
     public boolean isVisibleInHall(Job job, LocalDate today) {
         if (job == null) return false;
         if (job.isDeleted()) return false;

@@ -49,41 +49,44 @@ public class ApplyJobServlet extends HttpServlet {
             return;
         }
 
-        // --- 核心逻辑：计算并判断是否需要弹窗警告 ---
-
-        // A. 获取已录用的时长 (Accepted)
+        // --- 逻辑 A：保留原有工时逻辑（用于后端记录，不影响 MO 审批） ---
         int acceptedHours = appDao.getTotalWorkingHours(userId, "Accepted");
-
-        // B. 当前申请岗位的时长 (支持解析 "5h" 或 "5")
         int currentJobHours = 0;
         try {
-            String hStr = targetJob.getWorkingHours().toLowerCase().replace("h", "").trim();
+            // 健壮性处理：确保 getWorkingHours() 不为 null
+            String workHoursStr = targetJob.getWorkingHours();
+            String hStr = (workHoursStr != null) ? workHoursStr.toLowerCase().replace("h", "").trim() : "0";
             currentJobHours = Integer.parseInt(hStr);
         } catch (Exception e) { currentJobHours = 0; }
+        boolean willExceedHours = (acceptedHours + currentJobHours) > 20;
 
-        // 🌟 判定：已通过 + 本次申请 是否超过 20h
-        boolean willExceed = (acceptedHours + currentJobHours) > 20;
+        // --- 🌟 逻辑 B：新增申请职位条数逻辑（针对学生的 20 个职位警告） 🌟 ---
+        // 调用 DAO 统计该学生申请的总条数
+        int currentAppliedCount = appDao.getTotalApplicationCount(userId);
+        // 判定：加上本次后是否达到 20 个
+        boolean willExceedCount = (currentAppliedCount + 1) >= 20;
 
-        // 2. 执行保存申请 (无论超没超，都允许申请)
+
+        // 2. 执行保存申请
         boolean success = appDao.saveApplication(userId, jobId);
 
         if (success) {
-            // 判断请求来源，决定如何返回弹窗提醒
             String requestedWith = request.getHeader("X-Requested-With");
 
             if ("XMLHttpRequest".equals(requestedWith)) {
-                // 情况 1: 如果是 fetch/AJAX 请求，返回标记让前端处理 alert
+                // 情况 1: fetch/AJAX 请求
                 response.setStatus(HttpServletResponse.SC_OK);
-                if (willExceed) {
-                    response.getWriter().write("WARNING_OVER_20H");
+                // 🌟 如果条数达到 20，返回专门的信号给前端
+                if (willExceedCount) {
+                    response.getWriter().write("WARNING_COUNT_LIMIT");
                 } else {
                     response.getWriter().write("SUCCESS");
                 }
             } else {
-                // 情况 2: 如果是普通页面链接跳转，直接输出 JS 脚本弹窗
-                if (willExceed) {
+                // 情况 2: 普通页面跳转
+                if (willExceedCount) {
                     response.getWriter().println("<script>");
-                    response.getWriter().println("alert('Applied successfully! \\n\\nWarning: Your total workload (" + (acceptedHours + currentJobHours) + "h) exceeds the 20h limit. MO may not approve this application.');");
+                    response.getWriter().println("alert('Applied successfully! \\n\\nWarning: You have reached or exceeded the limit of 20 applications. Please manage your applications properly.');");
                     response.getWriter().println("window.location.href='StudentJobServlet';");
                     response.getWriter().println("</script>");
                 } else {

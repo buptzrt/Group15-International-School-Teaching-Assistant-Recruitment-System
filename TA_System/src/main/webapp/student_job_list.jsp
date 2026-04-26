@@ -74,6 +74,337 @@
         #gapModalBody { font-size: 15px; line-height: 1.8; color: #444; max-height: 60vh; overflow-y: auto; padding-right: 10px; }
         #gapModalBody::-webkit-scrollbar { width: 6px; }
         #gapModalBody::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        /* 核心修改：将子页面 body 设为透明，以便透出 Home 页的背景图 and 0.85 蒙层 */
+        body {
+            margin: 0;
+            padding: 36px 18px;
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            background: transparent !important;
+            color: #222;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 关键点：移除子页面自己的蒙层，防止颜色叠加导致变死白 */
+        body::before {
+            display: none;
+        }
+
+        .page-container {
+            max-width: 1060px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            /* 保持 0.5 透明度白色，形成磨砂玻璃感 */
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            margin: 0 0 14px;
+            color: #2c3e50;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .toolbar {
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            width: min(520px, 100%);
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            font-size: 15px;
+        }
+
+        .search-input::placeholder {
+            color: #7f8c8d;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1e90ff;
+            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+        }
+
+        .search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: min(620px, 100%);
+        }
+
+        .search-wrap .search-input {
+            flex: 1;
+            width: auto;
+        }
+
+        .search-btn {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: #2c3e50;
+            color: #fff;
+            border-radius: 10px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            min-width: 44px;
+        }
+
+        .search-btn:hover {
+            background: #1a252f;
+        }
+
+        .hint {
+            color: #555;
+            font-size: 13px;
+        }
+
+        .top-filter-btn {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+            color: #2c3e50;
+            border-radius: 999px;
+            padding: 9px 16px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .top-filter-btn.active {
+            background: #18b394;
+            border-color: #18b394;
+            color: #fff;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        thead th {
+            text-align: left;
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        thead th.action-col {
+            cursor: default;
+        }
+
+        .filter-mark {
+            margin-left: 6px;
+            font-size: 12px;
+            color: #1e90ff;
+        }
+
+        tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            color: #333;
+            font-size: 15px;
+            line-height: 1.45;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .view-btn {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 8px;
+            color: #fff;
+            background: #1e90ff;
+            text-decoration: none;
+            font-size: 13px;
+            border: none;
+        }
+
+        .view-btn:hover {
+            background: #187bcd;
+        }
+
+        .view-btn.closed {
+            background: #b9770e;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .view-btn.overdue {
+            background: #e67e22;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .empty {
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* 筛选弹窗样式 */
+        .header-filter {
+            position: fixed;
+            z-index: 9999;
+            min-width: 220px;
+            max-width: 320px;
+            max-height: 300px;
+            overflow: auto;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            box-shadow: 0 16px 30px rgba(0,0,0,0.15);
+            padding: 10px;
+            display: none;
+        }
+
+        .header-filter .filter-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .filter-option {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 6px;
+            padding: 7px 9px;
+            border-radius: 7px;
+            border: 1px solid #eee;
+            background: #f9f9f9;
+            color: #333;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .filter-option.active {
+            border-color: #18b394;
+            background: rgba(24, 179, 148, 0.1);
+            color: #18b394;
+        }
+
+        .deadline-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .deadline-box input[type="date"] {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #333;
+        }
+
+        .deadline-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .deadline-actions button {
+            flex: 1;
+            padding: 7px 8px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            color: #333;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .deadline-actions button.primary {
+            background: #18b394;
+            border-color: #18b394;
+            color: #fff;
+        }
+
+        /* 基础 Apply 按钮样式 */
+        .apply-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 16px;
+            border-radius: 10px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 152, 0, 0.25);
+        }
+
+        .apply-btn:hover {
+            background: linear-gradient(135deg, #fb8c00, #ef6c00);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .apply-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(255, 152, 0, 0.3);
+        }
+
+        .apply-btn.disabled {
+            background: #555555 !important;
+            color: #999999 !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
+            transform: none !important;
+            box-shadow: none !important;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -87,7 +418,7 @@
                     <input id="jobSearch" class="search-input" type="text" placeholder="Search visible columns...">
                     <button id="btnSearch" class="search-btn" type="button" title="Search">Search</button>
                 </div>
-                <span class="hint">Click a header to filter. Max workload: 20h.</span>
+                <span class="hint">Click a header to filter. Max Applications Workload: 20h.</span>
             </div>
             <div class="toolbar-right">
                 <button id="btnClearAll" class="top-filter-btn" type="button">Clear All Filters</button>
@@ -111,13 +442,15 @@
                 </thead>
 
                 <%
+                    // 🌟 获取已申请岗位的总工时累积
                     String currentUserId = (String) session.getAttribute("userId");
                     Set<String> appliedJobIds = new HashSet<>();
-                    int totalAccepted = 0;
+                    int totalAppliedHours = 0;
                     if (currentUserId != null) {
                         ApplicationDao appDao = new ApplicationDao();
                         appliedJobIds = appDao.getAppliedJobIds(currentUserId);
-                        totalAccepted = appDao.getTotalWorkingHours(currentUserId, "Accepted");
+                        // 🌟 调用新增方法：累加已申请的所有岗位的时长
+                        totalAppliedHours = appDao.getAppliedTotalHours(currentUserId);
                     }
                 %>
 
@@ -134,11 +467,12 @@
                         int positionsLeft = job.getNumberOfPositions();
                         String creatorName = (job.getCreatorName() == null || job.getCreatorName().isEmpty()) ? "Unknown" : job.getCreatorName();
 
-                        int jobHrs = 0;
+                        // 解析当前职位的工时
+                        int thisJobHours = 0;
                         try {
-                            String hStr = job.getWorkingHours() != null ? job.getWorkingHours().toLowerCase().replace("h","").trim() : "0";
-                            jobHrs = Integer.parseInt(hStr);
-                        } catch(Exception e) { jobHrs = 0; }
+                            String hStr = (job.getWorkingHours() != null) ? job.getWorkingHours().replaceAll("[^0-9]", "") : "0";
+                            thisJobHours = hStr.isEmpty() ? 0 : Integer.parseInt(hStr);
+                        } catch(Exception e) { thisJobHours = 0; }
 
                         boolean isClosed = "Closed".equalsIgnoreCase(job.getStatus()) || !job.isStudentCanApply();
                         boolean isOverdue = false;
@@ -146,7 +480,9 @@
                             if (job.getApplicationDeadline() != null && !job.getApplicationDeadline().trim().isEmpty()) {
                                 isOverdue = LocalDate.parse(job.getApplicationDeadline().trim()).isBefore(today);
                             }
-                        } catch (Exception e) { isOverdue = false; }
+                        } catch (Exception e) {
+                            isOverdue = false;
+                        }
 
                         boolean blockView = isClosed || isOverdue;
                         String viewClass = isOverdue ? "view-btn overdue" : (isClosed ? "view-btn closed" : "view-btn");
@@ -179,6 +515,35 @@
                     <td><%= type %></td>
                     <td><%= deadline %></td>
                     <td><%= positionsLeft %></td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <% if (blockView) { %>
+                            <span class="<%= viewClass %>"><%= viewLabel %></span>
+                            <% } else { %>
+                            <a class="<%= viewClass %>" href="view_job.jsp?jobId=<%= job.getJobId() %>&from=StudentJobServlet">View</a>
+                            <% } %>
+
+                            <% if (appliedJobIds != null && appliedJobIds.contains(job.getJobId())) { %>
+                            <a class="apply-btn disabled" href="javascript:void(0);">Applied</a>
+                            <% } else if (isOverdue) { %>
+                            <a class="apply-btn disabled" href="javascript:void(0);">Apply</a>
+                            <% } else if (isClosed) { %>
+                            <a class="apply-btn disabled" style="background: #b9770e !important;" href="javascript:void(0);">Close</a>
+                            <% } else if (positionsLeft <= 0) { %>
+                            <a class="apply-btn disabled" style="background: #777 !important;" href="javascript:void(0);">Full</a>
+                            <% } else { %>
+                            <%-- 🌟 核心传参：传递累积时长和本次岗位的时长 --%>
+                            <a class="apply-btn" href="javascript:void(0);"
+                               onclick="confirmApply('<%= job.getJobId() %>', '<%= title.replace("'", "\\'").replace("\n", " ").replace("\r", " ") %>', event, <%= totalAppliedHours %>, <%= thisJobHours %>)">Apply</a>
+                            <% } %>
+                        </div>
+                    </td>
+                </tr>
+                <% } %>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
 
 <%--// ==========================================
 //当 JS 里的 fetch 开始排队请求后端时，这个 Loading 会一直闪烁。只要大模型（或者缓存）一返回结果，JS 就会立刻用分数或者红色的错误提示把这个 Loading 覆盖掉。
@@ -564,6 +929,198 @@ if (expandRow) tbody.appendChild(expandRow);
 }
 
 window.addEventListener('DOMContentLoaded', loadAiScores);
+    /**
+     * 🌟 修复后的时长警告弹窗逻辑
+     */
+    function confirmApply(jobId, jobTitle, event, totalAppliedHours, thisJobHours) {
+        if (event) event.preventDefault();
+        const btn = event.currentTarget;
+
+        if (btn.classList.contains('disabled')) return;
+
+        // 🌟 核心：计算预期总工时
+        const currentTotal = parseInt(totalAppliedHours) || 0;
+        const adding = parseInt(thisJobHours) || 0;
+        const nextTotal = currentTotal + adding;
+
+        console.log("Applied Hours:", currentTotal, "Current Job:", adding, "Estimated Total:", nextTotal);
+
+        let msg = "Are you sure you want to apply for the position: \n[" + jobTitle + "]?";
+
+        // 🌟 时长超过 20 小时的强警告逻辑
+        if (nextTotal > 20) {
+            msg = "⚠️ WORKLOAD LIMIT WARNING!\n\n" +
+                "Your current applied workload is " + currentTotal + "h.\n" +
+                "Applying for this " + adding + "h job will bring your total workload to " + nextTotal + "h.\n\n" +
+                "This exceeds the 20h limit. The Module Leader may reject your application. Do you still want to proceed?";
+        }
+
+        if (confirm(msg)) {
+            btn.classList.add('disabled');
+            btn.innerText = "Processing...";
+
+            fetch("ApplyJobServlet?jobId=" + jobId, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Applied successfully!");
+                        window.location.reload();
+                    } else {
+                        alert("Application failed. You may have already applied or the session expired.");
+                        btn.classList.remove('disabled');
+                        btn.innerText = "Apply";
+                    }
+                })
+                .catch(err => {
+                    alert("Server error, please try again.");
+                    btn.classList.remove('disabled');
+                    btn.innerText = "Apply";
+                });
+        }
+    }
+
+    (function () {
+        const table = document.getElementById("jobTable");
+        if (!table) return;
+
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const searchInput = document.getElementById("jobSearch");
+        const btnSearch = document.getElementById("btnSearch");
+        const btnClearAll = document.getElementById("btnClearAll");
+        const btnNotExpired = document.getElementById("btnNotExpired");
+        const filterPopup = document.getElementById("headerFilter");
+        const headers = Array.from(table.querySelectorAll("thead th[data-key]"));
+
+        const state = { textQuery: "", onlyNotExpired: false, columnFilters: { course: "", title: "", type: "", position: "", creator: "" }, deadlineBefore: "" };
+
+        function normalize(str) { return (str || "").toString().trim().toLowerCase(); }
+
+        function buildSearchHay(row) {
+            const visibleCols = [];
+            for (let i = 0; i <= 5; i++) {
+                const cell = row.cells[i];
+                if (cell) visibleCols.push(cell.textContent || "");
+            }
+            return normalize(visibleCols.join(" "));
+        }
+
+        function matchesSearch(hay, query) {
+            if (!query) return true;
+            const h = normalize(hay);
+            const q = normalize(query);
+            return q.split(/\s+/).filter(Boolean).every(token => h.includes(token));
+        }
+
+        function parseYmdDate(dateStr) {
+            const v = (dateStr || "").trim();
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
+            const t = Date.parse(v + "T00:00:00");
+            return isNaN(t) ? null : t;
+        }
+
+        function todayStart() {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            return d.getTime();
+        }
+
+        function refreshHeaderMarks() {
+            headers.forEach(th => {
+                const key = th.dataset.key;
+                const mark = th.querySelector(".filter-mark");
+                if (!mark) return;
+                mark.textContent = (key === "deadline") ? (state.deadlineBefore ? "*" : "") : (state.columnFilters[key] ? "*" : "");
+            });
+        }
+
+        function applyFilters() {
+            const q = normalize(state.textQuery);
+            const today = todayStart();
+            const beforeTime = parseYmdDate(state.deadlineBefore);
+
+            rows.forEach(row => {
+                const searchHay = buildSearchHay(row);
+                const courseVal = normalize(row.getAttribute("data-course"));
+                const titleVal = normalize(row.getAttribute("data-title"));
+                const typeVal = normalize(row.getAttribute("data-type"));
+                const positionVal = normalize(row.getAttribute("data-position"));
+                const creatorVal = normalize(row.getAttribute("data-creator"));
+                const deadlineVal = (row.getAttribute("data-deadline") || "").trim();
+                const deadlineTime = parseYmdDate(deadlineVal);
+
+                let visible = true;
+                if (!matchesSearch(searchHay, q)) visible = false;
+                if (visible && state.onlyNotExpired) visible = deadlineTime !== null && deadlineTime >= today;
+                if (visible && state.columnFilters.course && courseVal !== state.columnFilters.course) visible = false;
+                if (visible && state.columnFilters.title && titleVal !== state.columnFilters.title) visible = false;
+                if (visible && state.columnFilters.type && typeVal !== state.columnFilters.type) visible = false;
+                if (visible && state.columnFilters.position && positionVal !== state.columnFilters.position) visible = false;
+                if (visible && state.columnFilters.creator && creatorVal !== state.columnFilters.creator) visible = false;
+                if (visible && beforeTime !== null) visible = deadlineTime !== null && deadlineTime <= beforeTime;
+
+                row.style.display = visible ? "" : "none";
+            });
+
+            refreshHeaderMarks();
+            btnNotExpired.classList.toggle("active", state.onlyNotExpired);
+        }
+
+        function closePopup() { filterPopup.style.display = "none"; filterPopup.innerHTML = ""; }
+
+        function placePopupNear(th) {
+            const rect = th.getBoundingClientRect();
+            filterPopup.style.top = (rect.bottom + window.scrollY + 6) + "px";
+            filterPopup.style.left = Math.max(10, rect.left) + "px";
+            filterPopup.style.display = "block";
+        }
+
+        function getUniqueValues(key, colIndex) {
+            const map = new Map();
+            rows.forEach(row => {
+                const v = normalize(row.getAttribute("data-" + key));
+                const label = (row.cells[colIndex] ? row.cells[colIndex].textContent : "").trim();
+                if (v && !map.has(v)) map.set(v, label || v);
+            });
+            return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+        }
+
+        function openValueFilter(th) {
+            const key = th.dataset.key;
+            const colIndex = { creator: 0, course: 1, title: 2, type: 3, position: 5 }[key];
+            const values = getUniqueValues(key, colIndex);
+            let html = '<div class="filter-title">Filter ' + th.textContent.trim() + '</div>';
+            html += '<button class="filter-option ' + (!state.columnFilters[key] ? 'active' : '') + '" data-val="">All</button>';
+            values.forEach(([val, label]) => {
+                const active = state.columnFilters[key] === val ? 'active' : '';
+                html += '<button class="filter-option ' + active + '" data-val="' + val.replace(/"/g, '&quot;') + '">' + label + '</button>';
+            });
+            filterPopup.innerHTML = html;
+            placePopupNear(th);
+            filterPopup.querySelectorAll(".filter-option").forEach(btn => {
+                btn.addEventListener("click", () => { state.columnFilters[key] = normalize(btn.getAttribute("data-val")); closePopup(); applyFilters(); });
+            });
+        }
+
+        function openDeadlineFilter(th) {
+            const safeVal = state.deadlineBefore || "";
+            filterPopup.innerHTML = '<div class="filter-title">Deadline Filter</div><div class="deadline-box"><input type="date" id="deadlineFilterInput" value="' + safeVal + '"><div class="hint">On or before selected date.</div><div class="deadline-actions"><button type="button" class="primary" id="deadlineApplyBtn">Apply</button><button type="button" id="deadlineClearBtn">Clear</button></div></div>';
+            placePopupNear(th);
+            const input = document.getElementById("deadlineFilterInput");
+            document.getElementById("deadlineApplyBtn").addEventListener("click", () => { state.deadlineBefore = (input.value || "").trim(); closePopup(); applyFilters(); });
+            document.getElementById("deadlineClearBtn").addEventListener("click", () => { state.deadlineBefore = ""; closePopup(); applyFilters(); });
+        }
+
+        function runSearch() { state.textQuery = searchInput.value || ""; applyFilters(); }
+        searchInput.addEventListener("input", runSearch);
+        btnSearch.addEventListener("click", runSearch);
+        btnNotExpired.addEventListener("click", () => { state.onlyNotExpired = !state.onlyNotExpired; applyFilters(); });
+        btnClearAll.addEventListener("click", () => { state.textQuery = ""; state.onlyNotExpired = false; state.deadlineBefore = ""; Object.keys(state.columnFilters).forEach(k => state.columnFilters[k] = ""); searchInput.value = ""; closePopup(); applyFilters(); });
+        headers.forEach(th => { th.addEventListener("click", (e) => { e.stopPropagation(); const key = th.dataset.key; if (!key) return; closePopup(); if (key === "deadline") openDeadlineFilter(th); else openValueFilter(th); }); });
+        document.addEventListener("click", (e) => { if (filterPopup.style.display !== "block") return; if (!filterPopup.contains(e.target)) closePopup(); });
+        applyFilters();
+    })();
 </script>
 </body>
 </html>
