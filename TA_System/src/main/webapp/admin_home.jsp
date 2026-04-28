@@ -153,7 +153,6 @@
             <h2>Admin Dashboard</h2>
             <a href="admin_home.jsp">Home</a>
             <a href="manage_students.jsp">Manage Students</a>
-            <a href="manage_mo.jsp">Manage MO</a>
             <a href="manage_jobs.jsp">Manage Jobs</a>
         </div>
         <div>

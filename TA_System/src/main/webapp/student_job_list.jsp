@@ -40,6 +40,7 @@
         table { width: 100%; border-collapse: collapse; min-width: 900px; background: rgba(255, 255, 255, 0.3); table-layout: fixed; /* 🌟 锁死表格布局，绝不自动乱调宽度 */ }
         thead th { text-align: left; color: #2c3e50; font-weight: 700; font-size: 15px; padding: 12px 14px; background: rgba(0, 0, 0, 0.05); border-bottom: 1px solid rgba(0, 0, 0, 0.08); cursor: pointer; user-select: none; white-space: nowrap; position: relative; }
         thead th.action-col { cursor: default; }
+        .header-caret { margin-left: 6px; font-size: 13px; font-weight: 700; color: #2c3e50; }
         .filter-mark { margin-left: 6px; font-size: 12px; color: #1e90ff; }
         tbody td { padding: 14px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); color: #333; font-size: 15px; line-height: 1.45; vertical-align: middle; }
 
@@ -100,14 +101,13 @@
             <table id="jobTable">
                 <thead>
                 <tr>
-                    <th style="width: 10%;" data-key="creator">Creator<span class="filter-mark"></span></th>
-                    <th style="width: 18%;" data-key="course">Course<span class="filter-mark"></span></th>
-                    <th style="width: 15%;" data-key="title">Title<span class="filter-mark"></span></th>
-                    <th style="width: 14%;" data-key="type">Type<span class="filter-mark"></span></th>
-                    <th style="width: 12%;" data-key="deadline">Deadline<span class="filter-mark"></span></th>
-                    <th style="width: 8%;" data-key="position">Position<span class="filter-mark"></span></th>
-                    <th style="width: 8%; text-align: center;">AI Match</th>
-                    <th style="width: 15%;" class="action-col">Action</th>
+                    <th style="width: 10%;" data-key="creator" data-label="Creator">Creator<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th style="width: 18%;" data-key="course" data-label="Course">Course<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th style="width: 19%;" data-key="title" data-label="Title">Title<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th style="width: 12%;" data-key="deadline" data-label="Deadline">Deadline<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th style="width: 9%;" data-key="position" data-label="Position">Position<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th style="width: 10%; text-align: center;">AI Match</th>
+                    <th style="width: 22%;" class="action-col">Action</th>
                 </tr>
                 </thead>
 
@@ -132,7 +132,6 @@
                         String moduleCode = job.getModuleCode() == null ? "-" : job.getModuleCode();
                         String course = courseName + " (" + moduleCode + ")";
                         String title = job.getJobTitle() == null ? "-" : job.getJobTitle();
-                        String type = job.getActivityType() == null ? "-" : job.getActivityType();
                         String deadline = job.getApplicationDeadline() == null ? "-" : job.getApplicationDeadline();
                         int positionsLeft = job.getNumberOfPositions();
                         String creatorName = (job.getCreatorName() == null || job.getCreatorName().isEmpty()) ? "Unknown" : job.getCreatorName();
@@ -160,7 +159,6 @@
 
                         String courseAttr = course.toLowerCase().replace("\"", "&quot;");
                         String titleAttr = title.toLowerCase().replace("\"", "&quot;");
-                        String typeAttr = type.toLowerCase().replace("\"", "&quot;");
                         String deadlineAttr = deadline.replace("\"", "&quot;");
                         String positionAttr = String.valueOf(positionsLeft).replace("\"", "&quot;");
                         String creatorAttr = creatorName.toLowerCase().replace("\"", "&quot;");
@@ -173,7 +171,6 @@
                 <tr class="job-row" data-jobid="<%= job.getJobId() %>"
                     data-course="<%= courseAttr %>"
                     data-title="<%= titleAttr %>"
-                    data-type="<%= typeAttr %>"
                     data-deadline="<%= deadlineAttr %>"
                     data-position="<%= positionAttr %>"
                     data-creator="<%= creatorAttr %>"
@@ -182,7 +179,6 @@
                     <td><%= creatorName %></td>
                     <td><%= course %></td>
                     <td><%= title %></td>
-                    <td><%= type %></td>
                     <td><%= deadline %></td>
                     <td><%= positionsLeft %></td>
 
@@ -222,7 +218,7 @@
                 </tr>
 
                 <tr class="expand-row" id="expand-<%= job.getJobId() %>">
-                    <td colspan="8" style="padding: 0;">
+                    <td colspan="7" style="padding: 0;">
                         <div class="expand-content">
                             <div>
                                 <span class="expand-title">Responsibilities / Requirements:</span>
@@ -378,13 +374,13 @@
         const filterPopup = document.getElementById("headerFilter");
         const headers = Array.from(table.querySelectorAll("thead th[data-key]"));
 
-        const state = { textQuery: "", onlyNotExpired: false, columnFilters: { course: "", title: "", type: "", position: "", creator: "" }, deadlineBefore: "" };
+        const state = { textQuery: "", onlyNotExpired: false, columnFilters: { course: "", title: "", position: "", creator: "" }, deadlineBefore: "" };
 
         function normalize(str) { return (str || "").toString().trim().toLowerCase(); }
 
         function buildSearchHay(row) {
             const visibleCols = [];
-            for (let i = 0; i <= 6; i++) {
+            for (let i = 0; i <= 5; i++) {
                 const cell = row.cells[i];
                 if (cell) visibleCols.push(cell.textContent || "");
             }
@@ -429,7 +425,6 @@
                 const searchHay = buildSearchHay(row);
                 const courseVal = normalize(row.getAttribute("data-course"));
                 const titleVal = normalize(row.getAttribute("data-title"));
-                const typeVal = normalize(row.getAttribute("data-type"));
                 const positionVal = normalize(row.getAttribute("data-position"));
                 const creatorVal = normalize(row.getAttribute("data-creator"));
                 const deadlineVal = (row.getAttribute("data-deadline") || "").trim();
@@ -440,7 +435,6 @@
                 if (visible && state.onlyNotExpired) visible = deadlineTime !== null && deadlineTime >= today;
                 if (visible && state.columnFilters.course && courseVal !== state.columnFilters.course) visible = false;
                 if (visible && state.columnFilters.title && titleVal !== state.columnFilters.title) visible = false;
-                if (visible && state.columnFilters.type && typeVal !== state.columnFilters.type) visible = false;
                 if (visible && state.columnFilters.position && positionVal !== state.columnFilters.position) visible = false;
                 if (visible && state.columnFilters.creator && creatorVal !== state.columnFilters.creator) visible = false;
                 if (visible && beforeTime !== null) visible = deadlineTime !== null && deadlineTime <= beforeTime;
@@ -479,9 +473,10 @@
 
         function openValueFilter(th) {
             const key = th.dataset.key;
-            const colIndex = { creator: 0, course: 1, title: 2, type: 3, position: 5 }[key];
+            const headerLabel = th.dataset.label || th.textContent.trim();
+            const colIndex = { creator: 0, course: 1, title: 2, position: 4 }[key];
             const values = getUniqueValues(key, colIndex);
-            let html = '<div class="filter-title">Filter ' + th.textContent.trim() + '</div>';
+            let html = '<div class="filter-title">Filter ' + headerLabel + '</div>';
             html += '<button class="filter-option ' + (!state.columnFilters[key] ? 'active' : '') + '" data-val="">All</button>';
             values.forEach(([val, label]) => {
                 const active = state.columnFilters[key] === val ? 'active' : '';
@@ -528,7 +523,7 @@
             if (!jobId || jobId.trim() === "") continue;
             jobId = jobId.trim();
 
-            const aiCell = row.querySelector('.ai-score-cell') || row.cells[6];
+            const aiCell = row.querySelector('.ai-score-cell') || row.cells[5];
             if (!aiCell || aiCell.innerText.includes('N/A')) continue;
 
             try {
