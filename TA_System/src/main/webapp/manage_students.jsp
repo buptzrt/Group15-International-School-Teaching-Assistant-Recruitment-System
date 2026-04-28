@@ -269,6 +269,20 @@
 
 
         .warning-text { color: #ff4757; font-size: 0.8em; display: block; margin-top: 4px; }
+        .table-tools {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0 10px;
+        }
+        .table-tools label { color: #f9ca24; font-weight: bold; }
+        .table-tools select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.35);
+            color: #fff;
+        }
 
     </style>
 
@@ -329,8 +343,6 @@
         <a href="admin_home.jsp">Home</a>
 
         <a href="manage_students.jsp" style="background-color: #00b894;">Manage Students</a>
-
-        <a href="manage_mo.jsp">Manage MO</a>
 
         <a href="manage_jobs.jsp">Manage Jobs</a>
 
@@ -397,8 +409,17 @@
     <p>Logged in as: <strong><%= displayName %></strong></p>
 
 
+    <div class="table-tools">
+        <label for="statusFilter">Status Filter:</label>
+        <select id="statusFilter">
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+        </select>
+    </div>
 
-    <table>
+    <table id="manageStudentsTable">
 
         <thead>
 
@@ -486,7 +507,9 @@
 
         %>
 
-        <tr>
+        <tr data-status="<%= st.toLowerCase() %>"
+            data-overlimit="<%= (totalAcceptedHours >= 20 || (st.equals("Pending") && willBeOverLimit)) ? "1" : "0" %>"
+            data-accumulated="<%= totalAcceptedHours %>">
 
             <td><%= studentName %></td>
 
@@ -541,6 +564,47 @@
     </table>
 
 </div>
+
+<script>
+    (function () {
+        const table = document.getElementById("manageStudentsTable");
+        const filter = document.getElementById("statusFilter");
+        if (!table || !filter) return;
+
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        // Keep overtime rows at the top, then sort by accumulated hours desc.
+        rows.sort((a, b) => {
+            const overA = parseInt(a.getAttribute("data-overlimit") || "0", 10);
+            const overB = parseInt(b.getAttribute("data-overlimit") || "0", 10);
+            if (overA !== overB) return overB - overA;
+            const accA = parseInt(a.getAttribute("data-accumulated") || "0", 10);
+            const accB = parseInt(b.getAttribute("data-accumulated") || "0", 10);
+            return accB - accA;
+        });
+        rows.forEach(r => tbody.appendChild(r));
+
+        function applyStatusFilter() {
+            const value = (filter.value || "all").toLowerCase();
+            rows.forEach(row => {
+                const status = (row.getAttribute("data-status") || "").toLowerCase();
+                let visible = true;
+                if (value !== "all") {
+                    if (value === "rejected") {
+                        visible = status === "rejected" || status === "reject";
+                    } else {
+                        visible = status === value;
+                    }
+                }
+                row.style.display = visible ? "" : "none";
+            });
+        }
+
+        filter.addEventListener("change", applyStatusFilter);
+        applyStatusFilter();
+    })();
+</script>
 
 </body>
 

@@ -208,11 +208,11 @@
         <h2>Admin Dashboard</h2>
         <a href="admin_home.jsp">Home</a>
         <a href="manage_students.jsp">Manage Students</a>
-        <a href="manage_mo.jsp">Manage MO</a>
         <a href="manage_jobs.jsp">Manage Jobs</a>
     </div>
 </div>
 
+<% if (false) { %>
 <div class="container">
     <h3><%= editJob == null ? "Create Recruitment Position (Admin Control)" : "Edit Recruitment Position (Admin Control)" %></h3>
     <form action="AdminJobServlet" method="post">
@@ -292,30 +292,10 @@
         </div>
     </form>
 </div>
+<% } %>
 
 <div class="container">
     <h3>Hall Monitoring Rules (Admin)</h3>
-    <div class="summary">
-        <%
-            if (jobs != null) {
-                for (Job job : jobs) {
-                    boolean hallVisible = jobDao.isVisibleInHall(job, today);
-                    boolean deadlineExpired = false;
-                    try {
-                        deadlineExpired = LocalDate.parse(job.getApplicationDeadline()).isBefore(today);
-                    } catch (Exception ignored) {}
-
-                    if (hallVisible) hallVisibleCount++;
-                    if (deadlineExpired && !hallVisible) expiredRemovedCount++;
-                    if (job.getNumberOfPositions() <= 0 && "Closed".equalsIgnoreCase(job.getStatus())) zeroQuotaClosedCount++;
-                }
-            }
-        %>
-        <div class="summary-item">Rule 1: MO-created valid jobs visible in hall = <strong><%= hallVisibleCount %></strong></div>
-        <div class="summary-item">Rule 2: Deadline reached and removed from hall = <strong><%= expiredRemovedCount %></strong></div>
-        <div class="summary-item">Rule 3: Quota=0 and auto-closed = <strong><%= zeroQuotaClosedCount %></strong></div>
-    </div>
-
     <div class="table-wrap">
         <table>
             <thead>
@@ -327,7 +307,7 @@
                 <th>Quota Left</th>
                 <th>Status</th>
                 <th>Hall</th>
-                <th>Rule Check</th>
+                <th>What This Means</th>
                 <th>Admin Actions</th>
             </tr>
             </thead>
@@ -347,15 +327,15 @@
 
                         String ruleCheck;
                         if (hallVisible) {
-                            ruleCheck = "<span class='ok'>Rule1 OK</span>";
+                            ruleCheck = "<span class='ok'>Visible to students</span>";
                         } else if (deadlineExpired) {
-                            ruleCheck = "<span class='ok'>Rule2 OK</span>";
+                            ruleCheck = "<span class='ok'>Deadline passed, hidden</span>";
                         } else if (job.getNumberOfPositions() <= 0 && "Closed".equalsIgnoreCase(job.getStatus())) {
-                            ruleCheck = "<span class='ok'>Rule3 OK</span>";
+                            ruleCheck = "<span class='ok'>No slots left, auto-closed</span>";
                         } else if (job.getNumberOfPositions() <= 0 && !"Closed".equalsIgnoreCase(job.getStatus())) {
-                            ruleCheck = "<span class='bad'>Rule3 Risk</span>";
+                            ruleCheck = "<span class='bad'>No slots left but still open</span>";
                         } else {
-                            ruleCheck = "<span class='warn'>Check Needed</span>";
+                            ruleCheck = "<span class='warn'>Please review this job</span>";
                         }
             %>
             <tr>
@@ -389,6 +369,89 @@
                     </form>
                 </td>
             </tr>
+            <% if (editJob != null && editJob.getJobId() != null && editJob.getJobId().equals(job.getJobId())) { %>
+            <tr>
+                <td colspan="9">
+                    <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 14px;">
+                        <h3 style="margin-bottom: 10px;">Edit Recruitment Position (Admin Control)</h3>
+                        <form action="AdminJobServlet" method="post">
+                            <input type="hidden" name="action" value="edit">
+                            <input type="hidden" name="jobId" value="<%= editJob.getJobId() %>">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Module Code</label>
+                                    <input name="moduleCode" required value="<%= editJob.getModuleCode() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Course Name</label>
+                                    <input name="courseName" required value="<%= editJob.getCourseName() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Job Title</label>
+                                    <input name="jobTitle" required value="<%= editJob.getJobTitle() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Activity Type</label>
+                                    <select name="activityType">
+                                        <option value="Teaching Assistant" <%= "Teaching Assistant".equals(editJob.getActivityType()) ? "selected" : "" %>>Teaching Assistant</option>
+                                        <option value="Invigilation" <%= "Invigilation".equals(editJob.getActivityType()) ? "selected" : "" %>>Invigilation</option>
+                                        <option value="Grading" <%= "Grading".equals(editJob.getActivityType()) ? "selected" : "" %>>Grading</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quota</label>
+                                    <input name="numberOfPositions" type="number" min="0" required value="<%= editJob.getNumberOfPositions() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Application Deadline</label>
+                                    <input name="applicationDeadline" type="date" required value="<%= editJob.getApplicationDeadline() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Working Hours</label>
+                                    <input name="workingHours" value="<%= editJob.getWorkingHours() == null ? "" : editJob.getWorkingHours() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Semester</label>
+                                    <input name="semester" value="<%= editJob.getSemester() == null ? "" : editJob.getSemester() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <input name="location" value="<%= editJob.getLocation() == null ? "" : editJob.getLocation() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Required Skills</label>
+                                    <input name="requiredSkills" value="<%= editJob.getRequiredSkills() == null ? "" : editJob.getRequiredSkills() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Preferred Major</label>
+                                    <input name="preferredMajor" value="<%= editJob.getPreferredMajor() == null ? "" : editJob.getPreferredMajor() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Min CGPA</label>
+                                    <input name="cgpaRequired" type="number" step="0.01" min="0" max="10" value="<%= editJob.getCgpaRequired() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Contact Email</label>
+                                    <input name="contactEmail" value="<%= editJob.getContactEmail() == null ? "" : editJob.getContactEmail() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Contact Phone</label>
+                                    <input name="contactPhone" value="<%= editJob.getContactPhone() == null ? "" : editJob.getContactPhone() %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Responsibilities</label>
+                                    <input name="jobResponsibilities" value="<%= editJob.getJobResponsibilities() == null ? "" : editJob.getJobResponsibilities() %>">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" type="submit">Save Position</button>
+                                <a class="btn btn-muted" href="manage_jobs.jsp">Cancel Edit</a>
+                            </div>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <% } %>
             <%
                     }
                 }
