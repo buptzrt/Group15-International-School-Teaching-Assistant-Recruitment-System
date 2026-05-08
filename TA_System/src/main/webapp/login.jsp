@@ -29,10 +29,9 @@
         }
 
         html, body {
-            width: 100%;
-            min-height: 100%;
-            overflow-x: hidden;
-            overflow-y: auto;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
             position: relative;
         }
 
@@ -45,8 +44,6 @@
             color: #f4f7fb;
             margin: 0;
             padding: 0;
-            min-height: 100svh;
-            overflow-x: hidden;
         }
 
         body::before {
@@ -71,10 +68,9 @@
         }
 
         .header-logos {
-            position: fixed;
-            top: 50%;
-            left: clamp(32px, 9vw, 182px);
-            transform: translateY(-28%);
+            position: absolute;
+            top: 30px;
+            left: 30px;
             z-index: 10;
             display: flex;
             flex-direction: column;
@@ -85,7 +81,6 @@
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(12px);
-            width: clamp(360px, 24vw, 450px);
         }
         .logo-item {
             display: flex;
@@ -110,16 +105,14 @@
         }
 
         .top-back-nav {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -6%);
+            position: absolute;
+            top: 30px;
+            right: 30px;
             z-index: 10;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 14px;
             align-items: center;
-            width: min(240px, 18vw);
         }
         .top-back-nav a {
             font-size: 16px;
@@ -135,8 +128,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
-            width: 100%;
-            text-align: center;
         }
         .top-back-nav a::before {
             content: '';
@@ -160,21 +151,21 @@
         }
 
         .login-content {
-            position: fixed;
+            position: absolute;
             top: 50%;
-            right: clamp(48px, 8vw, 160px);
-            transform: translateY(-50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 10;
             text-align: center;
-            width: clamp(300px, 22vw, 360px);
-            max-width: calc(100vw - 36px);
-            animation: none;
+            width: 90%;
+            max-width: 520px;
+            animation: fadeInUp 0.8s ease-out;
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 24px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px);
-            padding: clamp(32px, 4vh, 56px) clamp(28px, 3vw, 48px);
+            padding: 56px 48px;
         }
 
         .login-subtitle {
@@ -349,76 +340,26 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 1; transform: none; }
-            to { opacity: 1; transform: none; }
-        }
-
-        @media (max-width: 1280px) {
-            .header-logos {
-                left: 28px;
-                width: 360px;
-                padding: 24px;
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
             }
-
-            .login-content {
-                right: 28px;
-                width: 330px;
-            }
-
-            .top-back-nav {
-                width: 190px;
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
             }
         }
 
-        @media (max-width: 980px), (max-height: 680px) {
-            body {
-                display: flex;
-                flex-direction: column;
-                align-items: stretch;
-                gap: 14px;
-                padding: 14px;
-                overflow-y: auto;
-            }
-
-            .top-back-nav,
-            .header-logos,
+        @media (max-width: 768px) {
             .login-content {
-                position: relative;
-                top: auto;
-                left: auto;
-                right: auto;
-                transform: none;
-                width: 100%;
-                max-width: none;
-            }
-
-            .top-back-nav {
-                order: 1;
-                flex-direction: row;
-                justify-content: flex-end;
-                align-items: center;
-            }
-
-            .header-logos {
-                order: 2;
-            }
-
-            .login-content {
-                order: 3;
-                padding: 30px 22px;
+                padding: 40px 28px;
+                max-width: 90%;
             }
             .login-title {
-                font-size: 32px;
+                font-size: 36px;
             }
             .login-subtitle {
                 font-size: 14px;
-            }
-            .title-line {
-                margin-bottom: 30px;
-            }
-            .input-group {
-                gap: 16px;
-                margin-bottom: 22px;
             }
             .input-item label, .remember-group label {
                 font-size: 15px;
@@ -435,14 +376,14 @@
                 padding: 14px 28px;
             }
             .top-back-nav {
+                flex-direction: column;
                 gap: 10px;
+                top: 20px;
+                right: 20px;
             }
             .top-back-nav a {
                 font-size: 14px;
                 padding: 10px 20px;
-                text-align: center;
-                width: auto;
-                min-width: 130px;
             }
             .logo-item img {
                 width: 50px;
@@ -454,215 +395,6 @@
             .header-logos {
                 padding: 20px 24px;
                 gap: 18px;
-            }
-        }
-
-        @media (max-width: 560px) {
-            .top-back-nav {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .top-back-nav a {
-                width: 100%;
-            }
-
-            .logo-item {
-                align-items: flex-start;
-            }
-
-            .logo-text {
-                font-size: 13px;
-            }
-        }
-
-        /* Redesigned responsive login layout: top school strip + centered login card. */
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            gap: clamp(12px, 2vh, 22px);
-            padding: clamp(14px, 2vw, 28px);
-            overflow-x: hidden;
-            overflow-y: hidden;
-        }
-
-        .header-logos {
-            position: relative;
-            top: auto;
-            left: auto;
-            right: auto;
-            transform: none;
-            width: min(1150px, 100%);
-            min-height: 80px;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(34px, 7vw, 88px);
-            padding: 12px clamp(22px, 4vw, 48px);
-            border-radius: 18px;
-            order: 1;
-        }
-
-        .logo-item {
-            min-width: 0;
-            flex: 0 1 auto;
-        }
-
-        .logo-item img {
-            width: 54px;
-            height: 54px;
-            flex: 0 0 54px;
-        }
-
-        .logo-text {
-            color: #dfe9f7;
-            font-size: clamp(15px, 1.05vw, 18px);
-            line-height: 1.35;
-            font-weight: 700;
-            letter-spacing: 0;
-        }
-
-        .top-back-nav {
-            position: fixed;
-            right: clamp(28px, 5vw, 84px);
-            bottom: clamp(24px, 5vh, 64px);
-            top: auto;
-            left: auto;
-            transform: none;
-            order: 4;
-            width: min(430px, 32vw);
-            flex-direction: row;
-            justify-content: flex-end;
-            gap: 12px;
-            align-self: auto;
-            margin-top: 0;
-        }
-
-        .top-back-nav a {
-            width: auto;
-            min-width: 150px;
-            padding: 10px 22px;
-            font-size: 15px;
-        }
-
-        .login-content {
-            position: relative;
-            top: auto;
-            left: auto;
-            right: auto;
-            transform: none;
-            order: 2;
-            width: min(430px, 100%);
-            padding: clamp(28px, 3.5vh, 42px) clamp(30px, 4vw, 44px);
-            margin: clamp(2px, 1.2vh, 12px) auto 0;
-        }
-
-        .login-subtitle {
-            font-size: clamp(20px, 2vw, 24px);
-        }
-
-        .login-title {
-            font-size: clamp(34px, 3vw, 42px);
-        }
-
-        .title-line {
-            margin-bottom: clamp(28px, 4vh, 42px);
-        }
-
-        @media (max-width: 760px) {
-            body {
-                padding: 12px;
-                gap: 12px;
-                overflow-y: auto;
-            }
-
-            .header-logos {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-                padding: 16px;
-            }
-
-            .logo-item {
-                justify-content: flex-start;
-            }
-
-            .top-back-nav {
-                position: relative;
-                right: auto;
-                bottom: auto;
-                width: 100%;
-                margin-top: 0;
-            }
-
-            .top-back-nav a {
-                flex: 1 1 0;
-                min-width: 0;
-            }
-
-            .login-content {
-                padding: 28px 20px;
-            }
-        }
-
-        @media (max-height: 720px) and (min-width: 761px) {
-            body {
-                gap: 8px;
-            }
-
-            .header-logos {
-                min-height: 60px;
-                padding-top: 8px;
-                padding-bottom: 8px;
-            }
-
-            .logo-item img {
-                width: 46px;
-                height: 46px;
-                flex-basis: 46px;
-            }
-
-            .login-content {
-                padding-top: 22px;
-                padding-bottom: 22px;
-                margin-top: 0;
-            }
-
-            .login-subtitle {
-                margin-bottom: 8px;
-            }
-
-            .title-line {
-                margin-bottom: 22px;
-            }
-
-            .input-group {
-                gap: 12px;
-                margin-bottom: 16px;
-            }
-
-            .input-item input {
-                padding: 11px 15px;
-            }
-
-            .login-btn {
-                margin-bottom: 14px;
-                padding-top: 12px;
-                padding-bottom: 12px;
-            }
-
-            .remember-group {
-                margin-bottom: 12px;
-            }
-
-            .link-group {
-                gap: 8px;
-            }
-
-            .top-back-nav {
-                bottom: 24px;
             }
         }
     </style>
@@ -722,3 +454,5 @@
     </div>
 </body>
 </html>
+
+

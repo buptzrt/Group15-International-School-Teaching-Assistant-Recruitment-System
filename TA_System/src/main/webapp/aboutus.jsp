@@ -403,84 +403,60 @@
                 <h1 class="page-title">About the Platform</h1>
                 <div class="title-line"></div>
                 <p class="intro-text">
-                    This platform supports the full Teaching Assistant recruitment workflow, from publishing vacancies
-                    and submitting applications to reviewing candidates, managing workload rules, and tracking final decisions.
+                    This system was developed for the International School of Beijing University of Posts and Telecommunications
+                    to support the recruitment and management of Teaching Assistants in a clearer, faster, and more organized way.
                 </p>
             </section>
 
             <div class="content-grid">
                 <section class="card">
-                    <h2>System Purpose</h2>
+                    <h2>Project Background</h2>
                     <p>
-                        The TA Recruitment System is designed for a structured university recruitment process where students,
-                        Module Organisers, and Admin users work in one shared platform. It replaces scattered forms and manual
-                        communication with role-based dashboards, searchable tables, transparent status tracking, and consistent
-                        job and application management.
+                        The TA Recruitment System is a software engineering project created by Group 15 for the Software Engineering course.
+                        It was designed to improve the traditional recruitment process, which often relies on forms, spreadsheets,
+                        and manual communication. By building a web-based platform, the team aimed to make TA recruitment more efficient,
+                        transparent, and user-friendly for both applicants and administrators.
                     </p>
                 </section>
 
                 <section class="card">
-                    <h2>Role-Based Dashboards</h2>
+                    <h2>Development Purpose</h2>
                     <p>
-                        The system provides separate dashboards for Students, Module Organisers, and Admin users. Each dashboard
-                        keeps the most important actions at the top of the page and opens operational pages directly below it,
-                        so users can move between profile, job, application, and management tasks without losing context.
+                        The purpose of this system is to provide a dedicated platform for publishing Teaching Assistant opportunities
+                        within BUPT International School. It allows student applicants to view positions, submit applications,
+                        and track their progress, while Module Organisers and administrators can manage vacancies, review candidates,
+                        and coordinate recruitment work more effectively.
                     </p>
                 </section>
 
                 <section class="card">
-                    <h2>Student Features</h2>
+                    <h2>Core Features</h2>
                     <ul>
-                        <li>Register and log in as a student</li>
-                        <li>View and update a detailed personal profile</li>
-                        <li>Browse and search TA vacancies</li>
-                        <li>Filter jobs by visible columns, deadline, and expiry status</li>
-                        <li>View job details and submit applications</li>
-                        <li>Track application status and workload warnings in My Applications</li>
+                        <li>Create and manage applicant profiles</li>
+                        <li>Browse available TA positions</li>
+                        <li>Submit job applications online</li>
+                        <li>Track application status</li>
+                        <li>Support position posting and candidate selection</li>
                     </ul>
                 </section>
 
                 <section class="card">
-                    <h2>MO Features</h2>
-                    <ul>
-                        <li>Register and log in as a Module Organiser</li>
-                        <li>Create, edit, close, re-open, delete, and view TA vacancies</li>
-                        <li>Review student applications for owned jobs</li>
-                        <li>View applicant profiles without leaving the review workflow</li>
-                        <li>Accept or reject applications and manage overtime exceptions</li>
-                        <li>Use AI candidate matching to compare applicants for a selected job</li>
-                    </ul>
-                </section>
-
-                <section class="card">
-                    <h2>Admin Features</h2>
-                    <ul>
-                        <li>Monitor all applications with summary statistics</li>
-                        <li>Filter applications by Pending, Accepted, and Rejected status</li>
-                        <li>Approve, reject, or withdraw application decisions when an override is needed</li>
-                        <li>Manage all job records across the system</li>
-                        <li>Search jobs and review vacancy visibility, quota, deadline, and hall display rules</li>
-                        <li>Edit, close, re-open, delete, and view job information</li>
-                    </ul>
-                </section>
-
-                <section class="card">
-                    <h2>Smart Support</h2>
+                    <h2>Project Team</h2>
                     <p>
-                        The platform includes AI-assisted features for recruitment decisions. Students can view AI match
-                        information and gap analysis when available, while Module Organisers can run AI candidate matching
-                        to receive match scores and evaluation reasons. These tools support decision-making, while final
-                        approval remains under human control.
+                        This system was developed by Software Engineering Group 15 as part of the course project.
+                        The team followed an agile development approach throughout requirements analysis, design,
+                        implementation, testing, and iterative improvement. The project also reflects collaborative development,
+                        incremental delivery, and continuous feedback in practice.
                     </p>
                 </section>
 
                 <section class="card full-width">
                     <h2>System Value</h2>
                     <p>
-                        The system improves TA recruitment by making vacancies easier to publish, applications easier to review,
-                        and decisions easier to trace. It reduces repetitive manual work, keeps workload and deadline rules visible,
-                        and gives each role a focused workspace for the tasks they perform most often. The result is a clearer,
-                        more transparent, and more maintainable recruitment process.
+                        More than just a course assignment, this platform serves as a focused recruitment solution for the International School.
+                        It helps reduce repetitive manual work, improves communication between applicants and organisers,
+                        and offers a more structured experience for TA recruitment each semester. The system also demonstrates
+                        how software engineering methods can be applied to solve practical management problems in an academic environment.
                     </p>
                 </section>
             </div>

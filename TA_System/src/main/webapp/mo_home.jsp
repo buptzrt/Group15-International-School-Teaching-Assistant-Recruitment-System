@@ -43,7 +43,6 @@
 <head>
     <meta charset="UTF-8">
     <title>MO Dashboard</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         #contentFrame {
             width: 100%;
@@ -305,19 +304,9 @@
         }
     </style>
     <script>
-        function setActiveNav(target) {
-            document.querySelectorAll(".nav-link").forEach(function(link) {
-                link.classList.remove("active");
-            });
-            if (target) {
-                target.classList.add("active");
-            }
-        }
-
         function showDashboard(event) {
             if (event) {
                 event.preventDefault();
-                setActiveNav(event.currentTarget);
             }
             document.getElementById("welcomeCard").classList.remove("hidden");
             document.getElementById("content").classList.add("hidden");
@@ -327,7 +316,6 @@
         function openSection(page, event) {
             if (event) {
                 event.preventDefault();
-                setActiveNav(event.currentTarget);
             }
             document.getElementById("welcomeCard").classList.add("hidden");
             document.getElementById("content").classList.remove("hidden");
@@ -341,16 +329,16 @@
         }
     </script>
 </head>
-<body class="app-auth-bg dashboard-shell">
+<body>
     <div class="page-container">
         <div class="navbar">
             <div class="navbar-left">
-                <h2 class="dashboard-title"><span class="dashboard-icon">&#9719;</span><span>MO Dashboard</span></h2>
-                <a class="nav-link active" href="#" onclick="showDashboard(event)"><span class="nav-link-icon">&#8981;</span>Dashboard</a>
-                <a class="nav-link" href="#" onclick="openSection('mo_job_list.jsp', event)"><span class="nav-link-icon">&#9638;</span>Job List</a>
-                <a class="nav-link" href="#" onclick="openSection('MOJobServlet', event)"><span class="nav-link-icon">&#10010;</span>Post Job</a>
-                <a class="nav-link" href="#" onclick="openSection('mo_view_applications.jsp', event)"><span class="nav-link-icon">&#9998;</span>View Applications</a>
-                <a class="nav-link" href="#" onclick="openSection('mo_filter_students.jsp', event)"><span class="nav-link-icon">&#9906;</span>Filter Students</a>
+                <h2>MO Dashboard</h2>
+                <a href="#" onclick="showDashboard(event)">Dashboard</a>
+                <a href="#" onclick="openSection('mo_job_list.jsp', event)">Job List</a>
+                <a href="#" onclick="openSection('MOJobServlet', event)">Post Job</a>
+                <a href="#" onclick="openSection('mo_view_applications.jsp', event)">View Applications</a>
+                <a href="#" onclick="openSection('mo_filter_students.jsp', event)">Filter Students</a>
             </div>
             <div class="navbar-right">
                 <form action="LogoutServlet" method="get" style="margin: 0;" onsubmit="confirmLogout(event);">
@@ -359,34 +347,80 @@
             </div>
         </div>
 
-        <div class="welcome-card home-panel" id="welcomeCard">
-            <span class="home-kicker">Module Organizer Workspace</span>
-            <div class="home-heading-row">
-                <h3>Welcome, <%= displayName %></h3>
-            </div>
-            <div class="home-meta">
-                <span>Role: MO</span>
-                <span>Name: <%= displayName %></span>
-            </div>
-            <p class="home-lead">
-                This home page is your recruitment control center. Use it to move from publishing a vacancy
-                to reviewing candidates and narrowing the applicant pool.
+        <div class="welcome-card" id="welcomeCard">
+            <span class="welcome-eyebrow">Module Organizer Workspace</span>
+            <h3>Welcome, <%= displayName %></h3>
+            <p class="welcome-lead">
+                This dashboard is your central workspace for managing teaching assistant recruitment.
+                As an MO, you can publish vacancies, review the positions you have created, track incoming
+                applications, and screen students more efficiently before making decisions.
             </p>
 
-            <div class="home-grid">
-                <div class="home-card">
-                    <h4>Check Vacancies</h4>
-                    <p>Open Job List to inspect visible opportunities and confirm current vacancy details.</p>
+            <div class="welcome-grid">
+                <div class="info-block">
+                    <h4>Your role on this page</h4>
+                    <p>
+                        The MO home page is designed to help you move from job publishing to candidate review
+                        in one clear flow. It keeps your recruitment tasks in one place so you can quickly
+                        understand what to do next and navigate to the right module.
+                    </p>
                 </div>
-                <div class="home-card">
-                    <h4>Post or Update Jobs</h4>
-                    <p>Use Post Job to create TA positions, edit requirements, or close roles that are no longer active.</p>
-                </div>
-                <div class="home-card">
-                    <h4>Review Candidates</h4>
-                    <p>Use View Applications and Filter Students to compare applicants before making decisions.</p>
+                <div class="info-block">
+                    <h4>Recommended workflow</h4>
+                    <p>
+                        Start by checking your current openings in Job List, create or update vacancies in
+                        Post Job, then move to View Applications to assess applicants. If you need a more
+                        focused shortlist, use Filter Students to compare candidates and support your decision.
+                    </p>
                 </div>
             </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h5>Dashboard</h5>
+                    <p>
+                        Return to this overview page at any time to review the MO workflow, understand each
+                        function, and jump directly to the section you need.
+                    </p>
+                </div>
+                <div class="feature-item">
+                    <h5>Job List</h5>
+                    <p>
+                        Review the vacancies already visible in the system, check the positions under your
+                        responsibility, and stay aligned with the current recruitment status.
+                    </p>
+                </div>
+                <div class="feature-item">
+                    <h5>Post Job</h5>
+                    <p>
+                        Create new TA opportunities, manage course-related job details, and maintain clear
+                        vacancy information so students know exactly what the role requires.
+                    </p>
+                </div>
+                <div class="feature-item">
+                    <h5>View Applications</h5>
+                    <p>
+                        Examine submitted applications for your jobs, follow each candidate's status, and
+                        make more confident hiring decisions based on the information provided.
+                    </p>
+                </div>
+                <div class="feature-item">
+                    <h5>Filter Students</h5>
+                    <p>
+                        Narrow down applicants with smarter screening support, compare student suitability,
+                        and identify promising candidates more quickly for the roles you manage.
+                    </p>
+                </div>
+                <div class="feature-item">
+                    <h5>Clear guidance</h5>
+                    <p>
+                        Each function on this page is arranged to keep the process simple: publish positions,
+                        review responses, filter talent, and complete your selection with better visibility.
+                    </p>
+                </div>
+            </div>
+
+            
         </div>
 
         <div class="content hidden" id="content">

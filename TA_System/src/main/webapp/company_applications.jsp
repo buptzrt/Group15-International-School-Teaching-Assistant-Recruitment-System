@@ -6,7 +6,6 @@
 <head>
     <title>Admin - Company Applications</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -115,8 +114,7 @@
         }
     </style>
 </head>
-<body class="app-auth-bg table-page role-table-page">
-<div class="page-container panel">
+<body>
     <h2>📥 Company-wise Applications</h2>
 
     <%
@@ -182,6 +180,5 @@
     <form action="admin_home_content.jsp">
         <input type="submit" value="⬅️ Back to Admin Home">
     </form>
-</div>
 </body>
 </html>

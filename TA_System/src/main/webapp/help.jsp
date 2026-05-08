@@ -243,63 +243,36 @@
         <div class="title-line"></div>
 
         <p class="intro">
-            Use this guide to understand the main workflow for Students, Module Organisers, and Admin users.
+            This page provides guidance on how to use the Teaching Assistant Recruitment System.
         </p>
 
         <div class="card">
-            <h2>Getting Started</h2>
+            <h2>For Students</h2>
             <ul>
-                <li>Open Register to choose either Student Registration or MO Registration.</li>
-                <li>After registration, use Login with your ID or email and password.</li>
-                <li>The system will open the correct dashboard automatically according to your role.</li>
-                <li>Use Logout on the top-right of the dashboard when you finish your work.</li>
+                <li>Create an account and complete your personal profile.</li>
+                <li>Browse available Teaching Assistant positions.</li>
+                <li>Submit your application for the desired courses.</li>
+                <li>Track your application status through the system.</li>
             </ul>
         </div>
 
         <div class="card">
-            <h2>Student Guide</h2>
+            <h2>For Administrators / Module Organisers</h2>
             <ul>
-                <li>Home shows your role information and quick guidance for the student workflow.</li>
-                <li>My Profile lets you view and edit your personal information, academic details, skills, experience, and resume information.</li>
-                <li>View Job List shows available vacancies. You can search visible columns, filter by table headers, show only not expired jobs, view job details, and apply for suitable positions.</li>
-                <li>AI Match and AI Gap Analysis help compare your profile with job requirements when analysis data is available.</li>
-                <li>My Applications shows every submitted application, including MO creator, application date, status, workload warnings, and the job detail link.</li>
-                <li>Application statuses are shown as Pending, Accepted, or Rejected. A workload warning appears when your applications may exceed the 20-hour limit.</li>
+                <li>Publish and manage TA recruitment positions.</li>
+                <li>Review student applications efficiently.</li>
+                <li>Select suitable candidates based on requirements.</li>
+                <li>Maintain a structured and transparent recruitment process.</li>
             </ul>
         </div>
 
         <div class="card">
-            <h2>MO Guide</h2>
-            <ul>
-                <li>Dashboard provides shortcuts for checking vacancies, posting jobs, and reviewing candidates.</li>
-                <li>Job List shows all visible vacancies with search, column filters, deadline filtering, and the option to show only not expired jobs.</li>
-                <li>Post Job lets you create new TA vacancies, edit job requirements, close open jobs, re-open available closed jobs, delete jobs, and view job details.</li>
-                <li>View Applications lists student submissions for your jobs. You can view student profiles, approve applications, reject applications, and mark overtime cases when needed.</li>
-                <li>Filter Students runs AI candidate matching for a selected job and returns match scores plus evaluation reasons to support shortlisting.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>Admin Guide</h2>
-            <ul>
-                <li>Home summarizes the admin workspace and links to application and job management.</li>
-                <li>Manage Application shows all submitted applications with statistics for total, accepted, rejected, and pending records.</li>
-                <li>Use the status filter to focus on All, Pending, Accepted, or Rejected applications.</li>
-                <li>Admin can approve, reject, or withdraw application decisions when an override is required.</li>
-                <li>Manage Jobs shows all vacancies sorted by deadline by default. You can search the table, view details, edit jobs, close jobs, re-open jobs, and delete jobs.</li>
-                <li>The job table also shows hall visibility rules, deadline-related hiding, quota left, and whether the vacancy needs admin attention.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>Tips for Daily Use</h2>
-            <ul>
-                <li>Use the search box when a table has many rows; it searches the visible columns on that page.</li>
-                <li>Click table headers when filters are available. Use Clear All Filters to return to the full list.</li>
-                <li>Jobs and applications use colored status badges so you can quickly distinguish open, closed, pending, accepted, and rejected records.</li>
-                <li>If a pop-up detail page opens, use the back arrow in the upper-left of the detail panel to return.</li>
-                <li>If AI analysis fails or times out, try again later or review the applicant information manually.</li>
-            </ul>
+            <h2>System Features</h2>
+            <p>
+                The TA Recruitment System is designed to simplify and digitalize the recruitment workflow.
+                It improves communication efficiency, reduces manual workload, and ensures a more organized
+                application process for all users.
+            </p>
         </div>
 
         <div class="github-box">
