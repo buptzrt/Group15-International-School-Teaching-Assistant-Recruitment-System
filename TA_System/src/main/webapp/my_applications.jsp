@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <title>My Applications</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         body {
             margin: 0;
@@ -22,7 +23,7 @@
         }
 
         .page-wrap {
-            max-width: 1180px;
+            max-width: 1320px;
             margin: 0 auto;
         }
 
@@ -35,12 +36,12 @@
         }
 
         .table-container {
-            background: rgba(255, 255, 255, 0.78);
+            background: rgba(58, 84, 118, 0.74);
             backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 22px;
+            padding: 26px;
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             overflow-x: auto;
         }
 
@@ -48,39 +49,42 @@
             width: 100%;
             border-collapse: collapse;
             min-width: 980px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         th, td {
-            padding: 15px 16px;
+            padding: 17px 18px;
             text-align: left;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            color: #2d3436;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+            color: #eef4fb;
             vertical-align: middle;
         }
 
         th {
-            background: rgba(0, 0, 0, 0.05);
-            color: #1f2d3d;
+            background: rgba(47, 118, 145, 0.72);
+            color: #ffd166;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             letter-spacing: 0.02em;
         }
 
         tr:hover td {
-            background: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.06);
         }
 
         .info-primary {
             display: block;
             font-weight: 700;
-            color: #22313f;
+            color: #eef4fb;
         }
 
         .info-secondary {
             display: block;
             margin-top: 4px;
             font-size: 13px;
-            color: #66707a;
+            color: #dbe8f5;
         }
 
         .mono {
@@ -90,9 +94,9 @@
 
         .detail-btn {
             display: inline-block;
-            padding: 7px 16px;
+            padding: 10px 20px;
             border-radius: 10px;
-            background: #1e90ff;
+            background: linear-gradient(135deg, #2d93ff, #1b79f2);
             color: #fff !important;
             text-decoration: none;
             font-size: 13px;
@@ -101,19 +105,19 @@
         }
 
         .detail-btn:hover {
-            background: #0072ff;
+            background: linear-gradient(135deg, #3ba0ff, #1d7df8);
             transform: translateY(-1px);
-            box-shadow: 0 6px 14px rgba(30, 144, 255, 0.25);
+            box-shadow: 0 10px 20px rgba(45, 147, 255, 0.28);
         }
 
         .status-tag {
-            padding: 5px 12px;
+            padding: 8px 16px;
             border-radius: 999px;
-            font-size: 12px;
+            font-size: 16px;
             font-weight: 700;
             color: #fff;
             display: inline-block;
-            min-width: 84px;
+            min-width: 110px;
             text-align: center;
         }
 
@@ -122,17 +126,52 @@
         .status-reject { background: #e74c3c; }
         .status-pending { background: #f39c12; }
 
+        th.status-column,
+        td.status-column {
+            text-align: center !important;
+            vertical-align: middle !important;
+            width: 220px;
+            min-width: 220px;
+        }
+
+        th.status-column {
+            display: table-cell !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            text-align: center !important;
+        }
+
+        .table-page thead th.status-column,
+        .table-page table thead tr th.status-column,
+        .page-wrap .table-container table thead th.status-column {
+            text-align: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        td.status-column {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            overflow: hidden;
+        }
+
         .limit-warning {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             margin-top: 8px;
-            font-size: 11px;
+            font-size: 12px;
+            line-height: 1.2;
             color: #ffffff;
             font-weight: 700;
             background: #d35400;
             border-radius: 999px;
-            padding: 4px 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            white-space: nowrap;
+            padding: 5px 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.24);
+            white-space: normal;
+            overflow-wrap: anywhere;
+            max-width: calc(100% - 18px);
+            box-sizing: border-box;
         }
 
         .no-data {
@@ -143,8 +182,8 @@
         }
     </style>
 </head>
-<body>
-<div class="page-wrap">
+<body class="app-auth-bg table-page role-table-page">
+<div class="page-wrap panel">
     <h3>My Applications</h3>
 
     <div class="table-container">
@@ -156,7 +195,7 @@
                 <th>MO Creator</th>
                 <th>Application Date</th>
                 <th>Action</th>
-                <th style="text-align: center;">Status</th>
+                <th class="status-column">Status</th>
             </tr>
             </thead>
             <tbody>
@@ -179,7 +218,7 @@
                         }
                     }
 
-                    // 🌟 1. 核心逻辑切换：获取已申请所有岗位的总时长累积 (不分状态)
+                    // 馃専 1. 鏍稿績閫昏緫鍒囨崲锛氳幏鍙栧凡鐢宠鎵€鏈夊矖浣嶇殑鎬绘椂闀跨疮绉?(涓嶅垎鐘舵€?
                     int totalAppliedHours = applicationDao.getAppliedTotalHours(userId);
 
                     String appPath = ApplicationDao.getFilePath();
@@ -193,7 +232,7 @@
                         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                             String line;
                             while ((line = br.readLine()) != null) {
-                                // 🌟 2. 匹配逻辑优化
+                                // 馃専 2. 鍖归厤閫昏緫浼樺寲
                                 if (line.replace(" ", "").contains("\"studentId\":\"" + userId + "\"")) {
                                     hasData = true;
 
@@ -208,8 +247,10 @@
                                     boolean isActuallyTimeout = false;
                                     try {
                                         Date applyDate = sdf.parse(appDateStr);
-                                        // 7天超时逻辑
-                                        if ("Pending".equalsIgnoreCase(status) && (nowTime - applyDate.getTime() > 604800000L)) {
+                                        // 7澶╄秴鏃堕€昏緫
+                                        Calendar untreatedDeadline = Calendar.getInstance();
+                                        untreatedDeadline.add(Calendar.MONTH, -4);
+                                        if ("Pending".equalsIgnoreCase(status) && applyDate.before(untreatedDeadline.getTime())) {
                                             isActuallyTimeout = true;
                                         }
                                     } catch (Exception dateEx) { }
@@ -222,7 +263,7 @@
                                         String activityType = jobDetail.getActivityType() == null ? "-" : jobDetail.getActivityType();
                                         String creatorName = jobDetail.getCreatorName() == null || jobDetail.getCreatorName().trim().isEmpty() ? "Unknown" : jobDetail.getCreatorName();
 
-                                        // 🌟 3. 判定：只要总申请时长 >= 20h，且该条申请不是“已通过”或“已拒绝”，就显示警告（包含超时岗）
+                                        // 馃専 3. 鍒ゅ畾锛氬彧瑕佹€荤敵璇锋椂闀?>= 20h锛屼笖璇ユ潯鐢宠涓嶆槸鈥滃凡閫氳繃鈥濇垨鈥滃凡鎷掔粷鈥濓紝灏辨樉绀鸿鍛婏紙鍖呭惈瓒呮椂宀楋級
                                         boolean showHoursWarning = (totalAppliedHours >= 20) &&
                                                 !("Accepted".equalsIgnoreCase(status) || "Pass".equalsIgnoreCase(status) || "Reject".equalsIgnoreCase(status));
             %>
@@ -244,17 +285,17 @@
                 <td>
                     <a href="view_job.jsp?jobId=<%= jobDetail.getJobId() %>&from=my_applications.jsp" class="detail-btn">Detail</a>
                 </td>
-                <td style="text-align: center;">
+                <td class="status-column">
                     <% if ("Pass".equalsIgnoreCase(status) || "Accepted".equalsIgnoreCase(status)) { %>
-                    <span class="status-tag status-pass">Accepted</span>
+                    <span class="application-status status-tag status-pass">Accepted</span>
                     <% } else if ("Reject".equalsIgnoreCase(status)) { %>
-                    <span class="status-tag status-reject">Rejected</span>
+                    <span class="application-status status-tag status-reject">Rejected</span>
                     <% } else if (isActuallyTimeout) { %>
                     <span class="status-tag status-timeout">Untreated</span>
-                    <%-- 🌟 超时岗位现在也会正确触发时长限制提醒 --%>
+                    <%-- 馃専 瓒呮椂宀椾綅鐜板湪涔熶細姝ｇ‘瑙﹀彂鏃堕暱闄愬埗鎻愰啋 --%>
                     <% if (showHoursWarning) { %><br><span class="limit-warning">Workload limit reached (<%= totalAppliedHours %>h)</span><% } %>
                     <% } else { %>
-                    <span class="status-tag status-pending">Pending</span>
+                    <span class="application-status status-tag status-pending">Pending</span>
                     <% if (showHoursWarning) { %><br><span class="limit-warning">Workload limit reached (<%= totalAppliedHours %>h)</span><% } %>
                     <% } %>
                 </td>

@@ -323,6 +323,182 @@
                 font-size: 13px;
             }
         }
+
+        /* 与登录页保持一致的注册页布局：顶部学校标识、居中注册卡片、右下角返回按钮。 */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: clamp(12px, 2vh, 22px);
+            padding: clamp(14px, 2vw, 28px);
+            min-height: 100svh;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        .page-stage {
+            display: contents;
+            min-height: auto;
+        }
+
+        .header-logos {
+            position: relative;
+            top: auto;
+            left: auto;
+            right: auto;
+            transform: none;
+            width: min(1150px, 100%);
+            min-width: 0;
+            min-height: 80px;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(34px, 7vw, 88px);
+            padding: 12px clamp(22px, 4vw, 48px);
+            border-radius: 18px;
+            order: 1;
+        }
+
+        .logo-item {
+            min-width: 0;
+            flex: 0 1 auto;
+        }
+
+        .logo-item img {
+            width: 54px;
+            height: 54px;
+            flex: 0 0 54px;
+        }
+
+        .logo-text {
+            color: #dfe9f7;
+            font-size: clamp(15px, 1.05vw, 18px);
+            line-height: 1.35;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        .register-content {
+            position: relative;
+            top: auto;
+            left: auto;
+            right: auto;
+            transform: none;
+            order: 2;
+            width: min(430px, 100%);
+            max-width: none;
+            padding: clamp(30px, 4vh, 46px) clamp(30px, 4vw, 44px);
+            margin: clamp(2px, 1.2vh, 12px) auto 0;
+            animation: none;
+        }
+
+        .register-subtitle {
+            font-size: clamp(20px, 2vw, 24px);
+        }
+
+        .register-title {
+            font-size: clamp(34px, 3vw, 42px);
+        }
+
+        .title-line {
+            margin-bottom: clamp(24px, 3vh, 36px);
+        }
+
+        .top-back-nav {
+            position: fixed;
+            right: clamp(28px, 5vw, 84px);
+            bottom: clamp(24px, 5vh, 64px);
+            top: auto;
+            left: auto;
+            transform: none;
+            order: 4;
+            width: min(430px, 32vw);
+            flex-direction: row;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .top-back-nav a {
+            width: auto;
+            min-width: 150px;
+            padding: 10px 22px;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 12px;
+                gap: 12px;
+                overflow-y: auto;
+            }
+
+            .header-logos {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .logo-item {
+                justify-content: flex-start;
+            }
+
+            .register-content {
+                padding: 28px 20px;
+            }
+
+            .top-back-nav {
+                position: relative;
+                right: auto;
+                bottom: auto;
+                width: 100%;
+            }
+
+            .top-back-nav a {
+                flex: 1 1 0;
+                min-width: 0;
+            }
+        }
+
+        @media (max-height: 720px) and (min-width: 761px) {
+            body {
+                gap: 8px;
+            }
+
+            .header-logos {
+                min-height: 60px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+
+            .logo-item img {
+                width: 46px;
+                height: 46px;
+                flex-basis: 46px;
+            }
+
+            .register-content {
+                padding-top: 24px;
+                padding-bottom: 24px;
+                margin-top: 0;
+            }
+
+            .sub-desc {
+                margin-bottom: 18px;
+            }
+
+            .role-group {
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .choice-btn {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+        }
     </style>
 </head>
 <body>

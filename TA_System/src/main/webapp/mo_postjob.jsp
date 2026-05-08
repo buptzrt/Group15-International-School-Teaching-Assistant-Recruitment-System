@@ -7,18 +7,44 @@
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Comparator" %>
+<%@ page import="java.time.LocalDate" %>
 <%@ page import="com.me.finaldesignproject.model.Job" %>
 <%
   if (session == null || session.getAttribute("role") == null || !"MO".equalsIgnoreCase((String) session.getAttribute("role"))) {
     response.sendRedirect("login.jsp");
     return;
   }
+  // 获取当前 MO 发布的职位列表，并默认按申请截止日期从早到晚排序。
   List<Job> jobList = (List<Job>) request.getAttribute("jobList");
+  if (jobList != null) {
+    jobList.sort(new Comparator<Job>() {
+      private LocalDate parseDeadline(Job job) {
+        try {
+          String deadline = job == null ? null : job.getApplicationDeadline();
+          if (deadline == null || deadline.trim().isEmpty()) {
+            // 没有截止日期的职位排在最后。
+            return LocalDate.MAX;
+          }
+          return LocalDate.parse(deadline.trim());
+        } catch (Exception ignored) {
+          // 截止日期格式异常时也排在最后，避免页面渲染失败。
+          return LocalDate.MAX;
+        }
+      }
+
+      @Override
+      public int compare(Job a, Job b) {
+        return parseDeadline(a).compareTo(parseDeadline(b));
+      }
+    });
+  }
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
   <title>Manage TA Vacancies</title>
   <style>
     /* 🌟 滚动条整体美化 🌟 */
@@ -74,8 +100,8 @@
     select option { background-color: #1a2a40; color: #ffffff; }
   </style>
 </head>
-<body>
-<div class="page-container">
+<body class="app-auth-bg table-page role-table-page">
+<div class="page-container panel">
   <div class="header">
     <h2>My Posted Vacancies</h2>
     <button class="btn" onclick="openCreateModal()">+ Post New Vacancy</button>
@@ -92,9 +118,9 @@
 
 <%--      <div style="margin-top: 15px; display: flex; gap: 10px;">--%>
       <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-        <a href="view_job.jsp?jobId=<%= job.getJobId() %>&from=MOJobServlet" class="btn" style="padding: 8px 12px; background-color: #17a2b8; text-decoration: none; text-align: center;">View</a>
+        <a href="view_job.jsp?jobId=<%= job.getJobId() %>&from=MOJobServlet" class="btn btn-view" style="padding: 8px 12px; background-color: #17a2b8; text-decoration: none; text-align: center;">View</a>
 
-        <button type="button" class="btn" style="padding: 8px 12px; background-color: #3498db;" onclick="openEditModal('<%= job.getJobId() %>')">Edit</button>
+        <button type="button" class="btn btn-edit" style="padding: 8px 12px; background-color: #3498db;" onclick="openEditModal('<%= job.getJobId() %>')">Edit</button>
 
         <% if ("Open".equals(job.getStatus())) { %>
         <form action="MOJobServlet" method="POST" style="margin:0;">
@@ -106,7 +132,7 @@
         <form action="MOJobServlet" method="POST" style="margin:0;">
           <input type="hidden" name="action" value="reopen">
           <input type="hidden" name="jobId" value="<%= job.getJobId() %>">
-          <button type="submit" class="btn" style="padding: 8px 12px; background-color: #2ecc71;">Re-open</button>
+          <button type="submit" class="btn btn-reopen" style="padding: 8px 12px; background-color: #2ecc71;">Re-open</button>
         </form>
         <% } %>
         <form action="MOJobServlet" method="POST" style="margin:0;" onsubmit="return confirm('Are you sure you want to delete this vacancy?');">
@@ -122,9 +148,9 @@
   </div>
 </div>
 
-<div id="jobModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
+<div id="jobModal" class="modal detail-modal">
+  <div class="modal-content detail-surface">
+    <span class="close" onclick="closeModal()" title="Back"></span>
     <h3 id="modalTitle" style="color: #ffd166; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Create TA Vacancy</h3>
 
     <form id="jobForm" action="MOJobServlet" method="POST">

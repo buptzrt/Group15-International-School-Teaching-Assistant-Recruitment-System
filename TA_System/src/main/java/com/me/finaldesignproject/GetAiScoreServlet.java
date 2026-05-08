@@ -6,13 +6,13 @@ import com.me.finaldesignproject.dao.JobDao;
 import com.me.finaldesignproject.dao.StudentProfileDao;
 import com.me.finaldesignproject.model.Job;
 import com.me.finaldesignproject.model.StudentProfile;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 @WebServlet("/GetAiScoreServlet")
@@ -22,78 +22,72 @@ public class GetAiScoreServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        System.out.println("\n========== [GetAiScoreServlet] 收到 AI 打分请求 ==========");
+
+        JsonObject json = new JsonObject();
 
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
-                System.out.println("❌ 失败原因: Session 已过期或为空");
-                response.getWriter().write("{\"success\":false, \"message\":\"登录失效\"}");
+                writeError(response, "Session expired. Please log in again.");
                 return;
             }
 
             String studentId = (String) session.getAttribute("userId");
-            if (studentId == null || studentId.isEmpty()) {
+            if (studentId == null || studentId.trim().isEmpty()) {
                 studentId = (String) session.getAttribute("enrollment_no");
             }
-            System.out.println("👉 当前请求学号: " + studentId);
 
-            if (studentId == null || studentId.isEmpty()) {
-                System.out.println("❌ 失败原因: Session 中没有学号信息");
-                response.getWriter().write("{\"success\":false, \"message\":\"未登录\"}");
+            if (studentId == null || studentId.trim().isEmpty()) {
+                writeError(response, "Student ID not found in session.");
                 return;
             }
 
             String jobId = request.getParameter("jobId");
-            System.out.println("👉 目标岗位ID: " + jobId);
-
             if (jobId == null || jobId.trim().isEmpty()) {
-                System.out.println("❌ 失败原因: 前端传来的 jobId 是空的！");
-                response.getWriter().write("{\"success\":false, \"message\":\"缺JobID\"}");
+                writeError(response, "Missing jobId.");
                 return;
             }
             jobId = jobId.trim();
 
             Job targetJob = null;
-            for (Job j : new JobDao().getAllJobs()) {
-                if (j.getJobId().equals(jobId)) { targetJob = j; break; }
+            for (Job job : new JobDao().getAllJobs()) {
+                if (jobId.equals(job.getJobId())) {
+                    targetJob = job;
+                    break;
+                }
             }
 
             if (targetJob == null) {
-                System.out.println("❌ 失败原因: 数据库中找不到对应 ID 的岗位");
-                response.getWriter().write("{\"success\":false, \"message\":\"无此岗位\"}");
+                writeError(response, "Job not found.");
                 return;
             }
 
             StudentProfile profile = new StudentProfileDao().getByEnrollment(studentId);
             if (profile == null) {
-                System.out.println("❌ 失败原因: 数据库中查不到该学生的简历");
-                response.getWriter().write("{\"success\":false, \"message\":\"缺简历\"}");
+                writeError(response, "Student profile not found.");
                 return;
             }
 
-            System.out.println("✅ 数据全通，准备呼叫引擎或读取缓存...");
-            AiMatchEngine.MatchResult res = AiMatchEngine.evaluate(targetJob, profile, "");
-
-            if (res == null) {
-                System.out.println("❌ 失败原因: AiMatchEngine 返回了 null，可能是大模型死锁");
-                response.getWriter().write("{\"success\":false, \"message\":\"引擎崩溃\"}");
+            AiMatchEngine.MatchResult result = AiMatchEngine.evaluate(targetJob, profile, "");
+            if (result == null) {
+                writeError(response, "AI engine returned no result.");
                 return;
             }
 
-            System.out.println("🎉 打分成功！最终分数: " + res.score);
-            JsonObject json = new JsonObject();
             json.addProperty("success", true);
-            json.addProperty("score", res.score);
-            json.addProperty("reason", res.reason);
-
+            json.addProperty("score", result.score);
+            json.addProperty("reason", result.reason == null ? "" : result.reason);
             response.getWriter().write(GSON.toJson(json));
-
         } catch (Exception e) {
-            System.out.println("❌ 失败原因: 后端发生未知崩溃！");
             e.printStackTrace();
-            response.getWriter().write("{\"success\":false, \"message\":\"后台崩溃\"}");
+            writeError(response, "Failed to get AI score.");
         }
-        System.out.println("========================================================\n");
+    }
+
+    private void writeError(HttpServletResponse response, String message) throws IOException {
+        JsonObject json = new JsonObject();
+        json.addProperty("success", false);
+        json.addProperty("message", message);
+        response.getWriter().write(GSON.toJson(json));
     }
 }

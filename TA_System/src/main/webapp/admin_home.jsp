@@ -59,6 +59,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -147,13 +148,13 @@
         }
     </script>
 </head>
-<body>
+<body class="app-auth-bg dashboard-shell admin-home-page">
     <div class="navbar">
         <div class="navbar-left">
-            <h2>Admin Dashboard</h2>
-            <a href="admin_home.jsp">Home</a>
-            <a href="manage_students.jsp">Manage Students</a>
-            <a href="manage_jobs.jsp">Manage Jobs</a>
+            <h2 class="dashboard-title"><span class="dashboard-icon">&#9638;</span><span>Admin Dashboard</span></h2>
+            <a class="nav-link active" href="admin_home.jsp"><span class="nav-link-icon">&#8962;</span>Home</a>
+            <a class="nav-link" href="manage_students.jsp"><span class="nav-link-icon">&#9786;</span>Manage Application</a>
+            <a class="nav-link" href="manage_jobs.jsp"><span class="nav-link-icon">&#9638;</span>Manage Jobs</a>
         </div>
         <div>
             <form action="LogoutServlet" method="get" style="margin:0;" onsubmit="confirmLogout(event)">
@@ -162,12 +163,36 @@
         </div>
     </div>
 
-    <div class="container">
-        <h3>Welcome, <%= displayName %></h3>
-        <p>This is the Admin Dashboard.</p>
-        <p>You have successfully logged in as <strong>Admin</strong>.</p>
-        <p>Email: <%= displayEmail %></p>
-        <p>ID: <%= displayId %></p>
+    <div class="container home-panel">
+        <span class="home-kicker">Admin Workspace</span>
+        <div class="home-heading-row">
+            <h3>Welcome, <%= displayName %></h3>
+        </div>
+        <div class="home-meta">
+            <span>Role: Admin</span>
+            <span>Email: <%= displayEmail %></span>
+            <span>ID: <%= displayId %></span>
+        </div>
+        <p class="home-lead">
+            Use this home page as a quick control center for keeping applications, job visibility,
+            and recruitment rules in order. Start with the area that needs review today.
+        </p>
+
+        <div class="home-grid">
+            <div class="home-card">
+                <h4>Review Applications</h4>
+                <p>Open Manage Application to check student submissions, review status changes, and handle admin overrides.</p>
+            </div>
+            <div class="home-card">
+                <h4>Monitor Jobs</h4>
+                <p>Use Manage Jobs to confirm which vacancies are visible, closed, expired, or need admin attention.</p>
+            </div>
+            <div class="home-card">
+                <h4>Keep Records Clear</h4>
+                <p>Use the dashboard to keep each recruitment step traceable before module organizers make final decisions.</p>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>

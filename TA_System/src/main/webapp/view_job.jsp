@@ -9,7 +9,7 @@
         return;
     }
 
-    boolean isAuthorized = "MO".equalsIgnoreCase(userRole) || "Student".equalsIgnoreCase(userRole);
+    boolean isAuthorized = "MO".equalsIgnoreCase(userRole) || "Student".equalsIgnoreCase(userRole) || "Admin".equalsIgnoreCase(userRole);
     if (!isAuthorized) {
         response.sendRedirect("login.jsp");
         return;
@@ -18,7 +18,7 @@
     String jobId = request.getParameter("jobId");
     String from = request.getParameter("from");
 
-    String backUrl = "mo_job_list.jsp";
+    String backUrl = "Admin".equalsIgnoreCase(userRole) ? "manage_jobs.jsp" : "mo_job_list.jsp";
     if (from != null && !from.trim().isEmpty()) {
         backUrl = from;
     }
@@ -86,10 +86,12 @@
 <head>
     <meta charset="UTF-8">
     <title>View Job Details</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         body { margin: 0; padding: 36px 18px; font-family: Georgia, "Times New Roman", serif; background-image: url("${pageContext.request.contextPath}/images/bupt_campus_bg.jpg"); background-size: cover; background-position: center; background-attachment: fixed; color: #f4f7fb; min-height: 100vh; position: relative; }
         body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(18, 35, 61, 0.78); z-index: -1; }
         .page-container { max-width: 980px; margin: 0 auto; }
+        .detail-back-row { display: flex; align-items: center; min-height: 42px; margin-bottom: 18px; }
         .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .header-left a { text-decoration: none; color: #9bd3ff; font-size: 28px; transition: 0.3s; font-weight: bold; }
@@ -110,11 +112,13 @@
         @media (max-width: 760px) { .detail-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body>
-<div class="page-container">
+<body class="app-auth-bg table-page role-table-page detail-display-page">
+<div class="page-container panel detail-surface">
+    <div class="detail-back-row">
+        <a class="detail-exit-arrow" href="<%= backUrl %>" title="Back to List"></a>
+    </div>
     <div class="header">
         <div class="header-left">
-            <a href="<%= backUrl %>" title="Back to List">&#8592;</a>
             <h2>Job Details</h2>
         </div>
         <div class="pill">Status: <strong class="<%= "Open".equals(status) ? "status-open" : "status-closed" %>" style="margin-left: 6px;"><%= status %></strong></div>
