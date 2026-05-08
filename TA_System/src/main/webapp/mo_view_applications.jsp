@@ -195,6 +195,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: nowrap;
+            min-width: 190px;
         }
 
         /* 状态与按钮样式 */
@@ -205,8 +207,9 @@
         .status-timeout { color: #95a5a6; border: 1px solid #95a5a6; }
 
         .action-btn {
-            display: inline-block; padding: 6px 12px; border-radius: 6px;
-            text-decoration: none; font-size: 12px; font-weight: 600; color: #fff; border: none;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 82px; min-height: 56px; padding: 8px 14px; border-radius: 6px;
+            text-decoration: none; font-size: 13px; font-weight: 700; color: #fff; border: none;
             transition: 0.3s; cursor: pointer; white-space: nowrap;
         }
         .btn-pass { background: #2ecc71; }

@@ -64,7 +64,7 @@
 
         /* 评语特殊排版 */
         .ai-reason-text { font-size: 16px; line-height: 1.8; color: #f5f9ff; white-space: pre-line; }
-        .action-btn { background: #1e90ff; color: #fff; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
+        .action-btn { background: #1e90ff; color: #fff; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; white-space: nowrap; }
         .action-btn:hover { background: #187bcd; }
         /* 针对 AI 理由单元格的特殊样式，让 \n 变成真正的换行 */
         .reason-cell {
@@ -74,6 +74,17 @@
             color: #e2e8f0;
             padding-top: 16px !important;
             padding-bottom: 16px !important;
+        }
+        .reason-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .reason-list li {
+            margin-bottom: 8px;
+            white-space: normal;
+        }
+        .reason-list li:last-child {
+            margin-bottom: 0;
         }
 
         /* 🌟 滚动条美化 */
@@ -95,7 +106,7 @@
             background: rgba(18, 35, 61, 0.78); z-index: -1;
         }
 
-        .page-container { max-width: 1100px; margin: 0 auto; }
+        .page-container { max-width: 1280px; margin: 0 auto; }
 
         .panel {
             background: rgba(255, 255, 255, 0.08);
@@ -127,7 +138,7 @@
 
         .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.18); position: relative; display: none; }
 
-        table { width: 100%; border-collapse: collapse; min-width: 900px; background: rgba(255, 255, 255, 0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 1050px; background: rgba(255, 255, 255, 0.05); }
         thead th { text-align: left; color: #ffd166; font-weight: 700; font-size: 15px; padding: 14px; background: rgba(0, 0, 0, 0.2); border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
         tbody td { padding: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); color: #f5f9ff; font-size: 15px; line-height: 1.6; vertical-align: top; }
         tbody tr:hover { background: rgba(255, 255, 255, 0.08); }
@@ -175,7 +186,8 @@
                     <th style="width: 12%">Student ID</th>
                     <th style="width: 18%">Major</th>
                     <th style="width: 12%">Match Score</th>
-                    <th style="width: 46%">AI Evaluation Reason</th>
+                    <th style="width: 38%">AI Evaluation Reason</th>
+                    <th style="width: 8%">AI Analysis</th>
                 </tr>
                 </thead>
                 <tbody id="resultBody">
@@ -187,6 +199,37 @@
 
 <script>
     let currentAiData = []; // 声明一个全局变量保存结果，方便 Modal 随时读取
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatReasonAsList(reason) {
+        const text = String(reason || '').trim();
+        if (!text) {
+            return '<span>Not available.</span>';
+        }
+
+        const items = text
+            .replace(/\r\n/g, '\n')
+            .split(/\n?\s*\u2022\s+/)
+            .map(item => item.trim())
+            .filter(Boolean);
+
+        if (items.length <= 1) {
+            return '<ul class="reason-list"><li>' + escapeHtml(text.replace(/^\u2022\s*/, '')) + '</li></ul>';
+        }
+
+        return '<ul class="reason-list">' +
+            items.map(item => '<li>' + escapeHtml(item) + '</li>').join('') +
+            '</ul>';
+    }
+
     function runAiMatch() {
         const jobId = document.getElementById('jobSelector').value;
         if(!jobId) {
@@ -229,8 +272,8 @@
                             '<td style="color: #9bd3ff;">' + item.studentId + '</td>' +
                             '<td style="font-size:14px;">' + (item.major || 'Unknown') + '</td>' +
                             '<td><div class="score-box ' + scoreClass + '">' + item.score + '</div></td>' +
-                            '<td class="reason-cell">' + item.reason + '</td>' +
-                            '<td><button class="action-btn" onclick="openModal(' + index + ')">👁️ View</button></td>' +
+                            '<td class="reason-cell">' + formatReasonAsList(item.reason) + '</td>' +
+                            '<td><button type="button" class="action-btn" onclick="openModal(' + index + ')">View Analysis</button></td>' +
                             '</tr>';
                         tbody.innerHTML += row;
                     });
@@ -266,7 +309,7 @@
         scoreDiv.className = 'score-box ' + (item.score >= 80 ? 'score-high' : (item.score >= 60 ? 'score-mid' : 'score-low'));
 
         // 设置理由
-        document.getElementById('modalReason').innerText = item.reason;
+        document.getElementById('modalReason').innerHTML = formatReasonAsList(item.reason);
 
         // 加载 PDF (如果是空路径，给个提示)
         const iframe = document.getElementById('pdfIframe');
