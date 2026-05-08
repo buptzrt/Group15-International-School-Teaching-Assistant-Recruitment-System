@@ -447,7 +447,6 @@
             </div>
 
             <div class="link-group">
-                <p>Forgot Password? <a href="#">Click here to retrieve.</a></p>
                 <p>Don't have an account? <a href="register.jsp">Register here.</a></p>
             </div>
         </form>
