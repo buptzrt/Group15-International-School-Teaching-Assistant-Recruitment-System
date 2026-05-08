@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.me.finaldesignproject.dao.JobDao" %>
@@ -28,7 +28,6 @@
 <head>
     <meta charset="UTF-8">
     <title>AI Skill Matcher</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         /* 🌟 简历双屏对比 Modal 样式 */
         .modal-overlay {
@@ -146,7 +145,7 @@
         @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
     </style>
 </head>
-<body class="app-auth-bg table-page role-table-page">
+<body>
 <div class="page-container">
     <div class="panel">
         <h2>AI Candidate Matcher <span class="ai-badge">Powered by Qwen</span></h2>
