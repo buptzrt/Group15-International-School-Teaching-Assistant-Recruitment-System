@@ -1,41 +1,75 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Comparator" %>
+<%@ page import="java.time.LocalDate" %>
 <%@ page import="com.me.finaldesignproject.dao.JobDao" %>
 <%@ page import="com.me.finaldesignproject.model.Job" %>
 <%
-    // 权限校验：仅限 MO 角色访问
+    // 权限校验：仅允许 MO 角色访问该页面。
     if (session == null || session.getAttribute("role") == null || !"MO".equalsIgnoreCase((String) session.getAttribute("role"))) {
         response.sendRedirect("login.jsp");
         return;
     }
-    // 获取所有职位数据
+    // 获取所有职位，并默认排序：未过期职位在前，超过 Deadline 的职位放到最后；同组内按 Deadline 从早到晚排序。
     List<Job> allJobs = new JobDao().getAllJobs();
+    if (allJobs != null) {
+        allJobs.sort(new Comparator<Job>() {
+            private LocalDate parseDeadline(Job job) {
+                try {
+                    String deadline = job == null ? null : job.getApplicationDeadline();
+                    if (deadline == null || deadline.trim().isEmpty()) {
+                        // 没有截止日期的职位排在最后。
+                        return LocalDate.MAX;
+                    }
+                    return LocalDate.parse(deadline.trim());
+                } catch (Exception ignored) {
+                    // 截止日期格式异常时也排在最后，避免页面渲染失败。
+                    return LocalDate.MAX;
+                }
+            }
+
+            private boolean isOverdue(Job job) {
+                LocalDate deadline = parseDeadline(job);
+                return !LocalDate.MAX.equals(deadline) && deadline.isBefore(LocalDate.now());
+            }
+
+            @Override
+            public int compare(Job a, Job b) {
+                int overdueCompare = Boolean.compare(isOverdue(a), isOverdue(b));
+                if (overdueCompare != 0) {
+                    return overdueCompare;
+                }
+                return parseDeadline(a).compareTo(parseDeadline(b));
+            }
+        });
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Job List</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
-        /* 🌟 滚动条整体美化 🌟 */
+        /* 滚动条整体样式 */
         ::-webkit-scrollbar {
-            width: 8px; /* 纵向滚动条的宽度 */
-            height: 8px; /* 横向滚动条的高度 */
+            width: 8px; /* 纵向滚动条宽度 */
+            height: 8px; /* 横向滚动条高度 */
         }
-        /* 滚动条轨道（背景） */
+        /* 滚动条轨道 */
         ::-webkit-scrollbar-track {
-            background: transparent; /* 让轨道彻底透明，完美融入星空背景 */
+            background: transparent; /* 轨道透明，和背景融合 */
         }
         /* 滚动条滑块 */
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.25); /* 半透明白色，带有磨砂感 */
+            background: rgba(255, 255, 255, 0.25); /* 半透明白色滑块 */
             border-radius: 10px; /* 圆角设计 */
         }
         /* 鼠标悬停在滑块上的效果 */
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.45); /* 悬停时稍微变亮 */
         }
-        /* 原有样式保持不变 */
+        /* 页面基础样式 */
         body {
             margin: 0;
             padding: 36px 18px;
@@ -202,6 +236,13 @@
             cursor: default;
         }
 
+        .header-caret {
+            margin-left: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffd166;
+        }
+
         .filter-mark {
             margin-left: 6px;
             font-size: 12px;
@@ -219,6 +260,35 @@
 
         tbody tr:hover {
             background: rgba(255, 255, 255, 0.08);
+        }
+
+        tr.overdue-job-row,
+        .table-page tbody tr.overdue-job-row,
+        .role-table-page tbody tr.overdue-job-row {
+            filter: grayscale(0.85);
+        }
+
+        tr.overdue-job-row td,
+        .table-page tbody tr.overdue-job-row td,
+        .role-table-page tbody tr.overdue-job-row td {
+            color: rgba(210, 218, 226, 0.56) !important;
+            background: rgba(104, 113, 123, 0.42) !important;
+            border-bottom-color: rgba(210, 218, 226, 0.12) !important;
+        }
+
+        tr.overdue-job-row:hover td,
+        .table-page tbody tr.overdue-job-row:hover td,
+        .role-table-page tbody tr.overdue-job-row:hover td {
+            background: rgba(104, 113, 123, 0.5) !important;
+        }
+
+        tr.overdue-job-row .view-btn,
+        .table-page tbody tr.overdue-job-row .view-btn,
+        .role-table-page tbody tr.overdue-job-row .view-btn {
+            background: rgba(127, 140, 141, 0.9) !important;
+            color: rgba(255, 255, 255, 0.82) !important;
+            border-color: rgba(210, 218, 226, 0.18) !important;
+            box-shadow: none !important;
         }
 
         .view-btn {
@@ -242,7 +312,7 @@
             font-style: italic;
         }
 
-        /* 筛选弹窗样式 */
+        /* 表头筛选弹窗样式 */
         .header-filter {
             position: fixed;
             z-index: 9999;
@@ -319,7 +389,7 @@
         }
     </style>
 </head>
-<body>
+<body class="app-auth-bg table-page role-table-page">
 <div class="page-container">
     <div class="panel">
         <h2>Job List</h2>
@@ -342,12 +412,12 @@
             <table id="jobTable">
                 <thead>
                 <tr>
-                    <th data-key="creator">Creator<span class="filter-mark"></span></th>
-                    <th data-key="course">Course<span class="filter-mark"></span></th>
-                    <th data-key="title">Title<span class="filter-mark"></span></th>
-                    <th data-key="type">Type<span class="filter-mark"></span></th>
-                    <th data-key="deadline">Deadline<span class="filter-mark"></span></th>
-                    <th data-key="position">Position<span class="filter-mark"></span></th>
+                    <th data-key="creator">Creator<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th data-key="course">Course<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th data-key="type">Type<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th data-key="location">Location<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th data-key="deadline">Deadline<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
+                    <th data-key="position">Position<span class="header-caret">&#9662;</span><span class="filter-mark"></span></th>
                     <th class="action-col">Action</th>
                 </tr>
                 </thead>
@@ -357,31 +427,40 @@
                     String courseName = job.getCourseName() == null ? "" : job.getCourseName();
                     String moduleCode = job.getModuleCode() == null ? "-" : job.getModuleCode();
                     String course = courseName + " (" + moduleCode + ")";
-                    String title = job.getJobTitle() == null ? "-" : job.getJobTitle();
                     String type = job.getActivityType() == null ? "-" : job.getActivityType();
+                    String location = job.getLocation() == null ? "-" : job.getLocation();
                     String deadline = job.getApplicationDeadline() == null ? "-" : job.getApplicationDeadline();
                     String position = String.valueOf(job.getNumberOfPositions());
-                    // 获取发布者姓名
+                    boolean isOverdue = false;
+                    try {
+                        isOverdue = job.getApplicationDeadline() != null
+                                && !job.getApplicationDeadline().trim().isEmpty()
+                                && LocalDate.parse(job.getApplicationDeadline().trim()).isBefore(LocalDate.now());
+                    } catch (Exception ignored) {
+                        isOverdue = false;
+                    }
+                    // 获取发布者姓名，缺失时显示为 Unknown。
                     String creatorName = (job.getCreatorName() == null || job.getCreatorName().isEmpty()) ? "Unknown" : job.getCreatorName();
 
                     String courseAttr = course.toLowerCase().replace("\"", "&quot;");
-                    String titleAttr = title.toLowerCase().replace("\"", "&quot;");
                     String typeAttr = type.toLowerCase().replace("\"", "&quot;");
+                    String locationAttr = location.toLowerCase().replace("\"", "&quot;");
                     String deadlineAttr = deadline.replace("\"", "&quot;");
                     String positionAttr = position.replace("\"", "&quot;");
-                    // 处理属性用于 JS 筛选
+                    // 处理 data 属性值，方便前端搜索和筛选。
                     String creatorAttr = creatorName.toLowerCase().replace("\"", "&quot;");
                 %>
-                <tr data-course="<%= courseAttr %>"
-                    data-title="<%= titleAttr %>"
+                <tr class="<%= isOverdue ? "overdue-job-row" : "" %>"
+                    data-course="<%= courseAttr %>"
                     data-type="<%= typeAttr %>"
+                    data-location="<%= locationAttr %>"
                     data-deadline="<%= deadlineAttr %>"
                     data-position="<%= positionAttr %>"
                     data-creator="<%= creatorAttr %>">
                     <td><%= creatorName %></td>
                     <td><%= course %></td>
-                    <td><%= title %></td>
                     <td><%= type %></td>
+                    <td><%= location %></td>
                     <td><%= deadline %></td>
                     <td><%= position %></td>
                     <td><a class="view-btn" href="view_job.jsp?jobId=<%= job.getJobId() %>&from=mo_job_list.jsp">View</a></td>
@@ -419,10 +498,10 @@
             onlyNotExpired: false,
             columnFilters: {
                 course: "",
-                title: "",
                 type: "",
+                location: "",
                 position: "",
-                creator: "" // 新增筛选状态
+                creator: "" // Creator 列的筛选状态。
             },
             deadlineBefore: ""
         };
@@ -433,7 +512,7 @@
 
         function buildSearchHay(row) {
             const visibleCols = [];
-            // 搜索前 6 列内容 (从索引 0 到 5)
+            // 搜索前 6 列的可见文本内容。
             for (let i = 0; i <= 5; i++) {
                 const cell = row.cells[i];
                 if (cell) visibleCols.push(cell.textContent || "");
@@ -483,10 +562,11 @@
             rows.forEach(row => {
                 const searchHay = buildSearchHay(row);
                 const courseVal = normalize(row.getAttribute("data-course"));
-                const titleVal = normalize(row.getAttribute("data-title"));
                 const typeVal = normalize(row.getAttribute("data-type"));
+                const locationVal = normalize(row.getAttribute("data-location"));
                 const positionVal = normalize(row.getAttribute("data-position"));
-                const creatorVal = normalize(row.getAttribute("data-creator")); // 获取 Creator 值
+                // 获取 Creator 和 Deadline 的筛选值。
+                const creatorVal = normalize(row.getAttribute("data-creator"));
                 const deadlineVal = (row.getAttribute("data-deadline") || "").trim();
                 const deadlineTime = parseYmdDate(deadlineVal);
 
@@ -495,10 +575,10 @@
                 if (!matchesSearch(searchHay, q)) visible = false;
                 if (visible && state.onlyNotExpired) visible = deadlineTime !== null && deadlineTime >= today;
                 if (visible && state.columnFilters.course && courseVal !== state.columnFilters.course) visible = false;
-                if (visible && state.columnFilters.title && titleVal !== state.columnFilters.title) visible = false;
                 if (visible && state.columnFilters.type && typeVal !== state.columnFilters.type) visible = false;
+                if (visible && state.columnFilters.location && locationVal !== state.columnFilters.location) visible = false;
                 if (visible && state.columnFilters.position && positionVal !== state.columnFilters.position) visible = false;
-                if (visible && state.columnFilters.creator && creatorVal !== state.columnFilters.creator) visible = false; // 应用 Creator 筛选
+                if (visible && state.columnFilters.creator && creatorVal !== state.columnFilters.creator) visible = false;
                 if (visible && beforeTime !== null) visible = deadlineTime !== null && deadlineTime <= beforeTime;
 
                 row.style.display = visible ? "" : "none";
@@ -532,13 +612,12 @@
 
         function openValueFilter(th) {
             const key = th.dataset.key;
-            // 映射 Creator 列索引
-            // Creator 现在是第 1 列（索引 0），其他顺延
+            // 映射各筛选列在表格中的列索引。
             const colIndex = {
                 creator: 0,
                 course: 1,
-                title: 2,
-                type: 3,
+                type: 2,
+                location: 3,
                 position: 5
             }[key];
             const values = getUniqueValues(key, colIndex);
@@ -613,10 +692,10 @@
             state.textQuery = "";
             state.onlyNotExpired = false;
             state.columnFilters.course = "";
-            state.columnFilters.title = "";
             state.columnFilters.type = "";
+            state.columnFilters.location = "";
             state.columnFilters.position = "";
-            state.columnFilters.creator = ""; // 重置 Creator 筛选
+            state.columnFilters.creator = "";
             state.deadlineBefore = "";
             searchInput.value = "";
             closePopup();

@@ -1,7 +1,8 @@
-﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
 <%@ page import="java.io.*" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.time.LocalDate" %>
 <%@ page import="com.me.finaldesignproject.model.Job" %>
 <%@ page import="com.me.finaldesignproject.model.User" %>
 <%@ page import="com.me.finaldesignproject.dao.JobDao" %>
@@ -15,11 +16,33 @@
         return;
     }
 %>
+<%!
+    private LocalDate parseDeadline(String deadline) {
+        if (deadline == null || deadline.trim().isEmpty()) {
+            return LocalDate.MAX;
+        }
+        try {
+            return LocalDate.parse(deadline.trim());
+        } catch (Exception e) {
+            return LocalDate.MAX;
+        }
+    }
+
+    private String buildJobLabel(Job job) {
+        if (job == null) {
+            return "Unknown Job";
+        }
+        String courseName = job.getCourseName() == null ? "Unknown Course" : job.getCourseName();
+        String jobTitle = job.getJobTitle() == null ? "Unknown Job" : job.getJobTitle();
+        return courseName + " - " + jobTitle;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Student Applications Management</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         /* 🌟 滚动条美化 🌟 */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -42,10 +65,139 @@
         }
 
         h2 { text-align: center; color: #f9ca24; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        th, td { border: 1px solid rgba(255, 255, 255, 0.18); padding: 12px; text-align: left; }
-        th { background: rgba(0, 188, 212, 0.24); color: #f9ca24; font-weight: 600; }
-        tr:hover td { background-color: rgba(255, 255, 255, 0.06); }
+        .applications-table-wrap {
+            margin-top: 26px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            border-radius: 14px;
+            background: rgba(13, 31, 50, 0.26);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 34px rgba(0, 0, 0, 0.18);
+        }
+
+        table {
+            width: 100%;
+            min-width: 1180px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .applications-table col:nth-child(1) { width: 13%; }
+        .applications-table col:nth-child(2) { width: 12%; }
+        .applications-table col:nth-child(3) { width: 12%; }
+        .applications-table col:nth-child(4) { width: 12%; }
+        .applications-table col:nth-child(5) { width: 13%; }
+        .applications-table col:nth-child(6) { width: 13%; }
+        .applications-table col:nth-child(7) { width: 9%; }
+        .applications-table col:nth-child(8) { width: 16%; }
+
+        th, td {
+            border-right: 1px solid rgba(255, 255, 255, 0.18);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 14px 16px;
+            text-align: left;
+        }
+
+        th:last-child,
+        td:last-child {
+            border-right: none;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        th {
+            background: rgba(42, 123, 151, 0.76);
+            color: #ffd166;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        td {
+            background: rgba(78, 104, 137, 0.46);
+        }
+
+        tbody tr:nth-child(even) td {
+            background: rgba(61, 86, 119, 0.48);
+        }
+
+        tr:hover td { background-color: rgba(86, 118, 154, 0.66); }
+
+        .course-job-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            position: relative;
+        }
+
+        .header-filter-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(249, 202, 36, 0.45);
+            border-radius: 4px;
+            background: rgba(20, 30, 48, 0.35);
+            color: #f9ca24;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .header-filter-popup {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 320px;
+            max-width: 420px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 10px;
+            background: #1b2a3d;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+            z-index: 20;
+        }
+
+        .header-filter-popup.open {
+            display: block;
+        }
+
+        .header-filter-popup form {
+            margin: 0;
+        }
+
+        .header-filter-option {
+            width: 100%;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05);
+            color: #f0f0f0;
+            cursor: pointer;
+            margin-bottom: 6px;
+            font-size: 13px;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.35;
+        }
+
+        .header-filter-option.active {
+            border-color: rgba(249, 202, 36, 0.6);
+            background: rgba(249, 202, 36, 0.14);
+            color: #ffd166;
+        }
+
+        .job-group-start td {
+            border-top: 2px solid rgba(249, 202, 36, 0.45);
+        }
 
         /* 🌟 操作列布局：确保按钮并排 🌟 */
         .operation-cell {
@@ -53,21 +205,29 @@
             align-items: center;
             gap: 10px;
             flex-wrap: nowrap;
-            min-width: 190px;
         }
 
         /* 状态与按钮样式 */
-        .status-tag { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+        .status-tag { padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 800; line-height: 1.15; min-width: 96px; text-align: center; }
         .status-pending { color: #f9ca24; border: 1px solid #f9ca24; }
         .status-pass { color: #2ecc71; border: 1px solid #2ecc71; }
         .status-reject { color: #e74c3c; border: 1px solid #e74c3c; }
         .status-timeout { color: #95a5a6; border: 1px solid #95a5a6; }
 
         .action-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 82px; min-height: 56px; padding: 8px 14px; border-radius: 6px;
-            text-decoration: none; font-size: 13px; font-weight: 700; color: #fff; border: none;
+            display: inline-block; padding: 6px 12px; border-radius: 6px;
+            text-decoration: none; font-size: 12px; font-weight: 600; color: #fff; border: none;
             transition: 0.3s; cursor: pointer; white-space: nowrap;
+            min-width: 76px;
+            overflow-wrap: normal !important;
+            word-break: keep-all !important;
+        }
+        .operation-cell .action-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap !important;
+            flex: 0 0 auto;
         }
         .btn-pass { background: #2ecc71; }
         .btn-reject { background: #e74c3c; }
@@ -81,9 +241,10 @@
         }
 
         .processed-text {
-            color: #aaa;
-            font-size: 12px;
+            color: #f4f7fb;
+            font-size: 16px;
             font-style: italic;
+            font-weight: 800;
         }
 
         .overlimit-text { color: #ff4757; font-weight: bold; display: block; font-size: 11px; }
@@ -115,10 +276,7 @@
             width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
         }
         .modal-content {
-            background-color: transparent;
-            margin: 40px auto; padding: 0; border: none;
-            width: 85%; max-width: 950px; height: 90vh; position: relative;
-            box-shadow: none;
+            position: relative;
         }
 
         .close {
@@ -227,31 +385,111 @@
         function onFrameLoad() {
             var frame = document.getElementById("profileFrame");
             try {
-                var innerBody = frame.contentWindow.document.body;
-                innerBody.style.background = "transparent";
-                var backBtn = frame.contentWindow.document.querySelector('.back-btn');
-                var editBtn = frame.contentWindow.document.querySelector('.cta');
-                if(backBtn) backBtn.style.display = 'none';
+                var innerDoc = frame.contentWindow.document;
+                var innerBody = innerDoc.body;
+                innerDoc.documentElement.style.background = "transparent";
+                innerBody.style.setProperty("background", "transparent", "important");
+                innerBody.style.setProperty("background-image", "none", "important");
+                innerBody.classList.add("embedded-profile-frame");
+                var style = innerDoc.createElement("style");
+                style.textContent =
+                    "html,html body{width:100%!important;height:100%!important;min-height:100%!important;margin:0!important;padding:0!important;background:transparent!important;background-color:transparent!important;background-image:none!important;background-attachment:initial!important;overflow:hidden!important;}" +
+                    "html::before,html::after,html body::before,html body::after,body.app-auth-bg::before,body.app-auth-bg::after{display:none!important;content:none!important;background:none!important;background-color:transparent!important;background-image:none!important;}" +
+                    "body.app-auth-bg,body.app-auth-bg.table-page,body.app-auth-bg.table-page.role-table-page,body.app-auth-bg.table-page.role-table-page.profile-page,body.app-auth-bg.table-page:not(.dashboard-shell){background:transparent!important;background-color:transparent!important;background-image:none!important;background-attachment:initial!important;box-shadow:none!important;}" +
+                    "body.app-auth-bg.detail-display-page,body.view-profile-page.detail-display-page{display:block!important;min-height:100%!important;height:100%!important;padding:0!important;overflow:hidden!important;}" +
+                    ".profile-container.detail-surface,.role-table-page .profile-container.detail-surface,.view-profile-page .profile-container{display:block!important;width:100%!important;max-width:none!important;min-height:100%!important;height:100%!important;max-height:none!important;margin:0!important;padding:0!important;overflow:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;background-color:transparent!important;background-image:none!important;backdrop-filter:none!important;}" +
+                    ".profile-container .detail-back-row{margin:0!important;padding:24px 28px 0!important;background:transparent!important;}" +
+                    ".profile-container .header{margin:0!important;padding:22px 28px 24px!important;background:transparent!important;}" +
+                    ".profile-container .card{width:100%!important;min-height:calc(100% - 120px)!important;margin:0!important;padding:0 28px 28px!important;background:transparent!important;background-color:transparent!important;background-image:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;}" +
+                    ".profile-container .detail-item,.profile-container .description,.profile-container .pill{background:rgba(255,255,255,0.055)!important;background-image:none!important;}" +
+                    ".profile-container .header{margin-bottom:24px!important;}" +
+                    ".profile-container .detail-grid{grid-template-columns:repeat(2,minmax(240px,1fr))!important;}";
+                innerDoc.head.appendChild(style);
+                var editBtn = innerDoc.querySelector('.cta');
                 if(editBtn) editBtn.style.display = 'none';
-                var container = frame.contentWindow.document.querySelector('.profile-container');
+                var container = innerDoc.querySelector('.profile-container');
                 if(container) {
-                    container.style.marginTop = "0";
-                    container.style.boxShadow = "0 8px 32px rgba(0,0,0,0.4)";
+                    container.style.margin = "0";
+                    container.style.boxShadow = "none";
+                    container.style.background = "transparent";
                 }
             } catch (e) {
                 console.log("Frame ready check...");
             }
         }
+
+        function applyJobFilter(select) {
+            select.form.submit();
+        }
+
+        function toggleJobFilter(event) {
+            event.stopPropagation();
+            var popup = document.getElementById("jobHeaderFilter");
+            if (popup) {
+                popup.classList.toggle("open");
+            }
+        }
     </script>
 </head>
-<body>
+<body class="app-auth-bg table-page role-table-page">
 <div class="card">
     <h2>Student Applications Management</h2>
 
-    <table>
+    <%
+        String selectedJobId = request.getParameter("jobFilter");
+        if (selectedJobId == null) {
+            selectedJobId = "";
+        }
+    %>
+
+    <div class="applications-table-wrap">
+    <table class="applications-table">
+        <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
         <thead>
         <tr>
-            <th>Course & Job</th>
+            <th>
+                <div class="course-job-header">
+                    <span>Course & Job</span>
+                    <button type="button" class="header-filter-trigger" onclick="toggleJobFilter(event)">▼</button>
+                    <div id="jobHeaderFilter" class="header-filter-popup">
+                        <%
+                            Set<String> filterJobIds = new LinkedHashSet<>();
+                            Map<String, String> filterJobLabels = new HashMap<>();
+                            try {
+                                JobDao filterJobDao = new JobDao();
+                                for (Job job : filterJobDao.getAllJobs()) {
+                                    if (job != null && currentUserId.equals(job.getCreatorId())) {
+                                        filterJobIds.add(job.getJobId());
+                                        filterJobLabels.put(job.getJobId(), buildJobLabel(job));
+                                    }
+                                }
+                            } catch (Exception ignored) {}
+                        %>
+                        <form method="get">
+                            <button type="submit" class="header-filter-option <%= selectedJobId.isEmpty() ? "active" : "" %>">All jobs</button>
+                        </form>
+                        <%
+                            for (String jobIdOption : filterJobIds) {
+                        %>
+                        <form method="get">
+                            <input type="hidden" name="jobFilter" value="<%= jobIdOption %>">
+                            <button type="submit" class="header-filter-option <%= jobIdOption.equals(selectedJobId) ? "active" : "" %>"><%= filterJobLabels.get(jobIdOption) %></button>
+                        </form>
+                        <%
+                            }
+                        %>
+                    </div>
+                </div>
+            </th>
             <th>Student Name</th>
             <th>Resume</th> <th>Student ID</th>
             <th>Apply Date</th>
@@ -277,19 +515,21 @@
                 File file = new File(appPath);
                 if (file.exists()) {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                    long nowTime = new Date().getTime();
-                    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    List<Map<String, Object>> rows = new ArrayList<>();
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
                         String line;
                         while ((line = br.readLine()) != null) {
+                            if (line == null || !line.contains("\"studentId\":\"") || !line.contains("\"jobId\":\"") || !line.contains("\"date\":\"")) {
+                                continue;
+                            }
                             String sId = line.split("\"studentId\":\"")[1].split("\"")[0];
                             String jId = line.split("\"jobId\":\"")[1].split("\"")[0];
                             Job job = jobMap.get(jId);
-                            if (job != null && currentUserId != null && currentUserId.equals(job.getCreatorId())) {
-                                anyApplicationsForMe = true;
+                            if (job != null && currentUserId != null && currentUserId.equals(job.getCreatorId())
+                                    && (selectedJobId.isEmpty() || selectedJobId.equals(jId))) {
                                 String dStr = line.split("\"date\":\"")[1].split("\"")[0];
                                 String status = line.contains("\"status\":\"") ? line.split("\"status\":\"")[1].split("\"")[0] : "Pending";
 
-                                // 🌟 核心：从 JSON 中获取持久化的勾选标志 🌟
                                 boolean isPermanentlyIgnored = line.contains("\"ignoreOvertime\":\"true\"");
 
                                 int totalAcceptedHours = appDao.getTotalWorkingHours(sId, "Accepted");
@@ -298,12 +538,74 @@
                                 boolean willExceed = (totalAcceptedHours + currentJobHrs) > 20;
 
                                 boolean isTimeout = false;
+                                Date applyDate = null;
                                 try {
-                                    Date applyDate = sdf.parse(dStr);
-                                    if ("Pending".equalsIgnoreCase(status) && (nowTime - applyDate.getTime() > 604800000L)) isTimeout = true;
+                                    applyDate = sdf.parse(dStr);
+                                    Calendar untreatedDeadline = Calendar.getInstance();
+                                    untreatedDeadline.add(Calendar.MONTH, -4);
+                                    if ("Pending".equalsIgnoreCase(status) && applyDate.before(untreatedDeadline.getTime())) isTimeout = true;
                                 } catch(Exception e) {}
+
+                                Map<String, Object> row = new HashMap<>();
+                                row.put("studentId", sId);
+                                row.put("jobId", jId);
+                                row.put("job", job);
+                                row.put("applyDateText", dStr);
+                                row.put("applyDate", applyDate);
+                                row.put("status", status);
+                                row.put("isPermanentlyIgnored", isPermanentlyIgnored);
+                                row.put("totalAcceptedHours", totalAcceptedHours);
+                                row.put("willExceed", willExceed);
+                                row.put("isTimeout", isTimeout);
+                                row.put("jobDeadline", parseDeadline(job.getApplicationDeadline()));
+                                row.put("jobLabel", buildJobLabel(job));
+                                rows.add(row);
+                            }
+                        }
+                    }
+
+                    rows.sort(new Comparator<Map<String, Object>>() {
+                        @Override
+                        public int compare(Map<String, Object> a, Map<String, Object> b) {
+                            int deadlineCompare = ((LocalDate) a.get("jobDeadline")).compareTo((LocalDate) b.get("jobDeadline"));
+                            if (deadlineCompare != 0) {
+                                return deadlineCompare;
+                            }
+
+                            int jobCompare = String.valueOf(a.get("jobLabel")).compareToIgnoreCase(String.valueOf(b.get("jobLabel")));
+                            if (jobCompare != 0) {
+                                return jobCompare;
+                            }
+
+                            Date dateA = (Date) a.get("applyDate");
+                            Date dateB = (Date) b.get("applyDate");
+                            if (dateA == null && dateB == null) {
+                                return 0;
+                            }
+                            if (dateA == null) {
+                                return 1;
+                            }
+                            if (dateB == null) {
+                                return -1;
+                            }
+                            return dateA.compareTo(dateB);
+                        }
+                    });
+
+                    String previousJobId = null;
+                    for (Map<String, Object> row : rows) {
+                        anyApplicationsForMe = true;
+                        String sId = (String) row.get("studentId");
+                        String jId = (String) row.get("jobId");
+                        Job job = (Job) row.get("job");
+                        String dStr = (String) row.get("applyDateText");
+                        String status = (String) row.get("status");
+                        boolean isPermanentlyIgnored = (Boolean) row.get("isPermanentlyIgnored");
+                        int totalAcceptedHours = (Integer) row.get("totalAcceptedHours");
+                        boolean willExceed = (Boolean) row.get("willExceed");
+                        boolean isTimeout = (Boolean) row.get("isTimeout");
         %>
-        <tr>
+        <tr class="<%= !jId.equals(previousJobId) ? "job-group-start" : "" %>">
             <td>
                 <strong><%= job.getCourseName() %></strong><br>
                 <%= job.getJobTitle() %> <span class="pos-count">(Rem: <%= job.getNumberOfPositions() %>)</span>
@@ -330,9 +632,9 @@
             </td>
             <td>
                 <% if(isTimeout) { %>
-                <span class="status-tag status-timeout">Untreated</span>
+                <span class="application-status status-tag status-timeout">Untreated</span>
                 <% } else { %>
-                <span class="status-tag status-<%= status.toLowerCase() %>"><%= status %></span>
+                <span class="application-status status-tag status-<%= status.toLowerCase() %>"><%= status %></span>
                 <% } %>
             </td>
             <td>
@@ -343,7 +645,7 @@
                             class="action-btn btn-pass <%= (willExceed && !isPermanentlyIgnored) ? "btn-disabled" : "" %>"
                             style="<%= (willExceed && !isPermanentlyIgnored) ? "pointer-events: none; opacity: 0.6;" : "pointer-events: auto; opacity: 1;" %>"
                             onclick="handleAction(this, '<%= sId %>', '<%= jId %>', 'Accepted')">
-                        Accepted
+                        Accept
                     </button>
                     <button type="button" class="action-btn btn-reject"
                             onclick="handleAction(this, '<%= sId %>', '<%= jId %>', 'Reject')">
@@ -356,8 +658,7 @@
             </td>
         </tr>
         <%
-                            }
-                        }
+                        previousJobId = jId;
                     }
                 }
                 if (!anyApplicationsForMe) {
@@ -369,10 +670,11 @@
         %>
         </tbody>
     </table>
+    </div>
 </div>
 
-<div id="profileModal" class="modal">
-    <div class="modal-content">
+<div id="profileModal" class="modal detail-modal profile-modal">
+    <div class="modal-content detail-surface">
         <span class="close" onclick="closeModal()"></span>
         <iframe id="profileFrame" src="" allowtransparency="true" onload="onFrameLoad()"></iframe>
     </div>
@@ -383,6 +685,10 @@
         var modal = document.getElementById("profileModal");
         if (event.target == modal) {
             closeModal();
+        }
+        var filterPopup = document.getElementById("jobHeaderFilter");
+        if (filterPopup && !filterPopup.contains(event.target) && !event.target.classList.contains("header-filter-trigger")) {
+            filterPopup.classList.remove("open");
         }
     }
 </script>

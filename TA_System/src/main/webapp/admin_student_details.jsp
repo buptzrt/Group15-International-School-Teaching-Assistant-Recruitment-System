@@ -9,6 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin - Student Details</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
@@ -155,7 +156,8 @@
         }
     </style>
 </head>
-<body>
+<body class="app-auth-bg table-page role-table-page">
+<div class="page-container panel">
 
 <h2>Student Details</h2>
 
@@ -272,5 +274,6 @@
 }
 %>
 
+</div>
 </body>
 </html>

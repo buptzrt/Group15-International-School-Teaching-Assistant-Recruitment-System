@@ -57,6 +57,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Apply for Company</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -144,8 +145,8 @@
         }
     </script>
 </head>
-<body>
-    <div class="form-container">
+<body class="app-auth-bg table-page role-table-page">
+    <div class="form-container panel">
         <h2>Apply for <%= companyName %></h2>
         <form action="ApplyCompanyServlet" method="post" onsubmit="return confirmSubmit();">
             <input type="hidden" name="enrollment_no" value="<%= enrollmentNo %>">

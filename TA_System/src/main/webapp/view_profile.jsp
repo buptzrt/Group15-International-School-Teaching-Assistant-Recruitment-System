@@ -1,188 +1,110 @@
-<%--<%@ page import="com.me.finaldesignproject.model.User" %>--%>
-<%--<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>--%>
-<%--<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>--%>
-<%--<%--%>
-<%--    User user = (User) request.getAttribute("userProfile");--%>
-<%--    StudentProfile studentProfile = (StudentProfile) request.getAttribute("studentProfile");--%>
-<%--%>--%>
-<%--<!DOCTYPE html>--%>
-<%--<html lang="en">--%>
-<%--<head>--%>
-<%--    <meta charset="UTF-8">--%>
-<%--    <title>My Profile</title>--%>
-<%--    <style>--%>
-<%--        body {--%>
-<%--            margin: 0;--%>
-<%--            padding: 36px 18px;--%>
-<%--            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;--%>
-<%--            background: linear-gradient(135deg, #17293d 0%, #25496d 100%);--%>
-<%--            color: #f4f7fb;--%>
-<%--        }--%>
+﻿<%@ page import="com.me.finaldesignproject.model.User" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    User user = (User) request.getAttribute("userProfile");
+    StudentProfile studentProfile = (StudentProfile) request.getAttribute("studentProfile");
+    Boolean readOnly = (Boolean) request.getAttribute("isReadOnly");
+    boolean isReadOnly = readOnly != null && readOnly;
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
+    <style>
+        body { margin: 0; padding: 36px 18px; font-family: Georgia, "Times New Roman", serif; color: #f4f7fb; min-height: 100vh; position: relative; }
+        .profile-container { max-width: 980px; margin: 0 auto; }
+        .detail-back-row { display: flex; align-items: center; min-height: 42px; margin-bottom: 18px; }
+        .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        .header h2 { margin: 0; font-size: 32px; color: #ffd166; }
+        .card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 18px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.14); }
+        .section-title { color: #9bd3ff; margin-bottom: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 14px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(240px, 1fr)); gap: 18px; }
+        .detail-item { background: rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 18px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .detail-item strong { display: block; margin-bottom: 8px; font-size: 14px; color: #ffd166; }
+        .detail-item span { color: #e9effe; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .description { margin-top: 26px; background: rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.1); color: #edf2ff; line-height: 1.9; }
+        .description p { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .footer { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 16px; }
+        .pill { display: inline-flex; align-items: center; padding: 12px 18px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); color: #edf2ff; font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.12); }
+        .empty { color: #d7e3f1; font-style: italic; }
+        .cta { display: inline-flex; align-items: center; margin-top: 24px; padding: 11px 18px; border-radius: 999px; background: #18b394; color: #fff; text-decoration: none; font-weight: 700; }
+        @media (max-width: 760px) { .detail-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="app-auth-bg table-page role-table-page profile-page view-profile-page detail-display-page">
+<div class="profile-container detail-surface">
+    <div class="detail-back-row">
+        <button type="button" class="detail-exit-arrow" onclick="exitDetailPage()" title="Back"></button>
+    </div>
+    <% if (user == null) { %>
+    <div class="header"><h2>Student Profile</h2></div>
+    <div class="card"><div class="detail-item empty">No profile data is available.</div></div>
+    <% } else { %>
+    <div class="header">
+        <h2>Student Profile Overview</h2>
+        <div class="pill">Role: <strong style="margin-left: 6px;"><%= user.getRole() == null ? "Student" : user.getRole() %></strong></div>
+    </div>
 
-<%--        .profile-container {--%>
-<%--            max-width: 900px;--%>
-<%--            margin: 0 auto;--%>
-<%--            padding: 28px;--%>
-<%--            background: rgba(255, 255, 255, 0.1);--%>
-<%--            border: 1px solid rgba(255, 255, 255, 0.15);--%>
-<%--            border-radius: 18px;--%>
-<%--            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);--%>
-<%--        }--%>
+    <div class="card">
+        <div class="section-title">Basic Information</div>
+        <div class="detail-grid">
+            <div class="detail-item"><strong>Name</strong><span><%= user.getFullName() == null ? "Not set" : user.getFullName() %></span></div>
+            <div class="detail-item"><strong>Student Number</strong><span><%= user.getEnrollmentNo() == null ? "Not set" : user.getEnrollmentNo() %></span></div>
+            <div class="detail-item"><strong>Email</strong><span><%= user.getEmail() == null ? "Not set" : user.getEmail() %></span></div>
+            <div class="detail-item"><strong>Chinese Name</strong><span><%= studentProfile != null && studentProfile.getChineseName()!=null ? studentProfile.getChineseName() : "Not set" %></span></div>
+            <div class="detail-item"><strong>Gender</strong><span><%= studentProfile != null && studentProfile.getGender()!=null ? studentProfile.getGender() : "Not set" %></span></div>
+            <div class="detail-item"><strong>QM ID</strong><span><%= studentProfile != null && studentProfile.getQmId()!=null ? studentProfile.getQmId() : "Not set" %></span></div>
+            <div class="detail-item"><strong>BUPT ID</strong><span><%= studentProfile != null && studentProfile.getBuptId()!=null ? studentProfile.getBuptId() : (user.getEnrollmentNo()==null?"Not set":user.getEnrollmentNo()) %></span></div>
+            <div class="detail-item"><strong>BUPT Class</strong><span><%= studentProfile != null && studentProfile.getBuptClass()!=null ? studentProfile.getBuptClass() : "Not set" %></span></div>
+            <div class="detail-item"><strong>Major / Programme</strong><span><%= studentProfile != null && studentProfile.getMajorProgramme()!=null ? studentProfile.getMajorProgramme() : "Not set" %></span></div>
+            <div class="detail-item"><strong>Grade</strong><span><%= studentProfile != null && studentProfile.getGrade()!=null ? studentProfile.getGrade() : "Not set" %></span></div>
+            <div class="detail-item"><strong>Mobile Phone</strong><span><%= studentProfile != null && studentProfile.getMobilePhone()!=null ? studentProfile.getMobilePhone() : "Not set" %></span></div>
+            <div class="detail-item"><strong>WeChat ID</strong><span><%= studentProfile != null && studentProfile.getWechatId()!=null ? studentProfile.getWechatId() : "Not set" %></span></div>
+        </div>
 
-<%--        h2 {--%>
-<%--            margin: 0 0 20px;--%>
-<%--            color: #ffd166;--%>
-<%--            font-size: 30px;--%>
-<%--        }--%>
+        <div class="description">
+            <div class="section-title">Experience & Evaluation</div>
+            <p><strong style="color: #ffd166;">Skills:</strong> <%= studentProfile != null && studentProfile.getSkills()!=null ? studentProfile.getSkills() : "Not set" %></p>
+            <p><strong style="color: #ffd166;">Availability:</strong> <%= studentProfile != null && studentProfile.getAvailability()!=null ? studentProfile.getAvailability() : "Not set" %></p>
+            <p><strong style="color: #ffd166;">Campus Preference:</strong> <%= studentProfile != null && studentProfile.getCampusPreference()!=null ? studentProfile.getCampusPreference() : "Not set" %></p>
+            <p><strong style="color: #ffd166;">Prior Joint Programme:</strong> <%= studentProfile != null && studentProfile.getPriorAnswer()!=null ? studentProfile.getPriorAnswer() : "Not set" %></p>
+        </div>
 
-<%--        .grid {--%>
-<%--            display: grid;--%>
-<%--            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));--%>
-<%--            gap: 12px;--%>
-<%--        }--%>
+        <div class="footer">
+            <div class="pill" style="word-break: break-word; overflow-wrap:anywhere;">
+                CV:
+            <%
+                String rPath = (studentProfile != null) ? studentProfile.getResumePath() : null;
+                if (rPath != null && !rPath.trim().isEmpty()) {
+            %>
+            <a href="${pageContext.request.contextPath}/<%= rPath %>" target="_blank" style="color: #18b394; text-decoration: underline; font-weight: bold; font-size: 14px; margin-left: 6px;">
+                Click to View Resume (PDF)
+            </a>
+            <% } else { %>
+            <span class="empty" style="margin-left: 6px;">Not set</span>
+            <% } %>
+            </div>
+        </div>
 
-<%--        .card {--%>
-<%--            padding: 12px 14px;--%>
-<%--            border-radius: 12px;--%>
-<%--            background: rgba(255, 255, 255, 0.06);--%>
-<%--            line-height: 1.5;--%>
-<%--            font-size: 16px;--%>
-<%--            font-weight: 500;--%>
-<%--            letter-spacing: 0.1px;--%>
-<%--            font-variant-numeric: tabular-nums;--%>
-<%--        }--%>
-
-<%--        /* 🌟 特殊处理：让 Skills 占据更多空间并在同一行与 CV 搭配 */--%>
-<%--        .full-row-grid {--%>
-<%--            display: grid;--%>
-<%--            grid-template-columns: 2fr 1fr; /* Skills 占 2 份，CV 占 1 份 */--%>
-<%--            gap: 12px;--%>
-<%--            margin-top: 12px;--%>
-<%--        }--%>
-
-<%--        /* 移动端自适应 */--%>
-<%--        @media (max-width: 600px) {--%>
-<%--            .full-row-grid {--%>
-<%--                grid-template-columns: 1fr;--%>
-<%--            }--%>
-<%--        }--%>
-
-<%--        .label {--%>
-<%--            color: #ffd166;--%>
-<%--            font-weight: 700;--%>
-<%--            letter-spacing: 0.2px;--%>
-<%--        }--%>
-
-<%--        .empty {--%>
-<%--            color: #d7e3f1;--%>
-<%--            font-style: italic;--%>
-<%--        }--%>
-
-<%--        .section-title {--%>
-<%--            margin: 18px 0 8px;--%>
-<%--            color: #9bd3ff;--%>
-<%--            font-size: 20px;--%>
-<%--        }--%>
-
-<%--        .cta {--%>
-<%--            display: inline-block;--%>
-<%--            margin-top: 24px;--%>
-<%--            padding: 11px 18px;--%>
-<%--            border-radius: 999px;--%>
-<%--            background: #18b394;--%>
-<%--            color: #fff;--%>
-<%--            text-decoration: none;--%>
-<%--            font-weight: 700;--%>
-<%--        }--%>
-
-<%--        .back-btn {--%>
-<%--            display: inline-block;--%>
-<%--            margin-bottom: 14px;--%>
-<%--            padding: 9px 16px;--%>
-<%--            border-radius: 999px;--%>
-<%--            background: rgba(255, 255, 255, 0.12);--%>
-<%--            border: 1px solid rgba(255, 255, 255, 0.2);--%>
-<%--            color: #f4f7fb;--%>
-<%--            text-decoration: none;--%>
-<%--            font-weight: 600;--%>
-<%--            font-size: 14px;--%>
-<%--            cursor: pointer;--%>
-<%--            transition: all 0.25s ease;--%>
-<%--        }--%>
-
-<%--        .back-btn:hover {--%>
-<%--            background: rgba(255, 255, 255, 0.2);--%>
-<%--            transform: translateY(-1px);--%>
-<%--        }--%>
-<%--    </style>--%>
-<%--</head>--%>
-<%--<body>--%>
-<%--<div class="profile-container">--%>
-<%--    <%--%>
-<%--        String currentRole = (String) session.getAttribute("role");--%>
-<%--        if ("MO".equalsIgnoreCase(currentRole)) {--%>
-<%--    %>--%>
-<%--    <a href="#" class="back-btn" onclick="history.back(); return false;">&larr; Back to Applications</a>--%>
-<%--    <% } %>--%>
-
-<%--    <% if (user == null) { %>--%>
-<%--    <h2>My Profile</h2>--%>
-<%--    <div class="row empty">No profile data is available in the current session.</div>--%>
-<%--    <% } else { %>--%>
-<%--    <h2>Student Profile Overview</h2>--%>
-
-<%--    <div class="section-title">Basic Information</div>--%>
-<%--    <div class="grid">--%>
-<%--        <div class="card"><span class="label">Name:</span> <%= user.getFullName() == null ? "Not set" : user.getFullName() %></div>--%>
-<%--        <div class="card"><span class="label">Student Number:</span> <%= user.getEnrollmentNo() == null ? "Not set" : user.getEnrollmentNo() %></div>--%>
-<%--        <div class="card"><span class="label">Email:</span> <%= user.getEmail() == null ? "Not set" : user.getEmail() %></div>--%>
-<%--        <div class="card"><span class="label">Role:</span> <%= user.getRole() == null ? "Not set" : user.getRole() %></div>--%>
-<%--    </div>--%>
-
-<%--    <% if (user != null && studentProfile != null) { %>--%>
-<%--    <div class="section-title">Profile Details (same as Manage Profile)</div>--%>
-<%--    <div class="grid">--%>
-<%--        <div class="card"><span class="label">Name:</span> <%= studentProfile != null && studentProfile.getFullName()!=null ? studentProfile.getFullName() : (user.getFullName()==null?"Not set":user.getFullName()) %></div>--%>
-<%--        <div class="card"><span class="label">Chinese name:</span> <%= studentProfile != null && studentProfile.getChineseName()!=null ? studentProfile.getChineseName() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">Gender:</span> <%= studentProfile != null && studentProfile.getGender()!=null ? studentProfile.getGender() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">QM ID:</span> <%= studentProfile != null && studentProfile.getQmId()!=null ? studentProfile.getQmId() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">BUPT ID:</span> <%= studentProfile != null && studentProfile.getBuptId()!=null ? studentProfile.getBuptId() : (user.getEnrollmentNo()==null?"Not set":user.getEnrollmentNo()) %></div>--%>
-<%--        <div class="card"><span class="label">BUPT Class:</span> <%= studentProfile != null && studentProfile.getBuptClass()!=null ? studentProfile.getBuptClass() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">Major / Programme:</span> <%= studentProfile != null && studentProfile.getMajorProgramme()!=null ? studentProfile.getMajorProgramme() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">Grade:</span> <%= studentProfile != null && studentProfile.getGrade()!=null ? studentProfile.getGrade() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">Email:</span> <%= studentProfile != null && studentProfile.getEmail()!=null ? studentProfile.getEmail() : (user.getEmail()==null?"Not set":user.getEmail()) %></div>--%>
-<%--        <div class="card"><span class="label">Mobile Phone:</span> <%= studentProfile != null && studentProfile.getMobilePhone()!=null ? studentProfile.getMobilePhone() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">WeChat ID:</span> <%= studentProfile != null && studentProfile.getWechatId()!=null ? studentProfile.getWechatId() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">Prior Joint Programme:</span> <%= studentProfile != null && studentProfile.getPriorAnswer()!=null ? studentProfile.getPriorAnswer() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">Availability:</span> <%= studentProfile != null && studentProfile.getAvailability()!=null ? studentProfile.getAvailability() : "Not set" %></div>--%>
-<%--        <div class="card"><span class="label">Campus Preference:</span> <%= studentProfile != null && studentProfile.getCampusPreference()!=null ? studentProfile.getCampusPreference() : "Not set" %></div>--%>
-<%--    </div>--%>
-
-<%--    <div class="full-row-grid">--%>
-<%--        <div class="card"><span class="label">Skills:</span> <%= studentProfile != null && studentProfile.getSkills()!=null ? studentProfile.getSkills() : "Not set" %></div>--%>
-<%--        <div class="card" id="cvRow" style="word-break: break-word; overflow-wrap:anywhere;">--%>
-<%--            <span class="label">CV Path:</span><br>--%>
-<%--            <%--%>
-<%--                String rPath = (studentProfile != null) ? studentProfile.getResumePath() : null;--%>
-<%--                if (rPath != null && !rPath.trim().isEmpty()) {--%>
-<%--            %>--%>
-<%--            <a href="${pageContext.request.contextPath}/<%= rPath %>"--%>
-<%--               target="_blank"--%>
-<%--               style="color: #18b394; text-decoration: underline; font-weight: bold; font-size: 14px;">--%>
-<%--                Click to View Resume (PDF)--%>
-<%--            </a>--%>
-<%--            <% } else { %>--%>
-<%--            <span class="empty">Not set</span>--%>
-<%--            <% } %>--%>
-<%--        </div>--%>
-<%--    </div>--%>
-
-<%--    <div id="msg" class="card" style="display:none; color:#ffd166; font-weight:700; background:rgba(255,255,255,0.08); margin-top:10px;"></div>--%>
-<%--    <% if (!"MO".equalsIgnoreCase(currentRole)) { %>--%>
-<%--    <a class="cta" href="student_profile.html">Edit / Manage Profile</a>--%>
-<%--    <% } %>--%>
-<%--    <% } %>--%>
-<%--    <% } %>--%>
-<%--</div>--%>
-<%--</body>--%>
-<%--</html>--%>
+        <% if (!isReadOnly) { %>
+        <a class="cta" href="student_profile.html">Edit / Manage Profile</a>
+        <% } %>
+    </div>
+    <% } %>
+</div>
+<script>
+    function exitDetailPage() {
+        if (window.parent && window.parent !== window && typeof window.parent.closeModal === "function") {
+            window.parent.closeModal();
+            return;
+        }
+        if (window.history.length > 1) {
+            window.history.back();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.me.finaldesignproject.dao.JobDao" %>
@@ -28,6 +28,7 @@
 <head>
     <meta charset="UTF-8">
     <title>AI Skill Matcher</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         /* 🌟 简历双屏对比 Modal 样式 */
         .modal-overlay {
@@ -63,26 +64,37 @@
 
         /* 评语特殊排版 */
         .ai-reason-text { font-size: 16px; line-height: 1.8; color: #f5f9ff; white-space: pre-line; }
-        .action-btn { background: #1e90ff; color: #fff; padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; white-space: nowrap; }
+        .action-btn {
+            background: #1e90ff;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
         .action-btn:hover { background: #187bcd; }
         /* 针对 AI 理由单元格的特殊样式，让 \n 变成真正的换行 */
         .reason-cell {
             font-size: 14.5px;
             line-height: 1.7;
-            white-space: pre-line; /* 🌟 核心魔法：识别换行符 */
+            white-space: pre-line !important; /* 🌟 核心魔法：识别换行符 */
             color: #e2e8f0;
             padding-top: 16px !important;
             padding-bottom: 16px !important;
         }
-        .reason-list {
-            margin: 0;
-            padding-left: 20px;
+        .table-page td.reason-cell {
+            white-space: pre-line !important;
         }
-        .reason-list li {
+        .reason-point {
+            display: block;
             margin-bottom: 8px;
-            white-space: normal;
         }
-        .reason-list li:last-child {
+        .reason-point:last-child {
             margin-bottom: 0;
         }
 
@@ -105,7 +117,7 @@
             background: rgba(18, 35, 61, 0.78); z-index: -1;
         }
 
-        .page-container { max-width: 1280px; margin: 0 auto; }
+        .page-container { max-width: 1100px; margin: 0 auto; }
 
         .panel {
             background: rgba(255, 255, 255, 0.08);
@@ -137,7 +149,7 @@
 
         .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.18); position: relative; display: none; }
 
-        table { width: 100%; border-collapse: collapse; min-width: 1050px; background: rgba(255, 255, 255, 0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; background: rgba(255, 255, 255, 0.05); }
         thead th { text-align: left; color: #ffd166; font-weight: 700; font-size: 15px; padding: 14px; background: rgba(0, 0, 0, 0.2); border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
         tbody td { padding: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); color: #f5f9ff; font-size: 15px; line-height: 1.6; vertical-align: top; }
         tbody tr:hover { background: rgba(255, 255, 255, 0.08); }
@@ -156,7 +168,7 @@
         @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
     </style>
 </head>
-<body>
+<body class="app-auth-bg table-page role-table-page">
 <div class="page-container">
     <div class="panel">
         <h2>AI Candidate Matcher <span class="ai-badge">Powered by Qwen</span></h2>
@@ -185,8 +197,8 @@
                     <th style="width: 12%">Student ID</th>
                     <th style="width: 18%">Major</th>
                     <th style="width: 12%">Match Score</th>
-                    <th style="width: 38%">AI Evaluation Reason</th>
-                    <th style="width: 8%">AI Analysis</th>
+                    <th style="width: 34%">AI Evaluation Reason</th>
+                    <th style="width: 12%">Analysis</th>
                 </tr>
                 </thead>
                 <tbody id="resultBody">
@@ -198,6 +210,13 @@
 
 <script>
     let currentAiData = []; // 声明一个全局变量保存结果，方便 Modal 随时读取
+    function formatReasonText(reason) {
+        return String(reason || '')
+            .replace(/\s*•\s*/g, function(match, offset) {
+                return offset === 0 ? '• ' : '\n• ';
+            })
+            .trim();
+    }
 
     function escapeHtml(value) {
         return String(value || '')
@@ -208,25 +227,22 @@
             .replace(/'/g, '&#39;');
     }
 
-    function formatReasonAsList(reason) {
+    function formatReasonHtml(reason) {
         const text = String(reason || '').trim();
-        if (!text) {
-            return '<span>Not available.</span>';
-        }
+        if (!text) return '';
 
-        const items = text
-            .replace(/\r\n/g, '\n')
-            .split(/\n?\s*\u2022\s+/)
-            .map(item => item.trim())
+        const parts = text
+            .replace(/^\s*•\s*/, '')
+            .split(/\s*•\s*/)
             .filter(Boolean);
 
-        if (items.length <= 1) {
-            return '<ul class="reason-list"><li>' + escapeHtml(text.replace(/^\u2022\s*/, '')) + '</li></ul>';
+        if (parts.length === 0) {
+            return escapeHtml(text);
         }
 
-        return '<ul class="reason-list">' +
-            items.map(item => '<li>' + escapeHtml(item) + '</li>').join('') +
-            '</ul>';
+        return parts
+            .map(part => '<span class="reason-point">• ' + escapeHtml(part.trim()) + '</span>')
+            .join('');
     }
 
     function runAiMatch() {
@@ -271,7 +287,7 @@
                             '<td style="color: #9bd3ff;">' + item.studentId + '</td>' +
                             '<td style="font-size:14px;">' + (item.major || 'Unknown') + '</td>' +
                             '<td><div class="score-box ' + scoreClass + '">' + item.score + '</div></td>' +
-                            '<td class="reason-cell">' + formatReasonAsList(item.reason) + '</td>' +
+                            '<td class="reason-cell">' + formatReasonHtml(item.reason) + '</td>' +
                             '<td><button type="button" class="action-btn" onclick="openModal(' + index + ')">View Analysis</button></td>' +
                             '</tr>';
                         tbody.innerHTML += row;
@@ -308,7 +324,7 @@
         scoreDiv.className = 'score-box ' + (item.score >= 80 ? 'score-high' : (item.score >= 60 ? 'score-mid' : 'score-low'));
 
         // 设置理由
-        document.getElementById('modalReason').innerHTML = formatReasonAsList(item.reason);
+        document.getElementById('modalReason').innerText = formatReasonText(item.reason);
 
         // 加载 PDF (如果是空路径，给个提示)
         const iframe = document.getElementById('pdfIframe');

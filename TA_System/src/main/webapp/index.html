@@ -224,15 +224,28 @@
         }
 
         .action-btn.secondary {
-            background: transparent;
-            color: var(--page-text);
-            border-color: rgba(255, 255, 255, 0.24);
+            background: linear-gradient(135deg, var(--button-start) 0%, var(--button-end) 100%);
+            color: #fff;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
             box-shadow: none;
         }
 
         .action-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 12px 28px rgba(8, 18, 31, 0.28);
+            background: linear-gradient(135deg, #1acd9f 0%, var(--button-start) 100%);
+            box-shadow: 0 12px 32px rgba(24, 179, 148, 0.4);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-group .action-btn:last-child {
+            background: linear-gradient(135deg, var(--button-start) 0%, var(--button-end) 100%);
+            color: #fff;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-group .action-btn:last-child:hover {
+            background: linear-gradient(135deg, #1acd9f 0%, var(--button-start) 100%);
+            box-shadow: 0 12px 32px rgba(24, 179, 148, 0.4);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
         .ta-illustration {
@@ -398,7 +411,7 @@
                 <p class="sub-desc">View open opportunities, submit applications, and manage the process in one clear flow.</p>
                 <div class="btn-group">
                     <a href="login.jsp" class="action-btn">Login</a>
-                    <a href="register.jsp" class="action-btn secondary">Register</a>
+                    <a href="register.jsp" class="action-btn">Register</a>
                 </div>
             </div>
 

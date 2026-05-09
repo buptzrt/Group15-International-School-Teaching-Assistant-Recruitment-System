@@ -22,13 +22,13 @@ Yuxuan:yuxuanwwang@outlook.com    (Support TA)
 * **修改示例**：
   ```java
   // 请将下方路径替换为你自己电脑上的实际路径，注意目录分隔符请使用正斜杠 "/"
-  private static final String FILE_PATH = "D:/Your/Project/Path/data/jobs.json";
+  private static final String FILE_PATH = "D:/TA-system/Group15_TA_SYSTEM-main-intermediate-assessment/TA_System/src/main/resources/jobs.json";
   ```
   或者替换掉FILE_NAME/USER_JSON_FILE前面的resources的路径
   ```java
   private static Path resolvePath() {
       // 使用resources目录作为存储位置
-      return Paths.get("D:/Desktop/Study/three down/software_eng/Group15_TA_SYSTEM/TA_System/src/main/resources/" + FILE_NAME);
+      return Paths.get("D:/TA-system/Group15_TA_SYSTEM-main-intermediate-assessment/TA_System/src/main/resources/" + FILE_NAME);
   }
   ```
 ### 🚀 部署与运行步骤
