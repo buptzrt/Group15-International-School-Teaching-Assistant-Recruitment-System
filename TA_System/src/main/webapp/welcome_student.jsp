@@ -1,63 +1,82 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.me.finaldesignproject.model.User" %>
 <%
+    String studentName = null;
+    Object sessionUser = session.getAttribute("user");
+    if (sessionUser instanceof User) {
+        studentName = ((User) sessionUser).getFullName();
+    }
     String studentEmail = (String) session.getAttribute("email");
+    String studentId = (String) session.getAttribute("userId");
+    if (studentName == null || studentName.trim().isEmpty()) {
+        studentName = studentEmail;
+    }
+    if (studentName == null || studentName.trim().isEmpty()) {
+        studentName = "-";
+    }
+    if (studentEmail == null || studentEmail.trim().isEmpty()) {
+        studentEmail = "-";
+    }
+    if (studentId == null || studentId.trim().isEmpty()) {
+        studentId = "-";
+    }
 %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Welcome</title>
+    <title>Student Home</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
     <style>
         body {
             margin: 0;
-            padding: 40px;
-            font-family: 'Poppins', sans-serif;
-            background-color: transparent;
-            color: #ecf0f1;
-            animation: fadeInBody 0.7s ease;
-        }
-        .welcome-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            margin: auto;
-            animation: fadeInUp 0.8s ease;
-        }
-        .welcome-box h1 {
-            font-size: 28px;
-            color: #00cec9;
-            animation: slideDown 0.7s ease;
-        }
-        .welcome-box p {
-            font-size: 18px;
-            color: #dfe6e9;
+            padding: 18px 28px;
+            background: transparent;
+            color: #eef4fb;
         }
 
-        @keyframes fadeInBody {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .student-home {
+            width: 100%;
+            padding: 30px 34px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(14px);
         }
     </style>
 </head>
 <body>
-    <div class="welcome-box">
-        <h1>Welcome to the Student Dashboard 🎓</h1>
-        <p>Hello, <strong><%= studentEmail %></strong>!</p>
-        <p>You can view your profile, explore companies, and track your applications from here.</p>
-        <p>Use the navigation menu above to get started.</p>
+    <div class="student-home home-panel">
+        <span class="home-kicker">Student Workspace</span>
+        <div class="home-heading-row">
+            <h3>Welcome, <%= studentName %></h3>
+        </div>
+        <div class="home-meta">
+            <span>Role: Student</span>
+            <span>Email: <%= studentEmail %></span>
+            <span>ID: <%= studentId %></span>
+        </div>
+        <p class="home-lead">
+            This home page helps you prepare your profile, find suitable TA opportunities,
+            and track every application from one place.
+        </p>
+
+        <div class="home-grid">
+            <div class="home-card">
+                <h4>Complete Your Profile</h4>
+                <p>Keep your personal information, academic background, and resume ready before applying.</p>
+            </div>
+            <div class="home-card">
+                <h4>Find Open Jobs</h4>
+                <p>Use View Job List to compare active vacancies, requirements, deadlines, and available positions.</p>
+            </div>
+            <div class="home-card">
+                <h4>Track Applications</h4>
+                <p>Open My Applications to review submission status and follow the progress of your TA applications.</p>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>

@@ -152,7 +152,8 @@
 
     <meta charset="UTF-8">
 
-    <title>Manage Students - Admin Dashboard</title>
+    <title>Manage Application - Admin Dashboard</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-theme.css">
 
     <style>
 
@@ -256,13 +257,13 @@
 
         .overlimit { color: #ff4757; font-weight: bold; }
 
-        .btn-action { padding: 6px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-action { width: 100%; min-height: 36px; padding: 7px 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap; }
 
         .btn-approve { background: #00b894; color: white; }
 
-        .btn-reject { background: #e17055; color: white; margin-left: 5px; }
+        .btn-reject { background: #e17055; color: white; }
 
-        .btn-withdraw { background: #95a5a6; color: white; margin-left: 5px; }
+        .btn-withdraw { background: #95a5a6; color: white; }
 
         .btn-withdraw:hover { background: #7f8c8d; }
 
@@ -282,6 +283,62 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
             background: rgba(0, 0, 0, 0.35);
             color: #fff;
+        }
+
+        #manageStudentsTable { table-layout: fixed; }
+        #manageStudentsTable th,
+        #manageStudentsTable td { vertical-align: middle; }
+        #manageStudentsTable,
+        #manageStudentsTable th,
+        #manageStudentsTable td {
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif !important;
+        }
+        #manageStudentsTable th {
+            color: #ffd166 !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+            line-height: 1.35 !important;
+            padding: 14px 16px !important;
+            letter-spacing: 0 !important;
+        }
+        #manageStudentsTable td {
+            color: #eef4fb !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            line-height: 1.45 !important;
+            padding: 13px 16px !important;
+            letter-spacing: 0 !important;
+        }
+        #manageStudentsTable .application-status {
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+        }
+        #manageStudentsTable .actions-cell { min-width: 150px; }
+        .admin-action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(62px, 1fr));
+            gap: 8px;
+            align-items: stretch;
+            width: 100%;
+        }
+        .admin-action-buttons .btn-withdraw { grid-column: 1 / -1; }
+        @media (max-width: 1180px) {
+            #manageStudentsTable th,
+            #manageStudentsTable td {
+                padding-left: 7px;
+                padding-right: 7px;
+                font-size: 13px;
+            }
+            .admin-action-buttons {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            .btn-action {
+                min-height: 32px;
+                padding: 6px 8px;
+                font-size: 12px;
+            }
         }
 
     </style>
@@ -332,19 +389,19 @@
 
 </head>
 
-<body>
+<body class="app-auth-bg dashboard-shell table-page">
 
 <div class="navbar">
 
     <div class="navbar-left">
 
-        <h2>Management Dashboard</h2>
+        <h2 class="dashboard-title"><span class="dashboard-icon">&#9638;</span><span>Admin Dashboard</span></h2>
 
-        <a href="admin_home.jsp">Home</a>
+        <a class="nav-link" href="admin_home.jsp"><span class="nav-link-icon">&#8962;</span>Home</a>
 
-        <a href="manage_students.jsp" style="background-color: #00b894;">Manage Students</a>
+        <a class="nav-link active" href="manage_students.jsp"><span class="nav-link-icon">&#9786;</span>Manage Application</a>
 
-        <a href="manage_jobs.jsp">Manage Jobs</a>
+        <a class="nav-link" href="manage_jobs.jsp"><span class="nav-link-icon">&#9638;</span>Manage Jobs</a>
 
     </div>
 
@@ -420,6 +477,17 @@
     </div>
 
     <table id="manageStudentsTable">
+        <colgroup>
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 15%;">
+            <col style="width: 11%;">
+            <col style="width: 9%;">
+            <col style="width: 8%;">
+            <col style="width: 11%;">
+            <col style="width: 11%;">
+            <col style="width: 15%;">
+        </colgroup>
 
         <thead>
 
@@ -519,7 +587,7 @@
 
             <td><%= moName %></td> <td><%= hoursStr %>h</td>
 
-            <td class="status-<%= st.toLowerCase() %>"><%= st %></td>
+            <td><span class="application-status status-<%= st.toLowerCase() %>"><%= st %></span></td>
 
             <td class="<%= (totalAcceptedHours >= 20 || (st.equals("Pending") && willBeOverLimit)) ? "overlimit" : "" %>">
 
@@ -533,7 +601,8 @@
 
             </td>
 
-            <td>
+            <td class="actions-cell">
+                <div class="admin-action-buttons">
 
                 <%-- AD 按钮：全部移除 disabled 限制，并传递原始 ignoreFlag --%>
 
@@ -553,6 +622,7 @@
 
                         onclick="handleAction(event, this, '<%= sId %>', '<%= jId %>', 'Pending', '<%= ignoreFlag %>')">Withdraw</button>
 
+                </div>
             </td>
 
         </tr>
