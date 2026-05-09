@@ -77,7 +77,10 @@
       border: none;
       padding: 12px 24px;
       border-radius: 8px;
+      font-family: Georgia, "Times New Roman", serif;
       font-size: 16px;
+      font-weight: 700;
+      line-height: 1.2;
       cursor: pointer;
       transition: 0.3s;
       white-space: nowrap; /* 🌟 核心新增：防止按钮里的文字被挤成两行 */

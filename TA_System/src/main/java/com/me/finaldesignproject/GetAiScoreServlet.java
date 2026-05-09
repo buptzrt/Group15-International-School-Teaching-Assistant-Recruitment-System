@@ -48,7 +48,6 @@ public class GetAiScoreServlet extends HttpServlet {
                 return;
             }
             jobId = jobId.trim();
-
             Job targetJob = null;
             for (Job job : new JobDao().getAllJobs()) {
                 if (jobId.equals(job.getJobId())) {

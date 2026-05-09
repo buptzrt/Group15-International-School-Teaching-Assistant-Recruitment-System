@@ -83,6 +83,15 @@
             background: rgba(255, 255, 255, 0.03);
         }
 
+        .applications-table col:nth-child(1) { width: 13%; }
+        .applications-table col:nth-child(2) { width: 12%; }
+        .applications-table col:nth-child(3) { width: 12%; }
+        .applications-table col:nth-child(4) { width: 12%; }
+        .applications-table col:nth-child(5) { width: 13%; }
+        .applications-table col:nth-child(6) { width: 13%; }
+        .applications-table col:nth-child(7) { width: 9%; }
+        .applications-table col:nth-child(8) { width: 16%; }
+
         th, td {
             border-right: 1px solid rgba(255, 255, 255, 0.18);
             border-bottom: 1px solid rgba(255, 255, 255, 0.18);
@@ -195,6 +204,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: nowrap;
         }
 
         /* 状态与按钮样式 */
@@ -208,6 +218,16 @@
             display: inline-block; padding: 6px 12px; border-radius: 6px;
             text-decoration: none; font-size: 12px; font-weight: 600; color: #fff; border: none;
             transition: 0.3s; cursor: pointer; white-space: nowrap;
+            min-width: 76px;
+            overflow-wrap: normal !important;
+            word-break: keep-all !important;
+        }
+        .operation-cell .action-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap !important;
+            flex: 0 0 auto;
         }
         .btn-pass { background: #2ecc71; }
         .btn-reject { background: #e74c3c; }
@@ -423,7 +443,17 @@
     %>
 
     <div class="applications-table-wrap">
-    <table>
+    <table class="applications-table">
+        <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
         <thead>
         <tr>
             <th>
@@ -615,7 +645,7 @@
                             class="action-btn btn-pass <%= (willExceed && !isPermanentlyIgnored) ? "btn-disabled" : "" %>"
                             style="<%= (willExceed && !isPermanentlyIgnored) ? "pointer-events: none; opacity: 0.6;" : "pointer-events: auto; opacity: 1;" %>"
                             onclick="handleAction(this, '<%= sId %>', '<%= jId %>', 'Accepted')">
-                        Accepted
+                        Accept
                     </button>
                     <button type="button" class="action-btn btn-reject"
                             onclick="handleAction(this, '<%= sId %>', '<%= jId %>', 'Reject')">

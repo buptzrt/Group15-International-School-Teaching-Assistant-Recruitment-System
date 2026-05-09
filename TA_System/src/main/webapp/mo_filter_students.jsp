@@ -64,16 +64,38 @@
 
         /* 评语特殊排版 */
         .ai-reason-text { font-size: 16px; line-height: 1.8; color: #f5f9ff; white-space: pre-line; }
-        .action-btn { background: #1e90ff; color: #fff; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
+        .action-btn {
+            background: #1e90ff;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
         .action-btn:hover { background: #187bcd; }
         /* 针对 AI 理由单元格的特殊样式，让 \n 变成真正的换行 */
         .reason-cell {
             font-size: 14.5px;
             line-height: 1.7;
-            white-space: pre-line; /* 🌟 核心魔法：识别换行符 */
+            white-space: pre-line !important; /* 🌟 核心魔法：识别换行符 */
             color: #e2e8f0;
             padding-top: 16px !important;
             padding-bottom: 16px !important;
+        }
+        .table-page td.reason-cell {
+            white-space: pre-line !important;
+        }
+        .reason-point {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .reason-point:last-child {
+            margin-bottom: 0;
         }
 
         /* 🌟 滚动条美化 */
@@ -175,7 +197,8 @@
                     <th style="width: 12%">Student ID</th>
                     <th style="width: 18%">Major</th>
                     <th style="width: 12%">Match Score</th>
-                    <th style="width: 46%">AI Evaluation Reason</th>
+                    <th style="width: 34%">AI Evaluation Reason</th>
+                    <th style="width: 12%">Analysis</th>
                 </tr>
                 </thead>
                 <tbody id="resultBody">
@@ -187,6 +210,41 @@
 
 <script>
     let currentAiData = []; // 声明一个全局变量保存结果，方便 Modal 随时读取
+    function formatReasonText(reason) {
+        return String(reason || '')
+            .replace(/\s*•\s*/g, function(match, offset) {
+                return offset === 0 ? '• ' : '\n• ';
+            })
+            .trim();
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatReasonHtml(reason) {
+        const text = String(reason || '').trim();
+        if (!text) return '';
+
+        const parts = text
+            .replace(/^\s*•\s*/, '')
+            .split(/\s*•\s*/)
+            .filter(Boolean);
+
+        if (parts.length === 0) {
+            return escapeHtml(text);
+        }
+
+        return parts
+            .map(part => '<span class="reason-point">• ' + escapeHtml(part.trim()) + '</span>')
+            .join('');
+    }
+
     function runAiMatch() {
         const jobId = document.getElementById('jobSelector').value;
         if(!jobId) {
@@ -229,8 +287,8 @@
                             '<td style="color: #9bd3ff;">' + item.studentId + '</td>' +
                             '<td style="font-size:14px;">' + (item.major || 'Unknown') + '</td>' +
                             '<td><div class="score-box ' + scoreClass + '">' + item.score + '</div></td>' +
-                            '<td class="reason-cell">' + item.reason + '</td>' +
-                            '<td><button class="action-btn" onclick="openModal(' + index + ')">👁️ View</button></td>' +
+                            '<td class="reason-cell">' + formatReasonHtml(item.reason) + '</td>' +
+                            '<td><button type="button" class="action-btn" onclick="openModal(' + index + ')">View Analysis</button></td>' +
                             '</tr>';
                         tbody.innerHTML += row;
                     });
@@ -266,7 +324,7 @@
         scoreDiv.className = 'score-box ' + (item.score >= 80 ? 'score-high' : (item.score >= 60 ? 'score-mid' : 'score-low'));
 
         // 设置理由
-        document.getElementById('modalReason').innerText = item.reason;
+        document.getElementById('modalReason').innerText = formatReasonText(item.reason);
 
         // 加载 PDF (如果是空路径，给个提示)
         const iframe = document.getElementById('pdfIframe');
