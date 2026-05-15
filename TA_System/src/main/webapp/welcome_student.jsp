@@ -1,13 +1,24 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.me.finaldesignproject.model.User" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
+<%@ page import="com.me.finaldesignproject.dao.StudentProfileDao" %>
 <%
     String studentName = null;
     Object sessionUser = session.getAttribute("user");
+    String studentId = (String) session.getAttribute("userId");
     if (sessionUser instanceof User) {
-        studentName = ((User) sessionUser).getFullName();
+        User user = (User) sessionUser;
+        if (studentId == null || studentId.trim().isEmpty()) {
+            studentId = user.getEnrollmentNo();
+        }
+        StudentProfile profile = new StudentProfileDao().getByEnrollment(user.getEnrollmentNo());
+        if (profile != null && profile.getFullName() != null && !profile.getFullName().trim().isEmpty()) {
+            studentName = profile.getFullName();
+        } else {
+            studentName = user.getFullName();
+        }
     }
     String studentEmail = (String) session.getAttribute("email");
-    String studentId = (String) session.getAttribute("userId");
     if (studentName == null || studentName.trim().isEmpty()) {
         studentName = studentEmail;
     }

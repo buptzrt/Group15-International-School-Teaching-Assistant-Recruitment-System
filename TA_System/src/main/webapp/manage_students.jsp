@@ -12,6 +12,8 @@
 
     JobDao jobDao = new JobDao();
 
+    StudentProfileDao studentProfileDao = new StudentProfileDao();
+
 
 
 // 2. Admin Display Name
@@ -535,7 +537,13 @@
 
                 User student = userDao.getUserByEnrollment(sId);
 
-                String studentName = (student != null) ? student.getFullName() : "Unknown";
+                StudentProfile studentProfile = studentProfileDao.getByEnrollment(sId);
+                String studentName = "Unknown";
+                if (studentProfile != null && studentProfile.getFullName() != null && !studentProfile.getFullName().trim().isEmpty()) {
+                    studentName = studentProfile.getFullName();
+                } else if (student != null && student.getFullName() != null && !student.getFullName().trim().isEmpty()) {
+                    studentName = student.getFullName();
+                }
 
 
 

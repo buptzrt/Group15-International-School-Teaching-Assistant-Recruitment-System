@@ -7,7 +7,9 @@
 <%@ page import="com.me.finaldesignproject.model.User" %>
 <%@ page import="com.me.finaldesignproject.dao.JobDao" %>
 <%@ page import="com.me.finaldesignproject.dao.UserDao" %>
+<%@ page import="com.me.finaldesignproject.dao.StudentProfileDao" %>
 <%@ page import="com.me.finaldesignproject.dao.ApplicationDao" %>
+<%@ page import="com.me.finaldesignproject.model.StudentProfile" %>
 <%
     // 权限校验
     String currentUserId = (String) session.getAttribute("userId");
@@ -505,11 +507,19 @@
                 JobDao jobDao = new JobDao();
                 ApplicationDao appDao = new ApplicationDao();
                 UserDao userDao = new UserDao();
+                StudentProfileDao studentProfileDao = new StudentProfileDao();
                 Map<String, Job> jobMap = new HashMap<>();
                 for(Job j : jobDao.getAllJobs()) { jobMap.put(j.getJobId(), j); }
                 Map<String, String> userNameMap = new HashMap<>();
                 for(User u : userDao.getAllUsers()) {
-                    if(u.getEnrollmentNo() != null) userNameMap.put(u.getEnrollmentNo(), u.getFullName());
+                    if(u.getEnrollmentNo() != null) {
+                        StudentProfile profile = studentProfileDao.getByEnrollment(u.getEnrollmentNo());
+                        if (profile != null && profile.getFullName() != null && !profile.getFullName().trim().isEmpty()) {
+                            userNameMap.put(u.getEnrollmentNo(), profile.getFullName());
+                        } else {
+                            userNameMap.put(u.getEnrollmentNo(), u.getFullName());
+                        }
+                    }
                 }
                 String appPath = ApplicationDao.getFilePath();
                 File file = new File(appPath);
