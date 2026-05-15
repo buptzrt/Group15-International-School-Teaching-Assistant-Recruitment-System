@@ -418,7 +418,7 @@
             <form action="StudentRegisterServlet" method="post">
                 <div class="input-group">
                     <div class="input-item">
-                        <label for="full_name">Full Name:</label>
+                        <label for="full_name">English Name:</label>
                         <input type="text" id="full_name" name="full_name" required>
                     </div>
                     <div class="input-item">

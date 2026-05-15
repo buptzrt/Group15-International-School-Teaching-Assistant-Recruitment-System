@@ -456,11 +456,21 @@
         }
         .admin-job-actions .btn,
         .admin-job-actions button {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
             width: 100%;
             min-height: 40px;
             padding: 8px 10px;
             text-align: center;
             white-space: nowrap;
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif !important;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            line-height: 1.2 !important;
+            box-sizing: border-box;
+            margin: 0;
+            appearance: none;
         }
 
         @media (max-width: 1180px) {

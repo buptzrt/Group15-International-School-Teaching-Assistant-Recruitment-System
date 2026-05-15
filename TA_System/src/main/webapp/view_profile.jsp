@@ -51,7 +51,7 @@
     <div class="card">
         <div class="section-title">Basic Information</div>
         <div class="detail-grid">
-            <div class="detail-item"><strong>Name</strong><span><%= user.getFullName() == null ? "Not set" : user.getFullName() %></span></div>
+            <div class="detail-item"><strong>English Name</strong><span><%= studentProfile != null && studentProfile.getFullName()!=null && !studentProfile.getFullName().trim().isEmpty() ? studentProfile.getFullName() : (user.getFullName() == null ? "Not set" : user.getFullName()) %></span></div>
             <div class="detail-item"><strong>Student Number</strong><span><%= user.getEnrollmentNo() == null ? "Not set" : user.getEnrollmentNo() %></span></div>
             <div class="detail-item"><strong>Email</strong><span><%= user.getEmail() == null ? "Not set" : user.getEmail() %></span></div>
             <div class="detail-item"><strong>Chinese Name</strong><span><%= studentProfile != null && studentProfile.getChineseName()!=null ? studentProfile.getChineseName() : "Not set" %></span></div>
