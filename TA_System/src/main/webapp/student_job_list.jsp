@@ -275,7 +275,7 @@
                             <div>
                                 <% if (!blockView) { %>
                                 <button class="apply-btn gap-btn" type="button" onclick="showGapModal('<%= job.getJobId() %>')">
-                                    闂?Review AI Gap Analysis
+                                    Review AI Gap Analysis
                                 </button>
                                 <% } else { %>
                                 <span style="color:#999; font-size:12px; font-style:italic;">(Analysis disabled for closed jobs)</span>

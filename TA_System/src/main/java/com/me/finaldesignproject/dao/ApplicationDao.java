@@ -8,7 +8,7 @@ import java.util.*;
 import com.me.finaldesignproject.model.Job;
 
 public class ApplicationDao {
-    private static final String FILE_PATH = "D:/TA-system/Group15_TA_SYSTEM-main-intermediate-assessment/TA_System/src/main/resources/applications.json";
+    private static final String FILE_PATH = "D:/ta-final/Group15_TA_SYSTEM-wji-modifyfinal/TA_System/src/main/resources/applications.json";
 
     public static String getFilePath() {
         return FILE_PATH;
