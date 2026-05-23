@@ -17,13 +17,17 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Data access object for student profile records stored in {@code student_profiles.json}.
+ */
 public class StudentProfileDao {
-
-    private static final String FILE_NAME = "student_profiles.json";
+    public static final String STUDENT_PROFILE_JSON_PATH_PROPERTY = "ta.system.studentProfiles.path";
+    private static final String DEFAULT_FILE_PATH =
+            "E:/Github/Group15_TA_SYSTEM/TA_System/src/main/resources/student_profiles.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static Path resolvePath() {
-        return Paths.get("D:/ta-final/Group15_TA_SYSTEM-wji-modifyfinal/TA_System/src/main/resources/" + FILE_NAME);
+        return Paths.get(System.getProperty(STUDENT_PROFILE_JSON_PATH_PROPERTY, DEFAULT_FILE_PATH));
 
     }
 

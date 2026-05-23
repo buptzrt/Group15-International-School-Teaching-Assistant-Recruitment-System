@@ -13,6 +13,36 @@ This is the software application developed by Group 15 for the BUPT Internationa
 
 ---
 
+## Running Test Programs on Another Computer
+The automated test files are located in `TA_System/test programs`.
+
+Important:
+- Teammates do **not** need to modify the DAO absolute paths before running the automated tests.
+- During testing, the test code temporarily redirects file access to isolated test data, so the tests do not directly overwrite the real JSON files in `src/main/resources`.
+- The default absolute paths in the DAO layer are still used for normal software execution, not for automated test data.
+
+How to run the tests:
+1. Clone or pull the latest repository.
+2. Make sure Java 21 and Maven are installed on the local machine.
+3. Open a terminal in the `TA_System` folder.
+4. Run:
+
+```bash
+mvn test
+```
+
+If Maven cannot write to the default local Maven repository on that machine, run:
+
+```bash
+mvn "-Dmaven.repo.local=.m2-temp" test
+```
+
+This command will run all automated tests in `TA_System/test programs`.
+
+When do teammates need to modify absolute paths?
+- If they only want to run the automated tests: no path modification is required.
+- If they want to run the actual web system locally through Tomcat: they must still update the default absolute JSON paths in the DAO files to match their own computer.
+
 ## ⚙️ Environment Setup & Configuration Guide
 This project is developed using pure Jakarta EE specifications. To successfully run the application in your local environment, please follow the setup instructions below:
 

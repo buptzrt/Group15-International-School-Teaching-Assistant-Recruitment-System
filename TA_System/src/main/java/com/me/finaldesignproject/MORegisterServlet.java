@@ -9,11 +9,22 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Servlet that registers a new module organizer account.
+ */
 public class MORegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Validates the submitted module organizer data and creates the new account when possible.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
@@ -71,3 +82,4 @@ public class MORegisterServlet extends HttpServlet {
         return value == null ? null : value.trim();
     }
 }
+

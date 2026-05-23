@@ -24,11 +24,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servlet that runs AI matching for applicants of a module organizer job.
+ */
 public class MOAiMatchServlet extends HttpServlet {
     private static final Gson GSON = new Gson();
 
+    /**
+     * Evaluates applicants for the selected job and returns ranked AI matching results.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         String jobId = request.getParameter("jobId");
 
@@ -50,7 +61,7 @@ public class MOAiMatchServlet extends HttpServlet {
                     // 1. 提取该学生的 PDF 原文
                     String pdfText = extractTextFromPdf(request, profile.getResumePath());
 
-                    // 2. 🚀 核心：直接调用带缓存的通用打分引擎！
+                    // 2. 核心：直接调用带缓存的通用打分引擎！
                     AiMatchEngine.MatchResult matchResult = AiMatchEngine.evaluate(targetJob, profile, pdfText);
 
                     // 3. 将结果组装成 JSON 发给前端
@@ -112,3 +123,4 @@ public class MOAiMatchServlet extends HttpServlet {
         return ids;
     }
 }
+

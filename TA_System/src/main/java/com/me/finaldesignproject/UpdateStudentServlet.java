@@ -5,8 +5,19 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.*;
 
+/**
+ * Servlet that updates student information.
+ */
 public class UpdateStudentServlet extends HttpServlet {
 
+    /**
+     * Processes the submitted student changes and saves the updated student record.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

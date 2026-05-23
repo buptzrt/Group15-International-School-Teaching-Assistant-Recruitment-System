@@ -15,12 +15,23 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+/**
+ * Servlet that calculates or retrieves the AI match score for a student and job.
+ */
 @WebServlet("/GetAiScoreServlet")
 public class GetAiScoreServlet extends HttpServlet {
     private static final Gson GSON = new Gson();
 
+    /**
+     * Builds the student and job context, invokes the AI matcher, and returns the score as JSON.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
 
         JsonObject json = new JsonObject();
@@ -90,3 +101,4 @@ public class GetAiScoreServlet extends HttpServlet {
         response.getWriter().write(GSON.toJson(json));
     }
 }
+

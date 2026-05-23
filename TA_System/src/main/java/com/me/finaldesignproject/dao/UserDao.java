@@ -13,12 +13,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data access object for reading and persisting users from {@code users.json}.
+ */
 public class UserDao {
+    public static final String USER_JSON_PATH_PROPERTY = "ta.system.users.path";
+    private static final String DEFAULT_USER_JSON_PATH =
+            "E:/Github/Group15_TA_SYSTEM/TA_System/src/main/resources/users.json";
 
     private static final String USER_JSON_FILE = "users.json";
 
     private static String getUserJsonPath() {
-        return "D:/ta-final/Group15_TA_SYSTEM-wji-modifyfinal/TA_System/src/main/resources/" + USER_JSON_FILE;
+        return System.getProperty(USER_JSON_PATH_PROPERTY, DEFAULT_USER_JSON_PATH);
     }
 
     public List<User> getAllUsers() {

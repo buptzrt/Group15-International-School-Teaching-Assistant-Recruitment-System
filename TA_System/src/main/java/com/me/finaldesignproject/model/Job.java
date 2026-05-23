@@ -9,6 +9,9 @@ package com.me.finaldesignproject.model;
 
 import java.io.Serializable;
 
+/**
+ * Serializable job posting model used across publishing, approval, and application workflows.
+ */
 public class Job implements Serializable {
 
     private static final long serialVersionUID = 1L;

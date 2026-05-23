@@ -14,19 +14,30 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Servlet that submits a student job application and returns the outcome.
+ */
 @WebServlet("/ApplyJobServlet")
 public class ApplyJobServlet extends HttpServlet {
 
     private final ApplicationDao appDao = new ApplicationDao();
     private final JobDao jobDao = new JobDao();
 
+    /**
+     * Validates the current student and target job, then saves a new application when allowed.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute("userId");
         String jobId = request.getParameter("jobId");
 
-        // 🌟 设置编码，确保弹窗中文不乱码
+        // 设置编码，确保弹窗中文不乱码
         response.setContentType("text/html;charset=UTF-8");
 
         if (userId == null || jobId == null) {
@@ -76,7 +87,7 @@ public class ApplyJobServlet extends HttpServlet {
             if ("XMLHttpRequest".equals(requestedWith)) {
                 // 情况 1: fetch/AJAX 请求
                 response.setStatus(HttpServletResponse.SC_OK);
-                // 🌟 如果条数达到 20，返回专门的信号给前端
+                // 如果条数达到 20，返回专门的信号给前端
                 if (willExceedCount) {
                     response.getWriter().write("WARNING_COUNT_LIMIT");
                 } else {
@@ -94,9 +105,10 @@ public class ApplyJobServlet extends HttpServlet {
                 }
             }
         } else {
-            // 失败处理
+            // 操作失败处理
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("<script>alert('Application failed!'); history.back();</script>");
         }
     }
 }
+

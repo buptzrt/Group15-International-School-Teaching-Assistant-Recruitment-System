@@ -1,12 +1,30 @@
 package com.me.finaldesignproject;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
+/**
+ * Servlet that updates company information.
+ */
 public class UpdateCompanyServlet extends HttpServlet {
 
+    /**
+     * Processes the submitted company changes and saves the updated company record.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -21,7 +39,7 @@ public class UpdateCompanyServlet extends HttpServlet {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/design_engineering_portal", "root", "root");
+                    "jdbc:mysql://localhost:3306/design_engineering_portal", "root", "root");
 
             String selectSql = "SELECT * FROM companies WHERE company_id = ?";
             PreparedStatement selectStmt = conn.prepareStatement(selectSql);
@@ -45,7 +63,8 @@ public class UpdateCompanyServlet extends HttpServlet {
                 rs.close();
                 selectStmt.close();
 
-                String updateSql = "UPDATE companies SET company_name = ?, email = ?, job_description = ?, details = ? WHERE company_id = ?";
+                String updateSql = "UPDATE companies SET company_name = ?, email = ?, "
+                        + "job_description = ?, details = ? WHERE company_id = ?";
                 PreparedStatement ps = conn.prepareStatement(updateSql);
                 ps.setString(1, name);
                 ps.setString(2, email);
@@ -58,17 +77,16 @@ public class UpdateCompanyServlet extends HttpServlet {
                 conn.close();
 
                 if (rowsUpdated > 0) {
-                    session.setAttribute("message", "✅ Company updated successfully.");
+                    session.setAttribute("message", "Company updated successfully.");
                 } else {
-                    session.setAttribute("message", "❌ Company update failed.");
+                    session.setAttribute("message", "Company update failed.");
                 }
             } else {
-                session.setAttribute("message", "❌ Company ID not found.");
+                session.setAttribute("message", "Company ID not found.");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("message", "❌ Error: " + e.getMessage());
+            session.setAttribute("message", "Error: " + e.getMessage());
         }
 
         response.sendRedirect("admin_company_details.jsp");
