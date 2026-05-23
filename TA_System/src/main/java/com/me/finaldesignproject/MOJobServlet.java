@@ -17,14 +17,25 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Servlet that lists and manages jobs created by module organizers.
+ */
 @WebServlet("/MOJobServlet")
 public class MOJobServlet extends HttpServlet {
     private final JobDao jobDao = new JobDao();
     private final UserDao userDao = new UserDao();
     private final ApplicationDao applicationDao = new ApplicationDao();
 
+    /**
+     * Loads the jobs owned by the current module organizer and forwards them to the job management page.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
             response.sendRedirect("login.jsp");
@@ -37,8 +48,16 @@ public class MOJobServlet extends HttpServlet {
         request.getRequestDispatcher("mo_postjob.jsp").forward(request, response);
     }
 
+    /**
+     * Processes module organizer job creation and update requests.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
@@ -207,3 +226,4 @@ public class MOJobServlet extends HttpServlet {
         }
     }
 }
+

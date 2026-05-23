@@ -2,6 +2,9 @@ package com.me.finaldesignproject;
 
 import java.util.regex.Pattern;
 
+/**
+ * Shared validation rules used during public registration flows.
+ */
 public final class RegistrationRules {
     public static final String PUBLIC_ID_RULE_TEXT =
             "ID must follow 2020-2026 + 212/213 + any 3 digits, for example 2023213070.";

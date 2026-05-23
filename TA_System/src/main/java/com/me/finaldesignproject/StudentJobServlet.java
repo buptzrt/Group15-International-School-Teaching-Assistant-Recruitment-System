@@ -19,8 +19,16 @@ import jakarta.servlet.http.HttpSession;
  */
 @WebServlet("/StudentJobServlet")
 public class StudentJobServlet extends HttpServlet {
-    private JobDao jobDao = new JobDao(); // 实例化职位数据访问对象
+    private JobDao jobDao = new JobDao(); // 瀹炰緥鍖栬亴浣嶆暟鎹闂璞?
 
+    /**
+     * Loads the jobs currently visible to students and forwards them to the job hall page.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
@@ -36,7 +44,7 @@ public class StudentJobServlet extends HttpServlet {
                 .collect(Collectors.toList());
         System.out.println("==========[StudentJobServlet] JOB LIST DEBUG ==========");
         if (allJobs == null || allJobs.isEmpty()) {
-            System.out.println("❌ jobList 是空的！");
+            System.out.println("鉂?jobList 鏄┖鐨勶紒");
         } else {
             for (Job job : allJobs) {
                 System.out.println("JOB ID = [" + job.getJobId() + "]");
@@ -51,6 +59,14 @@ public class StudentJobServlet extends HttpServlet {
         request.getRequestDispatcher("student_job_list.jsp").forward(request, response);
     }
 
+    /**
+     * Handles student job page actions that are submitted with POST.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 学生端的 POST 请求通常由具体的申请逻辑处理，此处默认执行查询
         doGet(request, response);

@@ -7,15 +7,20 @@ import java.util.*;
 
 import com.me.finaldesignproject.model.Job;
 
+/**
+ * Data access object for storing and updating job application records in {@code applications.json}.
+ */
 public class ApplicationDao {
-    private static final String FILE_PATH = "D:/ta-final/Group15_TA_SYSTEM-wji-modifyfinal/TA_System/src/main/resources/applications.json";
+    public static final String APPLICATION_JSON_PATH_PROPERTY = "ta.system.applications.path";
+    private static final String DEFAULT_FILE_PATH =
+            "E:/Github/Group15_TA_SYSTEM/TA_System/src/main/resources/applications.json";
 
     public static String getFilePath() {
-        return FILE_PATH;
+        return System.getProperty(APPLICATION_JSON_PATH_PROPERTY, DEFAULT_FILE_PATH);
     }
 
     public boolean saveApplication(String studentId, String jobId) {
-        File file = new File(FILE_PATH);
+        File file = new File(getFilePath());
         try {
             if (!file.exists()) {
                 File parent = file.getParentFile();
@@ -63,7 +68,7 @@ public class ApplicationDao {
     }
 
     public boolean updateApplicationStatus(String studentId, String jobId, String newStatus, String ignoreOvertime) {
-        File file = new File(FILE_PATH);
+        File file = new File(getFilePath());
         if (!file.exists()) {
             return false;
         }
@@ -137,7 +142,7 @@ public class ApplicationDao {
 
     public Set<String> getAppliedJobIds(String studentId) {
         Set<String> appliedIds = new HashSet<>();
-        File file = new File(FILE_PATH);
+        File file = new File(getFilePath());
         if (!file.exists()) {
             return appliedIds;
         }
@@ -194,7 +199,7 @@ public class ApplicationDao {
             return 0;
         }
 
-        File file = new File(FILE_PATH);
+        File file = new File(getFilePath());
         if (!file.exists() || !file.isFile()) {
             return 0;
         }
@@ -217,7 +222,7 @@ public class ApplicationDao {
         if (jobId == null || jobId.trim().isEmpty()) {
             return false;
         }
-        File file = new File(FILE_PATH);
+        File file = new File(getFilePath());
         if (!file.exists()) {
             return false;
         }
@@ -237,7 +242,7 @@ public class ApplicationDao {
 
     private List<String> getAllApplicationLines() {
         List<String> lines = new ArrayList<>();
-        File file = new File(FILE_PATH);
+        File file = new File(getFilePath());
         if (!file.exists()) {
             return lines;
         }

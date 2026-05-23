@@ -7,6 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servlet that loads the current student applications page.
+ */
 public class MyApplicationsServlet extends HttpServlet {
 
     public static class Application {
@@ -16,6 +19,14 @@ public class MyApplicationsServlet extends HttpServlet {
         public Date applyDate;
     }
 
+    /**
+     * Loads the applications submitted by the current student and forwards them to the view.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

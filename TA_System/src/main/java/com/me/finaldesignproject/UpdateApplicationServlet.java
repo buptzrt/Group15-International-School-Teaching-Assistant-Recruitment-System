@@ -11,22 +11,33 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Servlet that updates the status of an application.
+ */
 @WebServlet("/UpdateApplicationServlet")
 public class UpdateApplicationServlet extends HttpServlet {
 
     private final ApplicationDao appDao = new ApplicationDao();
     private final JobDao jobDao = new JobDao();
 
+    /**
+     * Updates the selected application status and returns the result to the caller.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String studentId = request.getParameter("studentId");
         String jobId = request.getParameter("jobId");
         String status = request.getParameter("status");
 
-        // 🌟 核心配合修改：将 force 接收改为 ignoreOvertime (由 manage_students 或 manage_applications 传回)
+        // 核心配合修改：将 force 接收改为 ignoreOvertime (由 manage_students 或 manage_applications 传回)
         String ignoreOvertime = request.getParameter("ignoreOvertime");
         if (ignoreOvertime == null) {
-            ignoreOvertime = request.getParameter("force"); // 兼容可能存在的旧参数名
+            ignoreOvertime = request.getParameter("force"); // 鍏煎鍙兘瀛樺湪鐨勬棫鍙傛暟鍚?
         }
 
         if (studentId == null || jobId == null || status == null) {
@@ -68,7 +79,7 @@ public class UpdateApplicationServlet extends HttpServlet {
         boolean isAccepted = "Accepted".equalsIgnoreCase(status) || "Pass".equalsIgnoreCase(status);
         String normalizedStatus = isAccepted ? "Accepted" : status;
 
-        // 🌟 执行状态更新：同时传入 ignoreOvertime 标志，确保状态被持久化到 JSON
+        // 核心修改：执行状态更新，同时传入 ignoreOvertime 标志，确保状态被正确处理
         boolean isSuccess = appDao.updateApplicationStatus(studentId, jobId, normalizedStatus, ignoreOvertime);
 
         // 名额联动逻辑
@@ -96,3 +107,4 @@ public class UpdateApplicationServlet extends HttpServlet {
         }
     }
 }
+

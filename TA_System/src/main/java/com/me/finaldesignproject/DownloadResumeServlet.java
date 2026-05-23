@@ -17,7 +17,7 @@
 //
 //public class DownloadResumeServlet extends HttpServlet {
 //
-//    // ✅ 移除原本写死的静态 Path，改为在 doGet 内部动态解析
+//    // 鉁?绉婚櫎鍘熸湰鍐欐鐨勯潤鎬?Path锛屾敼涓哄湪 doGet 鍐呴儴鍔ㄦ€佽В鏋?
 //
 //    @Override
 //    protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -39,8 +39,8 @@
 //
 //        String storedPath = profile.getResumePath().trim();
 //
-//        // ✅ 核心修改点：动态获取 resources 目录的相对路径
-//        // 它会自动根据 Tomcat 部署位置找到正确的 resources 文件夹
+//        // 鉁?鏍稿績淇敼鐐癸細鍔ㄦ€佽幏鍙?resources 鐩綍鐨勭浉瀵硅矾寰?
+//        // 瀹冧細鑷姩鏍规嵁 Tomcat 閮ㄧ讲浣嶇疆鎵惧埌姝ｇ‘鐨?resources 鏂囦欢澶?
 //        String baseDir = getServletContext().getRealPath("/WEB-INF/classes/");
 //        Path resourcesDir = Paths.get(baseDir);
 //
@@ -76,7 +76,7 @@
 //        }
 //    }
 //
-//    // ✅ 核心修改点：传入动态获取的 resourcesDir
+//    // 鉁?鏍稿績淇敼鐐癸細浼犲叆鍔ㄦ€佽幏鍙栫殑 resourcesDir
 //    private File resolveResumeFile(String resumePath, Path resourcesDir) {
 //        String normalized = resumePath.replace("\\", "/");
 //        if (normalized.startsWith("/")) {
@@ -114,20 +114,31 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/**
+ * Servlet that streams an uploaded student resume to the client.
+ */
 public class DownloadResumeServlet extends HttpServlet {
 
+    /**
+     * Validates the requested resume and streams the stored file to the browser.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. 获取要查看的学号
+        // 1. 鑾峰彇瑕佹煡鐪嬬殑瀛﹀彿
         String enrollmentNo = request.getParameter("enrollment_no");
         if (enrollmentNo == null || enrollmentNo.trim().isEmpty()) {
             response.getWriter().write("Enrollment number is missing.");
             return;
         }
 
-        // 2. 查数据库，获取简历相对路径
+        // 2. 鏌ユ暟鎹簱锛岃幏鍙栫畝鍘嗙浉瀵硅矾寰?
         StudentProfileDao studentProfileDao = new StudentProfileDao();
         StudentProfile profile = studentProfileDao.getByEnrollment(enrollmentNo.trim());
 
@@ -136,9 +147,10 @@ public class DownloadResumeServlet extends HttpServlet {
             return;
         }
 
-        // ✅ 核心修改点：因为文件现在是公开的静态资源，直接重定向到该文件的 URL 即可！
-        // 彻底抛弃繁琐的 FileInputStream 和各种头文件设置，服务器瞬间减负！
+        // 鉁?鏍稿績淇敼鐐癸細鍥犱负鏂囦欢鐜板湪鏄叕寮€鐨勯潤鎬佽祫婧愶紝鐩存帴閲嶅畾鍚戝埌璇ユ枃浠剁殑 URL 鍗冲彲锛?
+        // 褰诲簳鎶涘純绻佺悙鐨?FileInputStream 鍜屽悇绉嶅ご鏂囦欢璁剧疆锛屾湇鍔″櫒鐬棿鍑忚礋锛?
         String resumeUrl = request.getContextPath() + "/" + profile.getResumePath().trim();
         response.sendRedirect(resumeUrl);
     }
 }
+

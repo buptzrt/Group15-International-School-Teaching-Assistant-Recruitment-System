@@ -15,14 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Data access object for reading and writing job postings stored in {@code jobs.json}.
+ */
 public class JobDao {
-    private static final String FILE_PATH = "D:/ta-final/Group15_TA_SYSTEM-wji-modifyfinal/TA_System/src/main/resources/jobs.json";
+    public static final String JOB_JSON_PATH_PROPERTY = "ta.system.jobs.path";
+    private static final String DEFAULT_FILE_PATH =
+            "E:/Github/Group15_TA_SYSTEM/TA_System/src/main/resources/jobs.json";
 
     private static final Type JOB_LIST_TYPE = new TypeToken<ArrayList<Job>>() {}.getType();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public List<Job> getAllJobs() {
-        return readJobsFromPath(FILE_PATH);
+        return readJobsFromPath(getFilePath());
     }
 
     public List<Job> getJobsByMoId(String moId) {
@@ -140,7 +145,11 @@ public class JobDao {
     }
 
     private boolean saveToFile(List<Job> jobs) {
-        return writeJobsToPath(FILE_PATH, jobs);
+        return writeJobsToPath(getFilePath(), jobs);
+    }
+
+    static String getFilePath() {
+        return System.getProperty(JOB_JSON_PATH_PROPERTY, DEFAULT_FILE_PATH);
     }
 
     private List<Job> readJobsFromPath(String filePath) {

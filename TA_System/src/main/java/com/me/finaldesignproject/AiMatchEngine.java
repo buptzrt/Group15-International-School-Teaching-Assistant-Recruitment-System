@@ -24,7 +24,11 @@ import com.google.gson.JsonElement;
 //
 //看缓存有没有过期？（对比缓存的 timestamp 和简历/岗位 JSON 文件的最后修改时间）。
 //总结： 我们的引擎是完全中立的公共服务。谁第一个在数据变动后去查分数，谁就负责“等”大模型算完并生成缓存；后来的人（不管是 MO 还是学生）就直接享受秒出的缓存成果。
+/**
+ * Central service for AI-based student-to-job matching with simple file-backed caching.
+ */
 public class AiMatchEngine {
+    static final String AI_CACHE_PATH_PROPERTY = "ta.system.aiCache.path";
     private static final Gson GSON = new Gson();
     // ⚠️ 填入你的真实 API Key
     private static final String QWEN_API_KEY = "sk-b1563cddb70642b2907dcb49fb883fca";
@@ -32,6 +36,12 @@ public class AiMatchEngine {
 
     // 缓存文件路径
     private static final String CACHE_FILE_NAME = "ai_match_cache.json";
+    private static MatchEvaluator matchEvaluator = AiMatchEngine::callAiForEvaluation;
+
+    @FunctionalInterface
+    interface MatchEvaluator {
+        MatchResult evaluate(Job job, StudentProfile profile, String pdfText);
+    }
 
     /**
      * 内部类：统一的返回结果结构
@@ -52,6 +62,10 @@ public class AiMatchEngine {
      * 获取缓存文件的绝对路径
      */
     private static String getCacheFilePath() {
+        String configuredPath = System.getProperty(AI_CACHE_PATH_PROPERTY);
+        if (configuredPath != null && !configuredPath.isBlank()) {
+            return configuredPath;
+        }
         String baseDir = ApplicationDao.getFilePath().replace("applications.json", "");
         return baseDir + CACHE_FILE_NAME;
     }
@@ -82,7 +96,13 @@ public class AiMatchEngine {
         System.out.println(">>> [AiEngine] 缓存未命中或已过期，呼叫大模型重新计算... CacheKey: " + cacheKey);
 
         // 3. 如果没缓存或已过期，调用大模型
-        MatchResult freshResult = callAiForEvaluation(job, profile, pdfText);
+        MatchResult freshResult;
+        try {
+            freshResult = matchEvaluator.evaluate(job, profile, pdfText);
+        } catch (Exception e) {
+            System.err.println(">>> [Error] Engine evaluator failed: " + e.getMessage());
+            freshResult = buildFallbackResult();
+        }
 
         // 4. 保存新结果到缓存
         if (freshResult != null) {
@@ -162,10 +182,22 @@ public class AiMatchEngine {
         } catch (Exception e) {
             System.err.println(">>> [Error] Engine 打分失败: " + e.getMessage());
         }
-        return new MatchResult(0, "AI Analysis Error. Please manually review the resume.", System.currentTimeMillis());
+        return buildFallbackResult();
     }
 
     // --- 缓存读写操作 ---
+    static void setMatchEvaluatorForTesting(MatchEvaluator evaluator) {
+        matchEvaluator = evaluator == null ? AiMatchEngine::callAiForEvaluation : evaluator;
+    }
+
+    static void resetMatchEvaluatorForTesting() {
+        matchEvaluator = AiMatchEngine::callAiForEvaluation;
+    }
+
+    private static MatchResult buildFallbackResult() {
+        return new MatchResult(0, "AI Analysis Error. Please manually review the resume.", System.currentTimeMillis());
+    }
+
     private static MatchResult readFromCache(String cacheKey) {
         File file = new File(getCacheFilePath());
         if (!file.exists()) return null;

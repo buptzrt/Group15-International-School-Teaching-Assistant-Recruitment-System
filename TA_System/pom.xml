@@ -51,10 +51,32 @@
             <version>2.8.9</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
         <finalName>webapp</finalName>
+        <testSourceDirectory>test programs</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -62,6 +84,28 @@
                 <version>3.11.0</version>
                 <configuration>
                     <release>21</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${maven.compiler.release}</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <docencoding>${project.build.sourceEncoding}</docencoding>
+                    <charset>${project.build.sourceEncoding}</charset>
+                    <show>protected</show>
+                    <doclint>none</doclint>
+                    <failOnError>false</failOnError>
+                    <windowtitle>TA System Javadocs</windowtitle>
+                    <doctitle>TA System API Documentation</doctitle>
+                    <destDir>javadocs</destDir>
                 </configuration>
             </plugin>
         </plugins>

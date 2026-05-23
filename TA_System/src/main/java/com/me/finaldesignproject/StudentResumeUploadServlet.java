@@ -36,17 +36,28 @@ import java.util.UUID;
         maxFileSize = 10 * 1024 * 1024,
         maxRequestSize = 20 * 1024 * 1024
 )
+/**
+ * Servlet that accepts and stores student resume uploads.
+ */
 public class StudentResumeUploadServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Gson GSON = new Gson();
     private static final String RESUME_RELATIVE_DIR = "resumes";
 
-    // ⚠️ 填入你的千问 API Key
+    // 鈿狅笍 濉叆浣犵殑鍗冮棶 API Key
     private static final String QWEN_API_KEY = "sk-b1563cddb70642b2907dcb49fb883fca";
     private static final String QWEN_API_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
 
+    /**
+     * Validates the uploaded resume, stores it on disk, and updates the related student profile.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("application/json;charset=UTF-8");
@@ -101,7 +112,7 @@ public class StudentResumeUploadServlet extends HttpServlet {
                 try (InputStream in = filePart.getInputStream()) {
                     Files.copy(in, targetFile, StandardCopyOption.REPLACE_EXISTING);
                 }
-                targetFileForAI = targetFile.toFile(); // 记录一个文件用来给AI读取
+                targetFileForAI = targetFile.toFile(); // 璁板綍涓€涓枃浠剁敤鏉ョ粰AI璇诲彇
             }
 
             String resumePath = RESUME_RELATIVE_DIR + "/" + uniqueFileName;
@@ -116,12 +127,12 @@ public class StudentResumeUploadServlet extends HttpServlet {
             studentProfile.setResumePath(resumePath);
             profileDao.save(studentProfile);
 
-            // --- 2. 🚀 核心重构：调用 AI 解析 PDF ---
+            // --- 2. 核心重构：调用 AI 解析 PDF ---
             JsonObject aiParsedData = new JsonObject();
             if (targetFileForAI != null && "pdf".equals(fileExtension)) {
                 String pdfText = extractTextFromPdf(targetFileForAI);
                 if (!pdfText.isEmpty()) {
-                    System.out.println(">>> [AI Auto-fill] 开始解析简历，长度: " + pdfText.length());
+                    System.out.println(">>> [AI Auto-fill] 寮€濮嬭В鏋愮畝鍘嗭紝闀垮害: " + pdfText.length());
                     aiParsedData = extractInfoWithAI(pdfText);
                 }
             }
@@ -143,17 +154,17 @@ public class StudentResumeUploadServlet extends HttpServlet {
     private String extractTextFromPdf(File pdfFile) {
         try (PDDocument document = PDDocument.load(pdfFile)) {
             PDFTextStripper stripper = new PDFTextStripper();
-            stripper.setEndPage(2); // 只读前2页，省Token
+            stripper.setEndPage(2); 
             String text = stripper.getText(document).trim();
-            // 防爆截断：最多保留 2000 个字符
+            // 闃茬垎鎴柇锛氭渶澶氫繚鐣?2000 涓瓧绗?
             return text.length() > 2000 ? text.substring(0, 2000) : text;
         } catch (IOException e) { return ""; }
     }
 
-    // --- 调用 Qwen 大模型进行 JSON 信息提取 ---
+    
     private JsonObject extractInfoWithAI(String pdfText) {
         try {
-            // 🌟 升级版 Prompt：严禁 AI 总结或篡改长文本经历，必须原样复制 (Verbatim)！
+           
             String systemPrompt = "You are a Resume Parsing Assistant. Extract the candidate's info from the text. " +
                     "Output STRICTLY a valid JSON object. Do not include markdown code blocks. " +
                     "If a field is not found, leave it as an empty string \"\". " +
@@ -215,3 +226,4 @@ public class StudentResumeUploadServlet extends HttpServlet {
         ApiResponse(boolean success, String message, String path) { this.success = success; this.message = message; this.path = path; }
     }
 }
+

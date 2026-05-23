@@ -7,6 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servlet that loads the student list view for administrators.
+ */
 public class AdminStudentListServlet extends HttpServlet {
 
     public class Student {
@@ -18,6 +21,14 @@ public class AdminStudentListServlet extends HttpServlet {
         public String branch;
     }
 
+    /**
+     * Loads the student records needed by the administrator student management page.
+     *
+     * @param request the incoming HTTP request
+     * @param response the outgoing HTTP response
+     * @throws ServletException if servlet processing fails
+     * @throws IOException if an input or output error occurs
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
